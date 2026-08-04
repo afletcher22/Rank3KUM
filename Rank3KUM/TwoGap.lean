@@ -1,4 +1,5 @@
-import Mathlib
+import Mathlib.Combinatorics.Matroid.Rank
+import Mathlib.Combinatorics.Matroid.Circuit
 
 namespace Rank3KUM.TwoGap
 
@@ -18,21 +19,6 @@ insertion statement and proves the first two ingredients of its proof:
 The universal two-gap theorem itself is deliberately not declared as a
 theorem in this checkpoint.
 -/
-
-#check Matroid.IsBase
-#check Matroid.IsBase.encard_eq_eRank
-#check Matroid.IsBase.indep
-#check Matroid.IsBase.closure_eq
-#check Matroid.IsBase.fundCircuit_isCircuit
-#check Matroid.fundCircuit_subset_insert
-#check Matroid.mem_fundCircuit
-#check Matroid.Indep.mem_fundCircuit_iff
-#check Matroid.fundCocircuit_isCocircuit
-#check Matroid.mem_fundCocircuit
-#check Matroid.fundCocircuit_subset_insert_compl
-#check Matroid.IsBase.mem_fundCocircuit_iff_mem_fundCircuit
-#check Matroid.IsCircuit.isCocircuit_inter_nontrivial
-#check Matroid.IsBase.exchange_isBase_of_indep'
 
 variable {α : Type*}
 
@@ -116,8 +102,6 @@ def SymmetricPartners
       M.IsBase (exchangeSet B e d) := by
   rfl
 
-#print axioms Rank3KUM.TwoGap.mem_symmetricPartners
-
 /--
 Ordinary symmetric basis exchange, packaged as nonemptiness of
 `SymmetricPartners`.
@@ -176,8 +160,6 @@ theorem symmetricPartners_nonempty
     exact hB.exchange_isBase_of_indep' heB hdEB.2 hBindep
   exact ⟨d, hdD, hdEB.2, hDbase, hBbase⟩
 
-#print axioms Rank3KUM.TwoGap.symmetricPartners_nonempty
-
 /-- A gap is blocked when its two candidate endpoint sets contain no unequal pair. -/
 def GapBlocked (A B : Set α) : Prop :=
   ¬ ∃ x ∈ A, ∃ y ∈ B, x ≠ y
@@ -211,14 +193,12 @@ theorem gapBlocked_iff_common_singleton
       constructor
       · intro hyB
         by_contra hya
-        exact hblocked ⟨a, haA, y, hyB, hya.symm⟩
+        exact hblocked ⟨a, haA, y, hyB, fun hay => hya hay.symm⟩
       · rintro rfl
         exact hbB
   · rintro ⟨t, rfl, rfl⟩ ⟨x, hx, y, hy, hxy⟩
     simp only [Set.mem_singleton_iff] at hx hy
     exact hxy (hx.trans hy.symm)
-
-#print axioms Rank3KUM.TwoGap.gapBlocked_iff_common_singleton
 
 /--
 Specialization of `gapBlocked_iff_common_singleton` to symmetric-partner
@@ -237,7 +217,5 @@ theorem gapBlocked_symmetricPartners_iff_common_singleton
   exact gapBlocked_iff_common_singleton
     (symmetricPartners_nonempty M hD hB₁ he₁B₁ he₁D)
     (symmetricPartners_nonempty M hD hB₂ he₂B₂ he₂D)
-
-#print axioms Rank3KUM.TwoGap.gapBlocked_symmetricPartners_iff_common_singleton
 
 end Rank3KUM.TwoGap
