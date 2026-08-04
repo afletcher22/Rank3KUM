@@ -1,4 +1,5 @@
 import Rank3KUM.CyclicOrder
+import Rank3KUM.HalfWeave.RankTwo
 import Mathlib.Tactic
 
 namespace Rank3KUM
@@ -389,6 +390,52 @@ theorem cyclicBasisOrder3_interleaveOneTwo_of_flat_pairs
 
 #print axioms Rank3KUM.isBase_insert_pair_of_isBasis_flat_rank3
 #print axioms Rank3KUM.cyclicBasisOrder3_interleaveOneTwo_of_flat_pairs
+
+/-- The half-weave successor is the same cyclic successor used by interleaving. -/
+theorem halfWeave_cyclicSucc_eq_cyclicIndex
+    (k : ℕ) (hk : 0 < k) (i : Fin k) :
+    HalfWeave.cyclicSucc k hk i =
+      cyclicIndex k hk i 1 := by
+  apply Fin.ext
+  simp [HalfWeave.cyclicSucc_val, cyclicIndex_val]
+
+/--
+A sorted rank-two enumeration supplies exactly the two pair-basis families
+needed by the rank-three flat interleave.
+-/
+theorem cyclicBasisOrder3_interleaveOneTwo_of_sortedEnumeration
+    (M : Matroid α) {P X : Set α} {k m : ℕ}
+    (hk : 0 < k)
+    (hRank : M.eRank = 3)
+    (hRestrictRank : (M ↾ X).eRank = 2)
+    (hPX : Disjoint P X)
+    (hPground : P ⊆ M.E)
+    (hXflat : M.IsFlat X)
+    (points : Fin k ≃ P)
+    (D : HalfWeave.RankTwoSortedEnumeration
+      (M ↾ X) k m) :
+    CyclicBasisOrder3 M (by omega)
+      (interleaveOneTwo hPX points (by
+        simpa using HalfWeave.rankTwoWoven D hk)) := by
+  let pairs : Fin k × Bool ≃ X := by
+    simpa using HalfWeave.rankTwoWoven D hk
+  change CyclicBasisOrder3 M (by omega)
+    (interleaveOneTwo hPX points pairs)
+  apply cyclicBasisOrder3_interleaveOneTwo_of_flat_pairs
+    M hk hRank hPX hPground hXflat points pairs
+  · intro i
+    apply (Matroid.isBase_restrict_iff hXflat.subset_ground).mp
+    simpa [pairs] using
+      (HalfWeave.rankTwoWoven_successor_isBase
+        (M ↾ X) D hk hRestrictRank (i, false))
+  · intro i
+    apply (Matroid.isBase_restrict_iff hXflat.subset_ground).mp
+    simpa [pairs, halfWeave_cyclicSucc_eq_cyclicIndex] using
+      (HalfWeave.rankTwoWoven_successor_isBase
+        (M ↾ X) D hk hRestrictRank (i, true))
+
+#print axioms Rank3KUM.halfWeave_cyclicSucc_eq_cyclicIndex
+#print axioms Rank3KUM.cyclicBasisOrder3_interleaveOneTwo_of_sortedEnumeration
 
 end
 
