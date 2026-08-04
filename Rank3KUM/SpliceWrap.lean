@@ -125,7 +125,18 @@ theorem cyclicBasisOrder3_appendBlock_wrap
   · intro j
     have hj :
         j = (0 : Fin 3) ∨ j = (1 : Fin 3) ∨ j = (2 : Fin 3) := by
-      fin_cases j <;> simp
+      fin_cases j
+      · left
+        apply Fin.ext
+        rfl
+      · right
+        left
+        apply Fin.ext
+        rfl
+      · right
+        right
+        apply Fin.ext
+        rfl
     rcases hj with rfl | rfl | rfl
     · have hnew₁ :
           cyclicIndex (m + 3) (by omega)
