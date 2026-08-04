@@ -282,10 +282,10 @@ theorem eRank_contract_eq_two_of_eRank_eq_three_eRk_eq_one
       M heBasis
         (show (Matroid.contract M X).E ⊆
           (Matroid.contract M X).E from Set.Subset.rfl)
-  rw [Matroid.contract_ground,
+  rw [(Matroid.contract M X).eRk_ground,
+    Matroid.contract_ground,
     Set.sdiff_union_of_subset hXsubset,
-    M.eRk_ground, hRank,
-    (Matroid.contract M X).eRk_ground] at hrank
+    M.eRk_ground, hRank] at hrank
   apply ENat.add_left_injective_of_ne_top
     (by simp : (1 : ℕ∞) ≠ ⊤)
   calc
