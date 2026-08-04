@@ -478,7 +478,47 @@ theorem cyclicBasisOrder3_interleaveOneTwo_of_sortedEnumeration
 #print axioms Rank3KUM.restrictGroundEquiv_coe
 #print axioms Rank3KUM.restrictGroundEquiv_trans_apply_coe
 #print axioms Rank3KUM.halfWeave_cyclicSucc_eq_cyclicIndex
+
 #print axioms Rank3KUM.cyclicBasisOrder3_interleaveOneTwo_of_sortedEnumeration
+
+/--
+Transport the interleaved order from the partition
+`(M.E \ X) ∪ X` back to the ground set.
+-/
+theorem exists_cyclicBasisOrder3_of_sortedEnumeration_flat
+    (M : Matroid α) {X : Set α} {k m : ℕ}
+    (hk : 0 < k)
+    (hRank : M.eRank = 3)
+    (hRestrictRank : (Matroid.restrict M X).eRank = 2)
+    (hXflat : M.IsFlat X)
+    (points : Fin k ≃ (M.E \ X : Set α))
+    (D : HalfWeave.RankTwoSortedEnumeration
+      (Matroid.restrict M X) k m) :
+    ∃ order : Fin (3 * k) ≃ M.E,
+      CyclicBasisOrder3 M (by omega) order := by
+  have hPX : Disjoint (M.E \ X) X :=
+    Set.disjoint_sdiff_left
+  have hUnion : (M.E \ X) ∪ X = M.E :=
+    Set.sdiff_union_of_subset hXflat.subset_ground
+  let localOrder : Fin (3 * k) ≃
+      ((M.E \ X) ∪ X : Set α) :=
+    interleaveOneTwo hPX points
+      ((HalfWeave.rankTwoWoven D hk).trans
+        (restrictGroundEquiv M X))
+  have hLocal : CyclicBasisOrder3 M (by omega) localOrder := by
+    exact
+      cyclicBasisOrder3_interleaveOneTwo_of_sortedEnumeration
+        M hk hRank hRestrictRank hPX Set.diff_subset
+        hXflat points D
+  let order : Fin (3 * k) ≃ M.E :=
+    localOrder.trans (Equiv.setCongr hUnion)
+  refine ⟨order, ?_⟩
+  intro i
+  have hi := hLocal i
+  simpa only [order, Equiv.trans_apply,
+    Equiv.setCongr_apply] using hi
+
+#print axioms Rank3KUM.exists_cyclicBasisOrder3_of_sortedEnumeration_flat
 
 end
 
