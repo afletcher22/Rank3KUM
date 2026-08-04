@@ -518,7 +518,41 @@ theorem exists_cyclicBasisOrder3_of_sortedEnumeration_flat
   simpa only [order, Equiv.trans_apply,
     Equiv.setCongr_apply] using hi
 
+
 #print axioms Rank3KUM.exists_cyclicBasisOrder3_of_sortedEnumeration_flat
+
+/--
+A cardinality proof for the complement supplies its enumeration automatically.
+-/
+theorem exists_cyclicBasisOrder3_of_sortedEnumeration_tight_flat
+    (M : Matroid α) {X : Set α} {k m : ℕ}
+    (hk : 0 < k)
+    (hE : M.E.Finite)
+    (hRank : M.eRank = 3)
+    (hRestrictRank : (Matroid.restrict M X).eRank = 2)
+    (hXflat : M.IsFlat X)
+    (hComplementCard : (M.E \ X).encard = (k : ℕ∞))
+    (D : HalfWeave.RankTwoSortedEnumeration
+      (Matroid.restrict M X) k m) :
+    ∃ order : Fin (3 * k) ≃ M.E,
+      CyclicBasisOrder3 M (by omega) order := by
+  have hComplementFinite : (M.E \ X).Finite :=
+    hE.subset Set.diff_subset
+  letI : Fintype (M.E \ X : Set α) :=
+    hComplementFinite.fintype
+  have hNcard : (M.E \ X).ncard = k := by
+    apply ENat.coe_injective
+    rw [hComplementFinite.cast_ncard_eq]
+    exact hComplementCard
+  have hNatCard : Nat.card (M.E \ X : Set α) = k := by
+    simpa only [Nat.card_coe_set_eq] using hNcard
+  let points : Fin k ≃ (M.E \ X : Set α) :=
+    (Finite.equivFinOfCardEq hNatCard).symm
+  exact
+    exists_cyclicBasisOrder3_of_sortedEnumeration_flat
+      M hk hRank hRestrictRank hXflat points D
+
+#print axioms Rank3KUM.exists_cyclicBasisOrder3_of_sortedEnumeration_tight_flat
 
 end
 
