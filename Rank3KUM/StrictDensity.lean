@@ -96,6 +96,96 @@ theorem StrictlyUniformlyDense.encard_lt_two_mul_k_of_eRk_eq_two
   rw [hXrank] at h
   simpa [Nat.mul_comm] using h
 
+/--
+In the strict case, after deleting a basis the density check is automatic in
+ranks zero, one, and three.  Only rank-two subsets of the complement remain.
+-/
+theorem uniformlyDense_delete_of_strict_of_rank_two_bound
+    (M : Matroid α) (k : ℕ)
+    (hk : 0 < k)
+    (hE : M.E.Finite)
+    (hRank : M.eRank = 3)
+    (hDense : UniformlyDense M k)
+    (hStrict : StrictlyUniformlyDense M k)
+    {D : Set α}
+    (hD : M.IsBase D)
+    (hComplementCard :
+      (M.E \ D).encard =
+        ((3 * (k - 1) : ℕ) : ℕ∞))
+    (hRankTwo :
+      ∀ A : Set α, A ⊆ M.E \ D →
+        M.eRk A = 2 →
+        A.encard ≤
+          ((k - 1 : ℕ) : ℕ∞) * 2) :
+    UniformlyDense (Matroid.delete M D) (k - 1) := by
+  rw [uniformlyDense_delete_iff]
+  intro A hAcomp
+  have hAE : A ⊆ M.E :=
+    hAcomp.trans Set.sdiff_subset
+  have hAfin : A.Finite :=
+    hE.subset hAE
+  by_cases hAempty : A = ∅
+  · subst A
+    simp
+  have hAnonempty : A.Nonempty :=
+    Set.nonempty_iff_ne_empty.2 hAempty
+  have hAproper : A ≠ M.E := by
+    intro hAEq
+    have hDempty : D = ∅ := by
+      apply Set.eq_empty_iff_forall_notMem.2
+      intro e heD
+      have heComp : e ∈ M.E \ D := by
+        rw [← hAEq]
+        exact hAcomp (hD.subset_ground heD)
+      exact heComp.2 heD
+    have hDcard : D.encard = (3 : ℕ∞) :=
+      hD.encard_eq_eRank.trans hRank
+    rw [hDempty] at hDcard
+    simp at hDcard
+  have hRkLe : M.eRk A ≤ 3 := by
+    calc
+      M.eRk A ≤ M.eRank := M.eRk_le_eRank A
+      _ = 3 := hRank
+  obtain ⟨r, hr, hrle⟩ :=
+    ENat.le_natCast_iff.mp hRkLe
+  have hRzero : r ≠ 0 := by
+    intro hrzero
+    subst r
+    have hLoopless : M.Loopless :=
+      loopless_of_uniformlyDense M k hk hDense
+    letI : M.Loopless := hLoopless
+    have hAloops : A ⊆ M.loops := by
+      apply (M.eRk_eq_zero_iff hAE).mp
+      simpa using hr
+    rw [M.loops_eq_empty] at hAloops
+    exact hAempty (Set.subset_empty_iff.mp hAloops)
+  interval_cases r
+  · exact (hRzero rfl).elim
+  · have hlt :
+        A.encard < (k : ℕ∞) :=
+      hStrict.encard_lt_k_of_eRk_eq_one
+        M k hAE hAnonempty hAproper (by simpa using hr)
+    have hltNat : A.ncard < k := by
+      rw [hAfin.cast_ncard_eq] at hlt
+      exact_mod_cast hlt
+    have hleNat : A.ncard ≤ k - 1 := by
+      omega
+    rw [hAfin.cast_ncard_eq]
+    have hleCast :
+        (A.ncard : ℕ∞) ≤ ((k - 1 : ℕ) : ℕ∞) := by
+      exact_mod_cast hleNat
+    simpa [hr] using hleCast
+  · exact
+      hRankTwo A hAcomp (by simpa using hr)
+  · have hcard :
+        A.encard ≤ ((3 * (k - 1) : ℕ) : ℕ∞) := by
+      calc
+        A.encard ≤ (M.E \ D).encard :=
+          Set.encard_mono hAcomp
+        _ = ((3 * (k - 1) : ℕ) : ℕ∞) :=
+          hComplementCard
+    simpa [hr, Nat.mul_comm] using hcard
+
 #print axioms Rank3KUM.exists_nonempty_proper_tight_or_strictlyUniformlyDense
 #print axioms Rank3KUM.StrictlyUniformlyDense.encard_lt_k_of_eRk_eq_one
 #print axioms Rank3KUM.StrictlyUniformlyDense.encard_lt_two_mul_k_of_eRk_eq_two
