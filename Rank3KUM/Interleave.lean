@@ -407,13 +407,13 @@ theorem cyclicBasisOrder3_interleaveOneTwo_of_sortedEnumeration
     (M : Matroid α) {P X : Set α} {k m : ℕ}
     (hk : 0 < k)
     (hRank : M.eRank = 3)
-    (hRestrictRank : (M ↾ X).eRank = 2)
+    (hRestrictRank : (Matroid.restrict M X).eRank = 2)
     (hPX : Disjoint P X)
     (hPground : P ⊆ M.E)
     (hXflat : M.IsFlat X)
     (points : Fin k ≃ P)
     (D : HalfWeave.RankTwoSortedEnumeration
-      (M ↾ X) k m) :
+      (Matroid.restrict M X) k m) :
     CyclicBasisOrder3 M (by omega)
       (interleaveOneTwo hPX points (by
         simpa using HalfWeave.rankTwoWoven D hk)) := by
@@ -427,12 +427,12 @@ theorem cyclicBasisOrder3_interleaveOneTwo_of_sortedEnumeration
     apply (Matroid.isBase_restrict_iff hXflat.subset_ground).mp
     simpa [pairs] using
       (HalfWeave.rankTwoWoven_successor_isBase
-        (M ↾ X) D hk hRestrictRank (i, false))
+        (Matroid.restrict M X) D hk hRestrictRank (i, false))
   · intro i
     apply (Matroid.isBase_restrict_iff hXflat.subset_ground).mp
     simpa [pairs, halfWeave_cyclicSucc_eq_cyclicIndex] using
       (HalfWeave.rankTwoWoven_successor_isBase
-        (M ↾ X) D hk hRestrictRank (i, true))
+        (Matroid.restrict M X) D hk hRestrictRank (i, true))
 
 #print axioms Rank3KUM.halfWeave_cyclicSucc_eq_cyclicIndex
 #print axioms Rank3KUM.cyclicBasisOrder3_interleaveOneTwo_of_sortedEnumeration
