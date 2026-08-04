@@ -10,3 +10,4 @@ import Rank3KUM.TwoGap.RankThreeTools
 import Rank3KUM.TwoGap.Unequal
 import Rank3KUM.TwoGap.UnequalContradiction
 import Rank3KUM.TwoGap.EqualSupport
+import Rank3KUM.TwoGap.EqualNonempty
