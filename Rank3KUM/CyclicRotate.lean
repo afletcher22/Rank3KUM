@@ -20,9 +20,6 @@ noncomputable def rotateOneOrder
     (i : Fin m) :
     ((rotateOneOrder hm small i : E) : α) =
       (small (cyclicIndex m hm i 1) : α) := by
-  apply congrArg Subtype.val
-  apply small.injective
-  apply Fin.ext
   simp [rotateOneOrder, cyclicIndex, Fin.add_def]
 
 /-- Cyclic offsets associate. -/
@@ -31,8 +28,8 @@ theorem cyclicIndex_cyclicIndex
     cyclicIndex n hn (cyclicIndex n hn i a) b =
       cyclicIndex n hn i (a + b) := by
   apply Fin.ext
-  simp [cyclicIndex, Nat.add_mod]
-  omega
+  simp only [cyclicIndex_val]
+  rw [Nat.mod_add_mod, Nat.add_assoc]
 
 /-- Rotating a cyclic basis order preserves the cyclic basis property. -/
 theorem CyclicBasisOrder3.rotateOne
@@ -50,8 +47,13 @@ theorem CyclicBasisOrder3.rotateOne
       cyclicIndex m hm (cyclicIndex m hm i 1) 2 =
         cyclicIndex m hm i 3 := by
     simpa using cyclicIndex_cyclicIndex m hm i 1 2
+  have h₃ :
+      cyclicIndex m hm (cyclicIndex m hm i 2) 1 =
+        cyclicIndex m hm i 3 := by
+    simpa using cyclicIndex_cyclicIndex m hm i 2 1
+  rw [rotateOneOrder_apply, rotateOneOrder_apply,
+    rotateOneOrder_apply, h₁, h₃]
   rw [h₁, h₂] at hs
-  simpa [rotateOneOrder_apply, cyclicIndex_cyclicIndex,
-    Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using hs
+  exact hs
 
 end Rank3KUM
