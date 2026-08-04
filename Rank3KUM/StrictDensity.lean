@@ -19,6 +19,13 @@ def HasDensityReducingBasis
     (M : Matroid α) (k : ℕ) : Prop :=
   ∃ D : Set α, DensityReducingBasis M k D
 
+/-- Every nonempty proper ground-set subset satisfies the density bound strictly. -/
+def StrictlyUniformlyDense
+    (M : Matroid α) (k : ℕ) : Prop :=
+  ∀ X : Set α, X ⊆ M.E →
+    X.Nonempty → X ≠ M.E →
+    X.encard < (k : ℕ∞) * M.eRk X
+
 /--
 A basis hits every near-tight rank-two set.  In the strict case these are
 exactly the possible `2k-1` obstructions to lowering the density parameter.
@@ -178,13 +185,6 @@ theorem uniformlyDense_delete_iff
     have hbound := h A hAcomp
     simpa [Matroid.delete_eq_restrict,
       M.restrict_eRk_eq hAcomp] using hbound
-
-/-- Every nonempty proper ground-set subset satisfies the density bound strictly. -/
-def StrictlyUniformlyDense
-    (M : Matroid α) (k : ℕ) : Prop :=
-  ∀ X : Set α, X ⊆ M.E →
-    X.Nonempty → X ≠ M.E →
-    X.encard < (k : ℕ∞) * M.eRk X
 
 /--
 Uniform density splits cleanly into a nonempty proper tight set or strict
