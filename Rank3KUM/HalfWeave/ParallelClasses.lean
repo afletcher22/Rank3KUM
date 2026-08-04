@@ -516,6 +516,43 @@ theorem sortedClosureBlock_surjective
   refine ⟨j, ?_⟩
   simpa [fiberFinset] using hj
 
+theorem sortedClosureBlock_eq_iff_closure_eq
+    (M : Matroid α)
+    (k : ℕ)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (hcard : Fintype.card M.E = 2 * k)
+    (a b : Fin (2 * k)) :
+    sortedClosureBlock M k hcard a =
+        sortedClosureBlock M k hcard b ↔
+      M.closure
+          ({((sortedClosureGroundEquiv M k hcard a :
+            M.E) : α)} : Set α) =
+        M.closure
+          ({((sortedClosureGroundEquiv M k hcard b :
+            M.E) : α)} : Set α) := by
+  let y := sortedClosureGroundEquiv M k hcard
+  calc
+    sortedClosureBlock M k hcard a =
+        sortedClosureBlock M k hcard b ↔
+      sortedClosureBlock M k hcard b =
+        sortedClosureBlock M k hcard a := eq_comm
+    _ ↔ y b ∈
+        (sortedClosurePartsEquiv M
+          (sortedClosureBlock M k hcard a)).1 :=
+      (mem_sortedClosurePart_iff_block_eq
+        M k hcard b
+          (sortedClosureBlock M k hcard a)).symm
+    _ ↔ M.closure
+          ({((y a : M.E) : α)} : Set α) =
+        M.closure
+          ({((y b : M.E) : α)} : Set α) := by
+      rw [← part_sortedClosureGroundEquiv
+        M k hcard a]
+      exact
+        mem_closureFinpartition_part_iff
+          M (y a) (y b)
+
 #print axioms Rank3KUM.HalfWeave.groundUnivFinsetEquiv
 #print axioms Rank3KUM.HalfWeave.closurePartsEnumeration
 #print axioms Rank3KUM.HalfWeave.sortedClosureCoordinatesEquiv
