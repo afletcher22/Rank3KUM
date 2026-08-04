@@ -31,7 +31,9 @@ theorem rankThreeKUM_of_small_two_and_strict_deletion
         N.E.encard = ((3 * j : ℕ) : ℕ∞) →
         UniformlyDense N j →
         StrictlyUniformlyDense N j →
-        HasDensityReducingBasis N j) :
+        ∃ D : Set α,
+          N.IsBase D ∧
+          HitsNearTightRankTwo N j D) :
     ∀ (k : ℕ) (M : Matroid α),
       0 < k →
       M.E.Finite →
@@ -58,21 +60,32 @@ theorem rankThreeKUM_of_small_two_and_strict_deletion
         exists_cyclicBasisOrder3_of_strict_case
           M k hk hE hRank hEcard hDense
       intro hStrict
-      obtain ⟨D, hD, hDelRankEq, hDelDense⟩ :=
+      obtain ⟨D, hD, hHits⟩ :=
         hReducing k M hkThree hE hRank hEcard
           hDense hStrict
-      have hDelRank :
-          (Matroid.delete M D).eRank = 3 :=
-        hDelRankEq.trans hRank
-      have hDelFinite :
-          (Matroid.delete M D).E.Finite := by
-        rw [Matroid.delete_ground]
-        exact hE.subset Set.sdiff_subset
       have hDelCard :
           (Matroid.delete M D).E.encard =
             ((3 * (k - 1) : ℕ) : ℕ∞) :=
         delete_ground_encard_eq_three_mul_pred
           M k hk hRank hEcard hD
+      have hComplementCard :
+          (M.E \ D).encard =
+            ((3 * (k - 1) : ℕ) : ℕ∞) := by
+        simpa using hDelCard
+      have hDelRank :
+          (Matroid.delete M D).eRank = 3 :=
+        eRank_delete_eq_three_of_strict
+          M k hkThree hRank hStrict hD
+          hComplementCard
+      have hDelDense :
+          UniformlyDense (Matroid.delete M D) (k - 1) :=
+        uniformlyDense_delete_of_strict_of_hitsNearTight
+          M k hk hE hRank hDense hStrict hD
+          hComplementCard hHits
+      have hDelFinite :
+          (Matroid.delete M D).E.Finite := by
+        rw [Matroid.delete_ground]
+        exact hE.subset Set.sdiff_subset
       obtain ⟨small, hsmall⟩ :=
         ih (k - 1) (by omega)
           (Matroid.delete M D) (by omega)
