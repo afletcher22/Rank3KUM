@@ -247,6 +247,7 @@ theorem isBase_insert_pair_of_isBasis_flat_rank3
   rw [hRank, htriple.eRk_eq_encard,
     Set.encard_insert_of_notMem hepair,
     Set.encard_pair hfg]
+  omega
 
 /--
 If each point with its pair, each pair with the next point, and the shifted
@@ -366,19 +367,25 @@ theorem cyclicBasisOrder3_interleaveOneTwo_of_flat_pairs
         (hpoint_ground i) (hpoint_not_mem i)
         (hwithin_ne i) (hwithin i)
   · intro i
-    simpa [or_comm, or_left_comm, or_assoc] using
-      (isBase_insert_pair_of_isBasis_flat_rank3
+    have hbase :=
+      isBase_insert_pair_of_isBasis_flat_rank3
         M hRank hXflat
         (hpoint_ground (cyclicIndex k hk i 1))
         (hpoint_not_mem (cyclicIndex k hk i 1))
-        (hwithin_ne i) (hwithin i))
+        (hwithin_ne i) (hwithin i)
+    convert hbase using 1
+    ext x
+    simp [or_comm, or_left_comm, or_assoc]
   · intro i
-    simpa [or_comm, or_left_comm, or_assoc] using
-      (isBase_insert_pair_of_isBasis_flat_rank3
+    have hbase :=
+      isBase_insert_pair_of_isBasis_flat_rank3
         M hRank hXflat
         (hpoint_ground (cyclicIndex k hk i 1))
         (hpoint_not_mem (cyclicIndex k hk i 1))
-        (hacross_ne i) (hacross i))
+        (hacross_ne i) (hacross i)
+    convert hbase using 1
+    ext x
+    simp [or_comm, or_left_comm, or_assoc]
 
 #print axioms Rank3KUM.isBase_insert_pair_of_isBasis_flat_rank3
 #print axioms Rank3KUM.cyclicBasisOrder3_interleaveOneTwo_of_flat_pairs
