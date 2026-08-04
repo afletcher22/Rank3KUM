@@ -75,7 +75,11 @@ theorem mem_closure_pair_of_not_isBase_triple
   have hdep : M.Dep ({x, y, z} : Set α) :=
     dep_triple_of_not_isBase M hRank hxE hyE hzE hxy hxz hyz hnot
   have hzxy : z ∉ ({x, y} : Set α) := by
-    simp [hxz, hyz]
+    constructor
+    · intro hzx
+      exact hxz hzx.symm
+    · intro hzy
+      exact hyz hzy.symm
   have heq :
       insert z ({x, y} : Set α) = ({x, y, z} : Set α) := by
     ext u
@@ -93,11 +97,11 @@ theorem closure_eq_of_indep_of_subset_closure_of_encard_eq
     M.closure I = M.closure J := by
   have hBasis : M.IsBasis I (M.closure J) := by
     apply hI.isBasis_of_eRk_ge hIfin hIJ
-    calc
+    exact (calc
       M.eRk (M.closure J) = M.eRk J := M.eRk_closure_eq J
       _ = J.encard := hJ.eRk_eq_encard
       _ = I.encard := hcard.symm
-      _ = M.eRk I := hI.eRk_eq_encard.symm
+      _ = M.eRk I := hI.eRk_eq_encard.symm).le
   exact hBasis.closure_eq_right
 
 /-- A support element that is not a symmetric partner must fail the opposite exchange. -/
@@ -157,7 +161,9 @@ theorem mem_closure_pair_of_fundamentalSupport_eq_pair
     rw [h]
     exact hd₂D
   have hepair : e ∉ ({d₁, d₂} : Set α) := by
-    simp [hed₁, hed₂]
+    constructor
+    · exact hed₁
+    · exact hed₂
   exact (hpairI.mem_closure_iff_of_notMem hepair).2 hC.dep
 
 /-- The final element of a basis triple is outside the closure of the first two. -/
@@ -166,16 +172,26 @@ theorem not_mem_closure_pair_of_isBase_triple
     (hB : M.IsBase ({x, y, z} : Set α))
     (hxz : x ≠ z) (hyz : y ≠ z) :
     z ∉ M.closure ({x, y} : Set α) := by
-  have hpairI : M.Indep ({x, y} : Set α) :=
-    hB.indep.subset (by intro u hu; simp_all)
+  have hpairI : M.Indep ({x, y} : Set α) := by
+    apply hB.indep.subset
+    intro u hu
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hu ⊢
+    rcases hu with rfl | rfl
+    · exact Or.inl rfl
+    · exact Or.inr (Or.inl rfl)
   have hzE : z ∈ M.E := hB.subset_ground (by simp)
   have hzpair : z ∉ ({x, y} : Set α) := by
-    simp [hxz, hyz]
+    constructor
+    · intro hzx
+      exact hxz hzx.symm
+    · intro hzy
+      exact hyz hzy.symm
   apply (hpairI.notMem_closure_iff_of_notMem hzpair hzE).2
   have heq :
       insert z ({x, y} : Set α) = ({x, y, z} : Set α) := by
     ext u
     simp [or_comm, or_left_comm, or_assoc]
-  rwa [heq]
+  rw [heq]
+  exact hB.indep
 
 end Rank3KUM.TwoGap
