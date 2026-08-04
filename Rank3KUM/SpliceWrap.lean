@@ -123,7 +123,10 @@ theorem cyclicBasisOrder3_appendBlock_wrap
           appendBlockOrder_block]
         exact hleft₂
   · intro j
-    fin_cases j
+    have hj :
+        j = (0 : Fin 3) ∨ j = (1 : Fin 3) ∨ j = (2 : Fin 3) := by
+      fin_cases j <;> simp
+    rcases hj with rfl | rfl | rfl
     · have hnew₁ :
           cyclicIndex (m + 3) (by omega)
               (Fin.natAdd m (0 : Fin 3)) 1 =
