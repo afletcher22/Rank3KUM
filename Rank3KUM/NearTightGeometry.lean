@@ -162,6 +162,136 @@ theorem inter_subset_closure_singleton_of_distinct_rankTwo_flats
       _ ≤ 1 := hInterRank
   norm_num at hbad
 
+/--
+For three pairwise-distinct nonconcurrent rank-two flats, representatives of
+their three pairwise intersections can be chosen to form a basis.
+-/
+theorem exists_isBase_of_pairwise_intersections_three_flats
+    (M : Matroid α)
+    (hLoopless : M.Loopless)
+    (hRank : M.eRank = 3)
+    {A B C : Set α}
+    (hAflat : M.IsFlat A)
+    (hBflat : M.IsFlat B)
+    (hCflat : M.IsFlat C)
+    (hABnonempty : (A ∩ B).Nonempty)
+    (hACnonempty : (A ∩ C).Nonempty)
+    (hBCnonempty : (B ∩ C).Nonempty)
+    (hABCempty : (A ∩ B) ∩ C = ∅) :
+    ∃ x ∈ A ∩ B, ∃ y ∈ A ∩ C, ∃ z ∈ B ∩ C,
+      M.IsBase ({x, y, z} : Set α) := by
+  obtain ⟨x, hx⟩ := hABnonempty
+  obtain ⟨y, hy⟩ := hACnonempty
+  obtain ⟨z, hz⟩ := hBCnonempty
+  have hxNotC : x ∉ C := by
+    intro hxC
+    have hxABC : x ∈ (A ∩ B) ∩ C :=
+      ⟨hx, hxC⟩
+    rw [hABCempty] at hxABC
+    exact hxABC
+  have hyNotB : y ∉ B := by
+    intro hyB
+    have hyABC : y ∈ (A ∩ B) ∩ C :=
+      ⟨⟨hy.1, hyB⟩, hy.2⟩
+    rw [hABCempty] at hyABC
+    exact hyABC
+  have hzNotA : z ∉ A := by
+    intro hzA
+    have hzABC : z ∈ (A ∩ B) ∩ C :=
+      ⟨⟨hzA, hz.1⟩, hz.2⟩
+    rw [hABCempty] at hzABC
+    exact hzABC
+  letI : M.Loopless := hLoopless
+  have hxE : x ∈ M.E :=
+    hAflat.subset_ground hx.1
+  have hyE : y ∈ M.E :=
+    hAflat.subset_ground hy.1
+  have hzE : z ∈ M.E :=
+    hBflat.subset_ground hz.1
+  have hyIndep : M.Indep ({y} : Set α) :=
+    (Matroid.isNonloop_of_loopless hyE).indep
+  have hClosureYSubsetC :
+      M.closure ({y} : Set α) ⊆ C := by
+    calc
+      M.closure ({y} : Set α) ⊆ M.closure C :=
+        M.closure_subset_closure (by simpa using hy.2)
+      _ = C := hCflat.closure
+  have hxNotClosureY :
+      x ∉ M.closure ({y} : Set α) :=
+    fun hxClosure => hxNotC (hClosureYSubsetC hxClosure)
+  have hxy : x ≠ y := by
+    intro h
+    subst x
+    exact hxNotC hy.2
+  have hxNotMemY : x ∉ ({y} : Set α) := by
+    simpa using hxy
+  have hPairIndep :
+      M.Indep ({x, y} : Set α) :=
+    (hyIndep.notMem_closure_iff_of_notMem
+      hxNotMemY hxE).1 hxNotClosureY
+  have hPairSubsetA :
+      ({x, y} : Set α) ⊆ A := by
+    intro u hu
+    simp only [Set.mem_insert_iff,
+      Set.mem_singleton_iff] at hu
+    rcases hu with rfl | rfl
+    · exact hx.1
+    · exact hy.1
+  have hClosurePairSubsetA :
+      M.closure ({x, y} : Set α) ⊆ A := by
+    calc
+      M.closure ({x, y} : Set α) ⊆ M.closure A :=
+        M.closure_subset_closure hPairSubsetA
+      _ = A := hAflat.closure
+  have hzNotClosurePair :
+      z ∉ M.closure ({x, y} : Set α) :=
+    fun hzClosure => hzNotA
+      (hClosurePairSubsetA hzClosure)
+  have hzNotMemPair :
+      z ∉ ({x, y} : Set α) :=
+    fun hzPair => hzNotA (hPairSubsetA hzPair)
+  have hInsertIndep :
+      M.Indep (insert z ({x, y} : Set α)) :=
+    (hPairIndep.notMem_closure_iff_of_notMem
+      hzNotMemPair hzE).1 hzNotClosurePair
+  have hSetEq :
+      insert z ({x, y} : Set α) =
+        ({x, y, z} : Set α) := by
+    ext u
+    simp [or_comm, or_left_comm, or_assoc]
+  have hTripleIndep :
+      M.Indep ({x, y, z} : Set α) := by
+    rwa [hSetEq] at hInsertIndep
+  have hxz : x ≠ z := by
+    intro h
+    subst x
+    exact hzNotA hx.1
+  have hyz : y ≠ z := by
+    intro h
+    subst y
+    exact hzNotA hy.1
+  have hTripleCard :
+      ({x, y, z} : Set α).encard = 3 := by
+    rw [Set.encard_insert_of_notMem]
+    · rw [Set.encard_pair hyz]
+      norm_num
+    · simp [hxy, hxz]
+  have hTripleFinite :
+      ({x, y, z} : Set α).Finite :=
+    Set.finite_of_encard_eq_coe hTripleCard
+  have hTripleBase :
+      M.IsBase ({x, y, z} : Set α) := by
+    apply hTripleIndep.isBase_of_eRk_ge hTripleFinite
+    exact (calc
+      M.eRank = 3 := hRank
+      _ = ({x, y, z} : Set α).encard :=
+        hTripleCard.symm
+      _ = M.eRk ({x, y, z} : Set α) :=
+        hTripleIndep.eRk_eq_encard.symm).le
+  exact ⟨x, hx, y, hy, z, hz, hTripleBase⟩
+
+#print axioms Rank3KUM.exists_isBase_of_pairwise_intersections_three_flats
+
 #print axioms Rank3KUM.inter_subset_closure_singleton_of_distinct_rankTwo_flats
 
 #print axioms Rank3KUM.eRk_inter_le_one_of_distinct_rankTwo_flats
