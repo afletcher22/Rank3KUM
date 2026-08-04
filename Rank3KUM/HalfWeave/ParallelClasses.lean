@@ -237,12 +237,12 @@ theorem sum_fin_castLE_eq_finSigmaPrefix
     (∑ i : Fin c.val,
       n (Fin.castLE c.isLt.le i)) =
         finSigmaPrefix n c.val := by
-  rw [Fin.sum_univ_eq_sum_range]
   unfold finSigmaPrefix
+  rw [← Fin.sum_univ_eq_sum_range]
   apply Finset.sum_congr rfl
-  intro i hi
-  have him : i < m :=
-    (Finset.mem_range.mp hi).trans c.isLt
+  intro i _
+  have him : i.val < m :=
+    i.isLt.trans c.isLt
   simp [him]
 
 theorem finSigmaPrefix_succ
