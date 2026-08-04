@@ -247,7 +247,7 @@ theorem isBase_insert_pair_of_isBasis_flat_rank3
   rw [hRank, htriple.eRk_eq_encard,
     Set.encard_insert_of_notMem hepair,
     Set.encard_pair hfg]
-  omega
+  norm_num
 
 /--
 If each point with its pair, each pair with the next point, and the shifted
