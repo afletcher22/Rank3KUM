@@ -64,7 +64,58 @@ theorem exists_cyclicBasisOrder3_of_uniformlyDense_rankTwo_flat
       M hk hE hRank hRestrictRank hXflat
       hComplementCard D
 
+/--
+The rank-two side of the tight-set classification now discharges all
+enumeration, restriction-rank, flatness, and complement-cardinality data.
+-/
+theorem exists_cyclicBasisOrder3_of_tight_rank_two
+    (M : Matroid α) (k : ℕ)
+    (hk : 0 < k)
+    (hE : M.E.Finite)
+    (hRank : M.eRank = 3)
+    (hEcard : M.E.encard = ((3 * k : ℕ) : ℕ∞))
+    (hDense : UniformlyDense M k)
+    {X : Set α}
+    (hX : Tight M k X)
+    (hXrank : M.eRk X = 2) :
+    ∃ order : Fin (3 * k) ≃ M.E,
+      CyclicBasisOrder3 M (by omega) order := by
+  have hXflat : M.IsFlat X :=
+    tight_isFlat M k hE hDense hX
+  have hXcard :
+      X.encard = ((2 * k : ℕ) : ℕ∞) :=
+    tight_encard_eq_two_mul_k_of_eRk_eq_two
+      M k hX hXrank
+  have hsum :
+      X.encard + (M.E \ X).encard = M.E.encard := by
+    rw [← Set.encard_union_eq Set.disjoint_sdiff_right,
+      Set.union_sdiff_cancel hX.1]
+  have hComplementCard :
+      (M.E \ X).encard = (k : ℕ∞) := by
+    apply ENat.add_right_injective_of_ne_top
+      (by simp : ((2 * k : ℕ) : ℕ∞) ≠ ⊤)
+    calc
+      ((2 * k : ℕ) : ℕ∞) + (M.E \ X).encard =
+          X.encard + (M.E \ X).encard := by
+        rw [hXcard]
+      _ = M.E.encard := hsum
+      _ = ((3 * k : ℕ) : ℕ∞) := hEcard
+      _ = ((2 * k : ℕ) : ℕ∞) + (k : ℕ∞) := by
+        rw [← ENat.natCast_add]
+        congr 1
+        omega
+  have hRestrictRank :
+      (M.restrict X).eRank = 2 := by
+    rw [Matroid.eRank_def,
+      Matroid.restrict_ground_eq,
+      M.restrict_eRk_eq hX.1, hXrank]
+  exact
+    exists_cyclicBasisOrder3_of_uniformlyDense_rankTwo_flat
+      M k hk hE hRank hDense hRestrictRank
+      hXflat hXcard hComplementCard
+
 #print axioms Rank3KUM.exists_cyclicBasisOrder3_of_uniformlyDense_rankTwo_flat
+#print axioms Rank3KUM.exists_cyclicBasisOrder3_of_tight_rank_two
 
 end
 
