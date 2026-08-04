@@ -1,6 +1,7 @@
 import Rank3KUM.FinalReduction
 import Rank3KUM.NearTightGeometry
 import Rank3KUM.SmallCases
+import Rank3KUM.SixPointMatroid
 
 namespace Rank3KUM
 
@@ -85,6 +86,24 @@ theorem rankThreeKUM_of_small_two_and_strict_deletion
         exists_cyclicBasisOrder3_of_cyclic_basis_deletion
           M k hkThree hRank hD hDelRank
           small hsmall
+
+/-- The complete rank-three cyclic ordering theorem. -/
+theorem rankThreeKUM
+    (k : ℕ) (M : Matroid α) (hk : 0 < k)
+    (hE : M.E.Finite)
+    (hRank : M.eRank = 3)
+    (hEcard : M.E.encard = ((3 * k : ℕ) : ℕ∞))
+    (hDense : UniformlyDense M k) :
+    ∃ order : Fin (3 * k) ≃ M.E,
+      CyclicBasisOrder3 M (by omega) order := by
+  apply
+    rankThreeKUM_of_small_two_and_strict_deletion
+      (fun N hNE hNRank hNCard hNDense =>
+        exists_cyclicBasisOrder3_of_ground_encard_six
+          N hNE hNRank hNCard hNDense)
+      k M hk hE hRank hEcard hDense
+
+#print axioms Rank3KUM.rankThreeKUM
 
 #print axioms Rank3KUM.rankThreeKUM_of_small_two_and_strict_deletion
 
