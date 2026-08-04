@@ -23,7 +23,7 @@ theorem rankThreeKUM_of_small_two_and_strict_deletion
         N.E.encard = (6 : ℕ∞) →
         UniformlyDense N 2 →
         ∃ order : Fin 6 ≃ N.E,
-          CyclicBasisOrder3 N (by omega) order)
+          CyclicBasisOrder3 N (by omega) order) :
     ∀ (k : ℕ) (M : Matroid α) (_hk : 0 < k),
       M.E.Finite →
       M.eRank = 3 →
