@@ -163,8 +163,8 @@ theorem uniformlyDense_delete_of_strict_of_rank_two_bound
   · exact (hRzero rfl).elim
   · have hlt :
         A.encard < (k : ℕ∞) :=
-      hStrict.encard_lt_k_of_eRk_eq_one
-        M k hAE hAnonempty hAproper (by simpa using hr)
+      StrictlyUniformlyDense.encard_lt_k_of_eRk_eq_one
+        M k hStrict hAE hAnonempty hAproper (by simpa using hr)
     have hltNat : A.ncard < k := by
       rw [hAfin.cast_ncard_eq] at hlt
       exact_mod_cast hlt
