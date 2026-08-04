@@ -683,6 +683,11 @@ def sortedClosureBlockModel
         (sortedClosurePartsEquiv M c).2
   fiber_card_antitone := by
     intro c d hcd
+    change
+      (fiberFinset
+        (sortedClosureBlock M k hcard) d).card ≤
+      (fiberFinset
+        (sortedClosureBlock M k hcard) c).card
     rw [card_fiberFinset_sortedClosureBlock,
       card_fiberFinset_sortedClosureBlock]
     exact antitone_sortedClosureParts_card M hcd
