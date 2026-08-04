@@ -409,6 +409,13 @@ def restrictGroundEquiv (M : Matroid α) (X : Set α) :
     ((restrictGroundEquiv M X e : X) : α) = e := by
   rfl
 
+@[simp] theorem restrictGroundEquiv_trans_apply_coe
+    {β : Type*} (M : Matroid α) (X : Set α)
+    (σ : β ≃ (Matroid.restrict M X).E) (x : β) :
+    (((σ.trans (restrictGroundEquiv M X)) x : X) : α) =
+      ((σ x : (Matroid.restrict M X).E) : α) := by
+  rfl
+
 /-- The half-weave successor is the same cyclic successor used by interleaving. -/
 theorem halfWeave_cyclicSucc_eq_cyclicIndex
     (k : ℕ) (hk : 0 < k) (i : Fin k) :
@@ -456,6 +463,7 @@ theorem cyclicBasisOrder3_interleaveOneTwo_of_sortedEnumeration
         (Matroid.restrict M X) D hk hRestrictRank (i, true))
 
 #print axioms Rank3KUM.restrictGroundEquiv_coe
+#print axioms Rank3KUM.restrictGroundEquiv_trans_apply_coe
 #print axioms Rank3KUM.halfWeave_cyclicSucc_eq_cyclicIndex
 #print axioms Rank3KUM.cyclicBasisOrder3_interleaveOneTwo_of_sortedEnumeration
 
