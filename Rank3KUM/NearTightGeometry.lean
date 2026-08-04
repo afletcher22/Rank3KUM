@@ -163,6 +163,48 @@ theorem inter_subset_closure_singleton_of_distinct_rankTwo_flats
   norm_num at hbad
 
 /--
+In a loopless matroid, the parallel class of a point outside a flat is
+disjoint from that flat.
+-/
+theorem closure_singleton_inter_flat_eq_empty_of_not_mem
+    (M : Matroid α)
+    (hLoopless : M.Loopless)
+    {F : Set α}
+    (hFflat : M.IsFlat F)
+    {e : α}
+    (heE : e ∈ M.E)
+    (heF : e ∉ F) :
+    M.closure ({e} : Set α) ∩ F = ∅ := by
+  letI : M.Loopless := hLoopless
+  apply Set.eq_empty_iff_forall_notMem.2
+  intro x hx
+  have hxE : x ∈ M.E :=
+    M.mem_ground_of_mem_closure hx.1
+  have hxNotClosureEmpty :
+      x ∉ M.closure ∅ := by
+    rw [← M.loops_eq_closure_empty,
+      M.loops_eq_empty]
+    simp
+  have hxDiff :
+      x ∈ M.closure (insert e ∅) \ M.closure ∅ := by
+    simpa using ⟨hx.1, hxNotClosureEmpty⟩
+  have heDiff :
+      e ∈ M.closure (insert x ∅) \ M.closure ∅ :=
+    (M.closure_exchange_iff).2 hxDiff
+  have heClosureX :
+      e ∈ M.closure ({x} : Set α) := by
+    simpa using heDiff.1
+  have hClosureXSubsetF :
+      M.closure ({x} : Set α) ⊆ F := by
+    calc
+      M.closure ({x} : Set α) ⊆ M.closure F :=
+        M.closure_subset_closure (by simpa using hx.2)
+      _ = F := hFflat.closure
+  exact heF (hClosureXSubsetF heClosureX)
+
+#print axioms Rank3KUM.closure_singleton_inter_flat_eq_empty_of_not_mem
+
+/--
 For three pairwise-distinct nonconcurrent rank-two flats, representatives of
 their three pairwise intersections can be chosen to form a basis.
 -/
