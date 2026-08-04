@@ -89,15 +89,15 @@ theorem false_of_equal_singleton_partner_pairs
   have huab : ua ≠ ub := by
     intro h
     subst ub
-    exact (Set.disjoint_left.1 hAB) ua hua hub
+    exact (Set.disjoint_left.1 hAB) hua hub
   have huac : ua ≠ uc := by
     intro h
     subst uc
-    exact (Set.disjoint_left.1 hAC) ua hua huc
+    exact (Set.disjoint_left.1 hAC) hua huc
   have hubc : ub ≠ uc := by
     intro h
     subst uc
-    exact (Set.disjoint_left.1 hBC) ub hub huc
+    exact (Set.disjoint_left.1 hBC) hub huc
 
   have htripleSub :
       ({ua, ub, uc} : Set α) ⊆ D \ {t} := by
@@ -119,7 +119,7 @@ theorem false_of_equal_singleton_partner_pairs
       (D \ {t}).encard = D.encard - ({t} : Set α).encard :=
         Set.encard_sdiff hsingleton (by simp)
       _ = 3 - 1 := by rw [hcardD, Set.encard_singleton]
-      _ = 2 := by norm_num
+      _ = 2 := by decide
   have hle := Set.encard_le_encard htripleSub
   rw [htripleCard, hcardDt] at hle
   norm_num at hle
