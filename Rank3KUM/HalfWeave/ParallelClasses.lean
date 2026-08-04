@@ -235,9 +235,10 @@ theorem part_sortedClosureCoordinatesEquiv
     (closureFinpartition M).part
         (sortedClosureCoordinatesEquiv M z) =
       (sortedClosurePartsEquiv M z.1).1 := by
-  let q :=
-    (Equiv.sigmaCongrLeft
-      (sortedClosurePartsEquiv M)) z
+  let q :
+      (p : (closureFinpartition M).parts) ×
+        Fin p.1.card :=
+    ⟨sortedClosurePartsEquiv M z.1, z.2⟩
   change
     (closureFinpartition M).part
         ((closurePartsEnumeration M).symm q) =
