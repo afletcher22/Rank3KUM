@@ -32,6 +32,65 @@ structure RankTwoSortedEnumeration
           ({((y a : M.E) : α),
             ((y b : M.E) : α)} : Set α)
 
+
+/--
+In a loopless matroid, elements in different singleton-closure classes form
+an independent pair.
+-/
+theorem pair_indep_of_closure_ne
+    {α : Type*}
+    (M : Matroid α)
+    (hLoopless : M.Loopless)
+    {e f : α}
+    (he : e ∈ M.E)
+    (hf : f ∈ M.E)
+    (hclosure :
+      M.closure ({e} : Set α) ≠
+        M.closure ({f} : Set α)) :
+    M.Indep ({e, f} : Set α) := by
+  letI : M.Loopless := hLoopless
+  have heNonloop : M.IsNonloop e :=
+    Matroid.isNonloop_of_loopless he
+  have hfNonloop : M.IsNonloop f :=
+    Matroid.isNonloop_of_loopless hf
+  by_contra hdep
+  apply hclosure
+  exact
+    (heNonloop.closure_eq_closure_iff_eq_or_dep
+      hfNonloop).2 (Or.inr hdep)
+
+/--
+To construct a sorted rank-two enumeration, it is enough to label exactly
+the singleton-closure classes.  The matroid independence field is then
+automatic from looplessness.
+-/
+def RankTwoSortedEnumeration.ofClosureBlocks
+    {α : Type*}
+    (M : Matroid α)
+    {k m : ℕ}
+    (hLoopless : M.Loopless)
+    (y : Fin (2 * k) ≃ M.E)
+    (S : SortedBlockModel k m)
+    (hblock :
+      ∀ a b : Fin (2 * k),
+        S.block a = S.block b ↔
+          M.closure
+              ({((y a : M.E) : α)} : Set α) =
+            M.closure
+              ({((y b : M.E) : α)} : Set α)) :
+    RankTwoSortedEnumeration M k m where
+  y := y
+  sortedBlocks := S
+  indep_of_blocks_ne := by
+    intro a b hab
+    apply pair_indep_of_closure_ne
+      M hLoopless (y a).property (y b).property
+    intro hclosure
+    exact hab ((hblock a b).2 hclosure)
+
+#print axioms Rank3KUM.HalfWeave.pair_indep_of_closure_ne
+#print axioms Rank3KUM.HalfWeave.RankTwoSortedEnumeration.ofClosureBlocks
+
 /-- The ground-set enumeration obtained by applying the half weave. -/
 def rankTwoWoven
     {α : Type*}
