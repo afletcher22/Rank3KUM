@@ -143,6 +143,7 @@ theorem cyclicBasisOrder3_appendBlock_wrap
             ({(block 0 : α), (block 1 : α), (block 2 : α)} : Set α) := by
         rw [← TwoGap.set_eq_triple_of_fin3_equiv block]
         exact hD
+      simp only
       rw [hnew₁, hnew₂,
         appendBlockOrder_block, appendBlockOrder_block,
         appendBlockOrder_block]
@@ -161,6 +162,7 @@ theorem cyclicBasisOrder3_appendBlock_wrap
         apply Fin.ext
         change (m + 1 + 2) % (m + 3) = 0
         rw [show m + 1 + 2 = m + 3 by omega, Nat.mod_self]
+      simp only
       rw [hnew₁, hnew₂,
         appendBlockOrder_block, appendBlockOrder_block,
         appendBlockOrder_old]
@@ -179,7 +181,8 @@ theorem cyclicBasisOrder3_appendBlock_wrap
         apply Fin.ext
         change (m + 2 + 2) % (m + 3) = 1
         rw [show m + 2 + 2 = (m + 3) + 1 by omega]
-        simp [Nat.add_mod, Nat.mod_eq_of_lt (by omega : 1 < m + 3)]
+        simp [Nat.mod_eq_of_lt (by omega : 1 < m + 3)]
+      simp only
       rw [hnew₁, hnew₂,
         appendBlockOrder_block, appendBlockOrder_old,
         appendBlockOrder_old]
