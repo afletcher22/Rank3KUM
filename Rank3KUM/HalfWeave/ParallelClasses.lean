@@ -203,6 +203,15 @@ def closurePartsEnumeration
       ((Equiv.refl _).sigmaCongr
         (fun p => p.1.equivFin)))
 
+@[simp] theorem closurePartsEnumeration_part
+    (M : Matroid α)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (e : M.E) :
+    ((closurePartsEnumeration M e).1).1 =
+      (closureFinpartition M).part e := by
+  rfl
+
 /-- Reindex the internally enumerated closure parts by decreasing size. -/
 def sortedClosureCoordinatesEquiv
     (M : Matroid α)
