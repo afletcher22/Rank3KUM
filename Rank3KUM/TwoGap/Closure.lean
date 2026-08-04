@@ -28,10 +28,16 @@ theorem closure_pair_inter_closure_pair_eq
       hB.subset_ground (by simp)
     have habE : ({a, b} : Set α) ⊆ M.E := by
       intro z hz
-      exact hB.subset_ground (by simp_all)
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+      rcases hz with rfl | rfl
+      · exact hB.subset_ground (by simp)
+      · exact hbE
     have hcbE : ({c, b} : Set α) ⊆ M.E := by
       intro z hz
-      exact hB.subset_ground (by simp_all)
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+      rcases hz with rfl | rfl
+      · exact hB.subset_ground (by simp)
+      · exact hbE
     have hxbE : ({x, b} : Set α) ⊆ M.E := by
       intro z hz
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
