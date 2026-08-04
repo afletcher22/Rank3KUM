@@ -264,6 +264,78 @@ theorem uniformlyDense_delete_of_strict_of_hitsNearTight
     rankTwoComplementBound_of_hitsNearTight
       M k hE hRank hStrict hHits hAcomp hArank
 
+/-- In a strict rank-three instance with `k ≥ 3`, deleting any basis preserves rank. -/
+theorem eRank_delete_eq_three_of_strict
+    (M : Matroid α) (k : ℕ)
+    (hk : 3 ≤ k)
+    (hRank : M.eRank = 3)
+    (hStrict : StrictlyUniformlyDense M k)
+    {D : Set α}
+    (hD : M.IsBase D)
+    (hComplementCard :
+      (M.E \ D).encard =
+        ((3 * (k - 1) : ℕ) : ℕ∞)) :
+    (Matroid.delete M D).eRank = 3 := by
+  have hFormula :
+      (Matroid.delete M D).eRank =
+        M.eRk (M.E \ D) := by
+    rw [Matroid.eRank_def,
+      Matroid.delete_ground,
+      Matroid.delete_eq_restrict,
+      M.restrict_eRk_eq Set.Subset.rfl]
+  rw [hFormula]
+  by_contra hne
+  have hrleThree : M.eRk (M.E \ D) ≤ 3 := by
+    calc
+      M.eRk (M.E \ D) ≤ M.eRank :=
+        M.eRk_le_eRank _
+      _ = 3 := hRank
+  obtain ⟨r, hr, hrle⟩ :=
+    ENat.le_natCast_iff.mp hrleThree
+  have hrleTwo : M.eRk (M.E \ D) ≤ 2 := by
+    rw [hr]
+    have hrne : r ≠ 3 := by
+      intro hre
+      subst r
+      exact hne (by simpa using hr)
+    exact_mod_cast (show r ≤ 2 by omega)
+  have hDcard : D.encard = (3 : ℕ∞) :=
+    hD.encard_eq_eRank.trans hRank
+  have hDnonempty : D.Nonempty := by
+    apply Set.encard_ne_zero.mp
+    rw [hDcard]
+    norm_num
+  have hComplementNonempty : (M.E \ D).Nonempty := by
+    apply Set.encard_ne_zero.mp
+    rw [hComplementCard]
+    norm_num
+    omega
+  have hComplementProper : M.E \ D ≠ M.E := by
+    intro heq
+    obtain ⟨e, heD⟩ := hDnonempty
+    have heComp : e ∈ M.E \ D := by
+      rw [heq]
+      exact hD.subset_ground heD
+    exact heComp.2 heD
+  have hlt :=
+    hStrict (M.E \ D) Set.sdiff_subset
+      hComplementNonempty hComplementProper
+  have hltTwo :
+      (M.E \ D).encard <
+        ((2 * k : ℕ) : ℕ∞) := by
+    refine hlt.trans_le ?_
+    calc
+      (k : ℕ∞) * M.eRk (M.E \ D) ≤
+          (k : ℕ∞) * 2 := by
+        exact mul_le_mul_left' hrleTwo _
+      _ = ((2 * k : ℕ) : ℕ∞) := by
+        rw [Nat.mul_comm]
+        exact ENat.natCast_mul k 2
+  rw [hComplementCard] at hltTwo
+  have hltNat : 3 * (k - 1) < 2 * k := by
+    exact_mod_cast hltTwo
+  omega
+
 #print axioms Rank3KUM.exists_nonempty_proper_tight_or_strictlyUniformlyDense
 #print axioms Rank3KUM.StrictlyUniformlyDense.encard_lt_k_of_eRk_eq_one
 #print axioms Rank3KUM.StrictlyUniformlyDense.encard_lt_two_mul_k_of_eRk_eq_two
