@@ -180,6 +180,86 @@ def sortedClosureSigmaEquiv
 #print axioms Rank3KUM.HalfWeave.sortedClosureSigmaEquiv
 
 
+/-- Prefix sum used by the standard flattening equivalence for finite sigma types. -/
+def finSigmaPrefix
+    {m : ℕ}
+    (n : Fin m → ℕ)
+    (r : ℕ) : ℕ :=
+  ∑ i ∈ Finset.range r,
+    if h : i < m then n ⟨i, h⟩ else 0
+
+theorem sum_fin_castLE_eq_finSigmaPrefix
+    {m : ℕ}
+    (n : Fin m → ℕ)
+    (c : Fin m) :
+    (∑ i : Fin c.val,
+      n (Fin.castLE c.isLt.le i)) =
+        finSigmaPrefix n c.val := by
+  rw [Fin.sum_univ_eq_sum_range]
+  unfold finSigmaPrefix
+  apply Finset.sum_congr rfl
+  intro i hi
+  have him : i < m :=
+    (Finset.mem_range.mp hi).trans c.isLt
+  simp [him]
+
+theorem finSigmaPrefix_succ
+    {m : ℕ}
+    (n : Fin m → ℕ)
+    (r : ℕ)
+    (hr : r < m) :
+    finSigmaPrefix n (r + 1) =
+      finSigmaPrefix n r + n ⟨r, hr⟩ := by
+  simp [finSigmaPrefix, Finset.sum_range_succ, hr]
+
+theorem finSigmaPrefix_add_le
+    {m : ℕ}
+    (n : Fin m → ℕ)
+    {a b : Fin m}
+    (hab : a < b) :
+    finSigmaPrefix n a.val + n a ≤
+      finSigmaPrefix n b.val := by
+  rw [← finSigmaPrefix_succ n a.val a.isLt]
+  unfold finSigmaPrefix
+  apply Finset.sum_le_sum_of_subset_of_nonneg
+  · exact Finset.range_mono (by omega)
+  · intro i _ _
+    exact Nat.zero_le _
+
+/-- The block coordinate of the standard flattened finite sigma type is monotone. -/
+theorem monotone_finSigmaFinEquiv_symm_fst
+    {m : ℕ}
+    {n : Fin m → ℕ} :
+    Monotone
+      (fun j : Fin (∑ i : Fin m, n i) =>
+        (finSigmaFinEquiv.symm j).1) := by
+  intro a b hab
+  let x := finSigmaFinEquiv.symm a
+  let y := finSigmaFinEquiv.symm b
+  by_contra hxy
+  have hyx : y.1 < x.1 :=
+    lt_of_not_ge hxy
+  have hxformula := finSigmaFinEquiv_apply x
+  have hyformula := finSigmaFinEquiv_apply y
+  have hxa : finSigmaFinEquiv x = a :=
+    finSigmaFinEquiv.apply_symm_apply a
+  have hyb : finSigmaFinEquiv y = b :=
+    finSigmaFinEquiv.apply_symm_apply b
+  rw [hxa] at hxformula
+  rw [hyb] at hyformula
+  rw [sum_fin_castLE_eq_finSigmaPrefix] at hxformula
+  rw [sum_fin_castLE_eq_finSigmaPrefix] at hyformula
+  have hpref :=
+    finSigmaPrefix_add_le n hyx
+  have hxoff : 0 ≤ x.2.val := Nat.zero_le _
+  have hyoff : y.2.val < n y.1 := y.2.isLt
+  change a.val ≤ b.val at hab
+  change a.val =
+    finSigmaPrefix n x.1.val + x.2.val at hxformula
+  change b.val =
+    finSigmaPrefix n y.1.val + y.2.val at hyformula
+  omega
+
 /-- Identify the ground subtype with the subtype of the universal finset. -/
 def groundUnivFinsetEquiv
     (M : Matroid α)
