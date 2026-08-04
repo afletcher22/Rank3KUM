@@ -51,6 +51,40 @@ theorem exists_isBase_hitsNearTight_of_no_nearTight
   intro A hAE hArank hAcard
   exact (hNone ⟨A, hAE, hArank, hAcard⟩).elim
 
+/-- A unique near-tight rank-two set can be hit by extending one of its points to a basis. -/
+theorem exists_isBase_hitsNearTight_of_unique
+    (M : Matroid α) (k : ℕ)
+    (hLoopless : M.Loopless)
+    {F : Set α}
+    (hFE : F ⊆ M.E)
+    (hFrank : M.eRk F = 2)
+    (hFcard : F.ncard = 2 * k - 1)
+    (hUnique :
+      ∀ A : Set α, A ⊆ M.E →
+        M.eRk A = 2 →
+        A.ncard = 2 * k - 1 →
+        A = F) :
+    ∃ D : Set α,
+      M.IsBase D ∧ HitsNearTightRankTwo M k D := by
+  have hFnonempty : F.Nonempty := by
+    apply Set.nonempty_iff_ne_empty.2
+    intro hFempty
+    subst F
+    simp at hFrank
+  obtain ⟨e, heF⟩ := hFnonempty
+  letI : M.Loopless := hLoopless
+  have heIndep : M.Indep ({e} : Set α) :=
+    (Matroid.isNonloop_of_loopless
+      (hFE heF)).indep
+  obtain ⟨D, hD, heD⟩ :=
+    heIndep.exists_isBase_superset
+  refine ⟨D, hD, ?_⟩
+  intro A hAE hArank hAcard
+  have hAF : A = F :=
+    hUnique A hAE hArank hAcard
+  subst A
+  exact ⟨e, heF, heD (by simp)⟩
+
 /-- A hit rules out the sole rank-two obstruction inside the complement. -/
 theorem rankTwoComplementBound_of_hitsNearTight
     (M : Matroid α) (k : ℕ)
