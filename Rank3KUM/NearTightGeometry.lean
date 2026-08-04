@@ -196,6 +196,122 @@ theorem closure_singleton_inter_flat_eq_empty_of_not_mem
 #print axioms Rank3KUM.closure_singleton_inter_flat_eq_empty_of_not_mem
 
 /--
+If a near-tight family has no common point, any one member can be extended to
+three pairwise-distinct members with empty triple intersection.
+-/
+theorem exists_nonconcurrent_three_nearTight
+    (M : Matroid α) (k : ℕ)
+    (hk : 3 ≤ k)
+    (hLoopless : M.Loopless)
+    (hE : M.E.Finite)
+    (hRank : M.eRank = 3)
+    (hEcard : M.E.encard = ((3 * k : ℕ) : ℕ∞))
+    (hStrict : StrictlyUniformlyDense M k)
+    (hExists :
+      ∃ A : Set α, A ⊆ M.E ∧
+        M.eRk A = 2 ∧
+        A.ncard = 2 * k - 1)
+    (hNoCommon :
+      ¬ ∃ e : α, e ∈ M.E ∧
+        ∀ A : Set α, A ⊆ M.E →
+          M.eRk A = 2 →
+          A.ncard = 2 * k - 1 →
+          e ∈ A) :
+    ∃ A B C : Set α,
+      (A ⊆ M.E ∧ M.eRk A = 2 ∧
+        A.ncard = 2 * k - 1) ∧
+      (B ⊆ M.E ∧ M.eRk B = 2 ∧
+        B.ncard = 2 * k - 1) ∧
+      (C ⊆ M.E ∧ M.eRk C = 2 ∧
+        C.ncard = 2 * k - 1) ∧
+      A ≠ B ∧ A ≠ C ∧ B ≠ C ∧
+      (A ∩ B) ∩ C = ∅ := by
+  obtain ⟨A, hAE, hArank, hAcard⟩ := hExists
+  have hAnonempty : A.Nonempty := by
+    apply Set.ncard_ne_zero.mp
+    rw [hAcard]
+    omega
+  obtain ⟨a, haA⟩ := hAnonempty
+  have hFailA :
+      ∃ B : Set α, B ⊆ M.E ∧
+        M.eRk B = 2 ∧
+        B.ncard = 2 * k - 1 ∧
+        a ∉ B := by
+    by_contra hFail
+    apply hNoCommon
+    refine ⟨a, hAE haA, ?_⟩
+    intro B hBE hBrank hBcard
+    by_contra haB
+    exact hFail ⟨B, hBE, hBrank, hBcard, haB⟩
+  obtain ⟨B, hBE, hBrank, hBcard, haB⟩ :=
+    hFailA
+  have hAB : A ≠ B := by
+    intro h
+    subst B
+    exact haB haA
+  have hABnonempty : (A ∩ B).Nonempty :=
+    inter_nonempty_of_nearTight
+      M k hk hE hEcard hAE hBE hAcard hBcard
+  obtain ⟨x, hxAB⟩ := hABnonempty
+  have hFailX :
+      ∃ C : Set α, C ⊆ M.E ∧
+        M.eRk C = 2 ∧
+        C.ncard = 2 * k - 1 ∧
+        x ∉ C := by
+    by_contra hFail
+    apply hNoCommon
+    refine ⟨x, hAE hxAB.1, ?_⟩
+    intro C hCE hCrank hCcard
+    by_contra hxC
+    exact hFail ⟨C, hCE, hCrank, hCcard, hxC⟩
+  obtain ⟨C, hCE, hCrank, hCcard, hxC⟩ :=
+    hFailX
+  have hAC : A ≠ C := by
+    intro h
+    subst C
+    exact hxC hxAB.1
+  have hBC : B ≠ C := by
+    intro h
+    subst C
+    exact hxC hxAB.2
+  have hAflat : M.IsFlat A :=
+    isFlat_of_strict_rankTwo_ncard_eq
+      M k hE hRank hStrict hAE hArank hAcard
+  have hBflat : M.IsFlat B :=
+    isFlat_of_strict_rankTwo_ncard_eq
+      M k hE hRank hStrict hBE hBrank hBcard
+  have hCflat : M.IsFlat C :=
+    isFlat_of_strict_rankTwo_ncard_eq
+      M k hE hRank hStrict hCE hCrank hCcard
+  have hABClosure :
+      A ∩ B ⊆ M.closure ({x} : Set α) :=
+    inter_subset_closure_singleton_of_distinct_rankTwo_flats
+      M hLoopless hE hRank hAflat hBflat
+      hArank hBrank (by omega) hAB hxAB
+  have hClosureDisjoint :
+      M.closure ({x} : Set α) ∩ C = ∅ :=
+    closure_singleton_inter_flat_eq_empty_of_not_mem
+      M hLoopless hCflat (hAE hxAB.1) hxC
+  have hABCempty : (A ∩ B) ∩ C = ∅ := by
+    apply Set.eq_empty_iff_forall_notMem.2
+    intro y hy
+    have hyClosure :
+        y ∈ M.closure ({x} : Set α) :=
+      hABClosure hy.1
+    have hyDisjoint :
+        y ∈ M.closure ({x} : Set α) ∩ C :=
+      ⟨hyClosure, hy.2⟩
+    rw [hClosureDisjoint] at hyDisjoint
+    exact hyDisjoint
+  exact ⟨A, B, C,
+    ⟨hAE, hArank, hAcard⟩,
+    ⟨hBE, hBrank, hBcard⟩,
+    ⟨hCE, hCrank, hCcard⟩,
+    hAB, hAC, hBC, hABCempty⟩
+
+#print axioms Rank3KUM.exists_nonconcurrent_three_nearTight
+
+/--
 For three pairwise-distinct nonconcurrent rank-two flats, representatives of
 their three pairwise intersections can be chosen to form a basis.
 -/
