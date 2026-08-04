@@ -174,6 +174,59 @@ def sortedClosureSigmaEquiv
 
 #print axioms Rank3KUM.HalfWeave.sortedClosureSigmaEquiv
 
+
+/-- Identify the ground subtype with the subtype of the universal finset. -/
+def groundUnivFinsetEquiv
+    (M : Matroid α)
+    [Fintype M.E]
+    [DecidableEq M.E] :
+    M.E ≃ (Finset.univ : Finset M.E) where
+  toFun e := ⟨e, Finset.mem_univ e⟩
+  invFun e := e.1
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- Enumerate every closure part internally by its finite cardinality. -/
+def closurePartsEnumeration
+    (M : Matroid α)
+    [Fintype M.E]
+    [DecidableEq M.E] :
+    M.E ≃
+      (p : (closureFinpartition M).parts) ×
+        Fin p.1.card :=
+  (groundUnivFinsetEquiv M).trans
+    ((closureFinpartition M).equivSigmaParts.trans
+      ((Equiv.refl _).sigmaCongr
+        (fun p => p.1.equivFin)))
+
+/-- Reindex the internally enumerated closure parts by decreasing size. -/
+def sortedClosureCoordinatesEquiv
+    (M : Matroid α)
+    [Fintype M.E]
+    [DecidableEq M.E] :
+    ((i : Fin (closureFinpartition M).parts.card) ×
+      Fin ((sortedClosurePartsEquiv M i).1).card) ≃
+        M.E :=
+  (Equiv.sigmaCongrLeft
+      (sortedClosurePartsEquiv M)).trans
+    (closurePartsEnumeration M).symm
+
+/-- A ground-set enumeration in which closure classes form sorted contiguous blocks. -/
+def sortedClosureGroundEquiv
+    (M : Matroid α)
+    (k : ℕ)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (hcard : Fintype.card M.E = 2 * k) :
+    Fin (2 * k) ≃ M.E :=
+  (sortedClosureSigmaEquiv M k hcard).trans
+    (sortedClosureCoordinatesEquiv M)
+
+#print axioms Rank3KUM.HalfWeave.groundUnivFinsetEquiv
+#print axioms Rank3KUM.HalfWeave.closurePartsEnumeration
+#print axioms Rank3KUM.HalfWeave.sortedClosureCoordinatesEquiv
+#print axioms Rank3KUM.HalfWeave.sortedClosureGroundEquiv
+
 /-- Every part of the closure partition inherits the uniform-density bound. -/
 theorem card_closureFinpartition_part_le
     (M : Matroid α)
