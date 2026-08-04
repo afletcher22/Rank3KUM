@@ -75,11 +75,8 @@ theorem mem_closure_pair_of_not_isBase_triple
   have hdep : M.Dep ({x, y, z} : Set α) :=
     dep_triple_of_not_isBase M hRank hxE hyE hzE hxy hxz hyz hnot
   have hzxy : z ∉ ({x, y} : Set α) := by
-    constructor
-    · intro hzx
-      exact hxz hzx.symm
-    · intro hzy
-      exact hyz hzy.symm
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff, not_or]
+    exact ⟨fun hzx => hxz hzx.symm, fun hzy => hyz hzy.symm⟩
   have heq :
       insert z ({x, y} : Set α) = ({x, y, z} : Set α) := by
     ext u
@@ -161,9 +158,8 @@ theorem mem_closure_pair_of_fundamentalSupport_eq_pair
     rw [h]
     exact hd₂D
   have hepair : e ∉ ({d₁, d₂} : Set α) := by
-    constructor
-    · exact hed₁
-    · exact hed₂
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff, not_or]
+    exact ⟨hed₁, hed₂⟩
   exact (hpairI.mem_closure_iff_of_notMem hepair).2 hC.dep
 
 /-- The final element of a basis triple is outside the closure of the first two. -/
@@ -181,11 +177,8 @@ theorem not_mem_closure_pair_of_isBase_triple
     · exact Or.inr (Or.inl rfl)
   have hzE : z ∈ M.E := hB.subset_ground (by simp)
   have hzpair : z ∉ ({x, y} : Set α) := by
-    constructor
-    · intro hzx
-      exact hxz hzx.symm
-    · intro hzy
-      exact hyz hzy.symm
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff, not_or]
+    exact ⟨fun hzx => hxz hzx.symm, fun hzy => hyz hzy.symm⟩
   apply (hpairI.notMem_closure_iff_of_notMem hzpair hzE).2
   have heq :
       insert z ({x, y} : Set α) = ({x, y, z} : Set α) := by
