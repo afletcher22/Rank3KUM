@@ -73,7 +73,10 @@ theorem exists_cyclicBasisOrder3_of_cyclic_basis_deletion
         cyclicIndex (3 * (k - 1) + 3) (by omega)
           (castIndex i) j := by
     apply Fin.ext
-    simp [castIndex, cyclicIndex]
+    change
+      (i.val + j) % (3 * k) =
+        (i.val + j) % (3 * (k - 1) + 3)
+    rw [show 3 * k = 3 * (k - 1) + 3 by omega]
   have hi := horder (castIndex i)
   change M.IsBase
     ({(order (castIndex i) : α),
