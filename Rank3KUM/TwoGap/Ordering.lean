@@ -53,4 +53,37 @@ theorem exists_fin3_equiv_with_endpoints
       simp [result]
     exact congrArg Subtype.val hresult_two
 
+/-- The range of an ordering `Fin 3 ≃ D` is exactly its three displayed values. -/
+theorem set_eq_triple_of_fin3_equiv
+    {D : Set α} (d : Fin 3 ≃ D) :
+    D = ({(d 0 : α), (d 1 : α), (d 2 : α)} : Set α) := by
+  ext x
+  constructor
+  · intro hx
+    let xD : D := ⟨x, hx⟩
+    obtain ⟨i, hi⟩ := d.surjective xD
+    have hval : (d i : α) = x :=
+      congrArg Subtype.val hi
+    fin_cases i <;> simp_all
+  · intro hx
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hx
+    rcases hx with hx | hx | hx
+    · subst x
+      exact (d 0).property
+    · subst x
+      exact (d 1).property
+    · subst x
+      exact (d 2).property
+
+/-- Distinct positions in a `Fin 3` ordering have distinct underlying values. -/
+theorem fin3_equiv_coe_ne
+    {D : Set α} (d : Fin 3 ≃ D) {i j : Fin 3}
+    (hij : i ≠ j) :
+    (d i : α) ≠ (d j : α) := by
+  intro h
+  apply hij
+  apply d.injective
+  apply Subtype.ext
+  exact h
+
 end Rank3KUM.TwoGap
