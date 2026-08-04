@@ -39,7 +39,16 @@ theorem not_mem_closure_singleton_of_exchange_isBase
     hpairI.notMem_closure_sdiff_of_mem (by simp)
   have hset : ({e, d} : Set α) \ {d} = ({e} : Set α) := by
     ext x
-    simp [hde]
+    simp only [Set.mem_sdiff, Set.mem_insert_iff,
+      Set.mem_singleton_iff]
+    constructor
+    · rintro ⟨hx, hxd⟩
+      rcases hx with rfl | rfl
+      · rfl
+      · exact (hxd rfl).elim
+    · intro hx
+      subst x
+      exact ⟨Or.inl rfl, hde.symm⟩
   rwa [hset] at hdNot
 
 /-- The residual supports of `a` and `c` are disjoint in the equal-singleton branch. -/
@@ -134,10 +143,10 @@ theorem equal_singleton_residualSupport_a_disjoint_c
   have hdE : d ∈ M.E := hD.subset_ground hdD
   have hdClBC : d ∈ M.closure ({b, c} : Set α) :=
     mem_closure_pair_of_not_isBase_triple M hRank hbcI hdE
-      hbc hdb hdc hBCDNot
+      hbc hdb.symm hdc.symm hBCDNot
   have hdClAB : d ∈ M.closure ({a, b} : Set α) :=
     mem_closure_pair_of_not_isBase_triple M hRank habI hdE
-      hab hda hdb hABDNot
+      hab hda.symm hdb.symm hABDNot
   have hdClB : d ∈ M.closure ({b} : Set α) := by
     rw [← closure_pair_inter_closure_pair_eq M hRank hC]
     exact ⟨hdClAB, hdClBC⟩
