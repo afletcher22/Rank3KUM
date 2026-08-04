@@ -42,6 +42,56 @@ def closureFinpartition
   exact Finpartition.mem_part_ofSetoid_iff_rel
 
 
+
+/-- Closure parts sorted by nonincreasing cardinality. -/
+def sortedClosureParts
+    (M : Matroid α)
+    [Fintype M.E]
+    [DecidableEq M.E] :
+    List (closureFinpartition M).parts :=
+  ((closureFinpartition M).parts.attach.toList).insertionSort
+    (fun p q => q.1.card ≤ p.1.card)
+
+@[simp] theorem length_sortedClosureParts
+    (M : Matroid α)
+    [Fintype M.E]
+    [DecidableEq M.E] :
+    (sortedClosureParts M).length =
+      (closureFinpartition M).parts.card := by
+  simp [sortedClosureParts]
+
+@[simp] theorem mem_sortedClosureParts
+    (M : Matroid α)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (p : (closureFinpartition M).parts) :
+    p ∈ sortedClosureParts M := by
+  simp [sortedClosureParts]
+
+theorem nodup_sortedClosureParts
+    (M : Matroid α)
+    [Fintype M.E]
+    [DecidableEq M.E] :
+    (sortedClosureParts M).Nodup := by
+  apply
+    (List.perm_insertionSort
+      (fun p q :
+        (closureFinpartition M).parts =>
+          q.1.card ≤ p.1.card)
+      ((closureFinpartition M).parts.attach.toList)).nodup_iff.mpr
+  simp
+
+theorem pairwise_sortedClosureParts
+    (M : Matroid α)
+    [Fintype M.E]
+    [DecidableEq M.E] :
+    (sortedClosureParts M).Pairwise
+      (fun p q => q.1.card ≤ p.1.card) := by
+  exact List.pairwise_insertionSort _ _
+
+#print axioms Rank3KUM.HalfWeave.nodup_sortedClosureParts
+#print axioms Rank3KUM.HalfWeave.pairwise_sortedClosureParts
+
 /-- Every part of the closure partition inherits the uniform-density bound. -/
 theorem card_closureFinpartition_part_le
     (M : Matroid α)
