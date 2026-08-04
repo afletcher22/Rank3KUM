@@ -46,6 +46,7 @@ theorem rankTwoComplementBound_of_hitsNearTight
   have hAfin : A.Finite :=
     hE.subset hAE
   have hAnonempty : A.Nonempty := by
+    apply Set.nonempty_iff_ne_empty.2
     intro hAempty
     rw [hAempty, M.eRk_empty] at hArank
     simp at hArank
