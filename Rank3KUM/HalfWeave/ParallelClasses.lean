@@ -252,6 +252,32 @@ def sortedClosureGroundEquiv
   (sortedClosureSigmaEquiv M k hcard).trans
     (sortedClosureCoordinatesEquiv M)
 
+/-- The sorted closure-class label attached to a flattened ground position. -/
+def sortedClosureBlock
+    (M : Matroid α)
+    (k : ℕ)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (hcard : Fintype.card M.E = 2 * k) :
+    Fin (2 * k) →
+      Fin (closureFinpartition M).parts.card :=
+  fun j => (sortedClosureSigmaEquiv M k hcard j).1
+
+theorem part_sortedClosureGroundEquiv
+    (M : Matroid α)
+    (k : ℕ)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (hcard : Fintype.card M.E = 2 * k)
+    (j : Fin (2 * k)) :
+    (closureFinpartition M).part
+        (sortedClosureGroundEquiv M k hcard j) =
+      (sortedClosurePartsEquiv M
+        (sortedClosureBlock M k hcard j)).1 := by
+  simpa [sortedClosureGroundEquiv, sortedClosureBlock] using
+    part_sortedClosureCoordinatesEquiv M
+      (sortedClosureSigmaEquiv M k hcard j)
+
 #print axioms Rank3KUM.HalfWeave.groundUnivFinsetEquiv
 #print axioms Rank3KUM.HalfWeave.closurePartsEnumeration
 #print axioms Rank3KUM.HalfWeave.sortedClosureCoordinatesEquiv
