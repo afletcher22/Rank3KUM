@@ -33,8 +33,16 @@ theorem delete_ground_encard_eq_three_mul_pred
     _ = ((3 * k : ℕ) : ℕ∞) := hEcard
     _ = (3 : ℕ∞) +
         ((3 * (k - 1) : ℕ) : ℕ∞) := by
-      exact_mod_cast
-        (show 3 * k = 3 + 3 * (k - 1) by omega)
+      have hnat :
+          3 * k = 3 + 3 * (k - 1) := by
+        omega
+      calc
+        ((3 * k : ℕ) : ℕ∞) =
+            ((3 + 3 * (k - 1) : ℕ) : ℕ∞) :=
+          congrArg (fun n : ℕ => (n : ℕ∞)) hnat
+        _ = (3 : ℕ∞) +
+            ((3 * (k - 1) : ℕ) : ℕ∞) :=
+          ENat.natCast_add 3 (3 * (k - 1))
 
 /--
 The induction splice in the natural `3k` parametrization: once deleting a
@@ -75,7 +83,9 @@ theorem exists_cyclicBasisOrder3_of_cyclic_basis_deletion
     change
       (i.val + j) % (3 * k) =
         (i.val + j) % (3 * (k - 1) + 3)
-    rw [show 3 * k = 3 * (k - 1) + 3 by omega]
+    exact congrArg
+      (fun n : ℕ => (i.val + j) % n)
+      (show 3 * k = 3 * (k - 1) + 3 by omega)
   have hi := horder (castIndex i)
   change M.IsBase
     ({(order (castIndex i) : α),
