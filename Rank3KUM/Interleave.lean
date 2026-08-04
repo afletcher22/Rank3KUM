@@ -61,7 +61,14 @@ def interleavePositionEquiv (k : ℕ) :
 /-- The position of residue `j` in the `i`th three-element block. -/
 def interleavePosition (k : ℕ) (i : Fin k) (j : Fin 3) :
     Fin (3 * k) :=
-  interleavePositionEquiv k (i, j)
+  (finCongr (Nat.mul_comm 3 k)).symm
+    (finProdFinEquiv (i, j))
+
+@[simp] theorem interleavePositionEquiv_apply
+    (k : ℕ) (i : Fin k) (j : Fin 3) :
+    interleavePositionEquiv k (i, j) =
+      interleavePosition k i j := by
+  rfl
 
 @[simp] theorem interleavePosition_val
     (k : ℕ) (i : Fin k) (j : Fin 3) :
@@ -126,7 +133,12 @@ theorem cyclicIndex_interleave_one_two
   by_cases hi : i.val + 1 < k
   · rw [Nat.mod_eq_of_lt hi, Nat.mod_eq_of_lt (by omega)]
     omega
-  · have hnum : 1 + 3 * i.val + 2 = 3 * k := by omega
+  · have hieq : i.val + 1 = k := by omega
+    have hwrap : (i.val + 1) % k = 0 := by
+      rw [hieq, Nat.mod_self]
+    rw [hwrap]
+    norm_num
+    have hnum : 1 + 3 * i.val + 2 = 3 * k := by omega
     rw [hnum, Nat.mod_self]
 
 /-- The third residue advances to the next block's point. -/
@@ -139,7 +151,12 @@ theorem cyclicIndex_interleave_two_one
   by_cases hi : i.val + 1 < k
   · rw [Nat.mod_eq_of_lt hi, Nat.mod_eq_of_lt (by omega)]
     omega
-  · have hnum : 2 + 3 * i.val + 1 = 3 * k := by omega
+  · have hieq : i.val + 1 = k := by omega
+    have hwrap : (i.val + 1) % k = 0 := by
+      rw [hieq, Nat.mod_self]
+    rw [hwrap]
+    norm_num
+    have hnum : 2 + 3 * i.val + 1 = 3 * k := by omega
     rw [hnum, Nat.mod_self]
 
 /-- Two steps from the third residue reaches the next block's first pair entry. -/
@@ -152,7 +169,12 @@ theorem cyclicIndex_interleave_two_two
   by_cases hi : i.val + 1 < k
   · rw [Nat.mod_eq_of_lt hi, Nat.mod_eq_of_lt (by omega)]
     omega
-  · have hnum : 2 + 3 * i.val + 2 = 3 * k + 1 := by omega
+  · have hieq : i.val + 1 = k := by omega
+    have hwrap : (i.val + 1) % k = 0 := by
+      rw [hieq, Nat.mod_self]
+    rw [hwrap]
+    norm_num
+    have hnum : 2 + 3 * i.val + 2 = 3 * k + 1 := by omega
     rw [hnum, Nat.add_mod, Nat.mod_self,
       Nat.mod_eq_of_lt (by omega)]
     simp
