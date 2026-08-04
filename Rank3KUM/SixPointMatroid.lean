@@ -267,6 +267,738 @@ theorem not_both_sixPointBad_of_shared_pair
       Set.image_insert, Set.image_singleton,
       or_comm, or_left_comm, or_assoc] using hBadD
 
+/-- Strict density at two makes the six-position bad-triple certificate linear. -/
+theorem linearSixBad_of_strict_two
+    (M : Matroid α)
+    (hLoopless : M.Loopless)
+    (hE : M.E.Finite)
+    (hRank : M.eRank = 3)
+    (hStrict : StrictlyUniformlyDense M 2)
+    (order : Fin 6 ≃ M.E) :
+    LinearSixBad (SixPointBad M order) := by
+  unfold LinearSixBad
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (1 : Fin 6))
+        (c := (2 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (1 : Fin 6))
+        (c := (2 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (1 : Fin 6))
+        (c := (2 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (2 : Fin 6))
+        (c := (1 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (2 : Fin 6))
+        (c := (1 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (2 : Fin 6))
+        (c := (1 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (2 : Fin 6))
+        (c := (0 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (2 : Fin 6))
+        (c := (0 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (2 : Fin 6))
+        (c := (0 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (1 : Fin 6))
+        (c := (3 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (1 : Fin 6))
+        (c := (3 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (3 : Fin 6))
+        (c := (1 : Fin 6)) (d := (2 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (3 : Fin 6))
+        (c := (1 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (3 : Fin 6))
+        (c := (1 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (3 : Fin 6))
+        (c := (0 : Fin 6)) (d := (2 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (3 : Fin 6))
+        (c := (0 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (3 : Fin 6))
+        (c := (0 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (1 : Fin 6))
+        (c := (4 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (4 : Fin 6))
+        (c := (1 : Fin 6)) (d := (2 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (4 : Fin 6))
+        (c := (1 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (4 : Fin 6))
+        (c := (1 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (4 : Fin 6))
+        (c := (0 : Fin 6)) (d := (2 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (4 : Fin 6))
+        (c := (0 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (4 : Fin 6))
+        (c := (0 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (5 : Fin 6))
+        (c := (1 : Fin 6)) (d := (2 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (5 : Fin 6))
+        (c := (1 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (5 : Fin 6))
+        (c := (1 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (5 : Fin 6))
+        (c := (0 : Fin 6)) (d := (2 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (5 : Fin 6))
+        (c := (0 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (5 : Fin 6))
+        (c := (0 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (2 : Fin 6))
+        (c := (3 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (2 : Fin 6))
+        (c := (3 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (3 : Fin 6))
+        (c := (2 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (3 : Fin 6))
+        (c := (2 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (3 : Fin 6))
+        (c := (0 : Fin 6)) (d := (1 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (3 : Fin 6))
+        (c := (0 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (3 : Fin 6))
+        (c := (0 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (2 : Fin 6))
+        (c := (4 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (4 : Fin 6))
+        (c := (2 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (4 : Fin 6))
+        (c := (2 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (4 : Fin 6))
+        (c := (0 : Fin 6)) (d := (1 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (4 : Fin 6))
+        (c := (0 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (4 : Fin 6))
+        (c := (0 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (5 : Fin 6))
+        (c := (2 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (5 : Fin 6))
+        (c := (2 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (5 : Fin 6))
+        (c := (0 : Fin 6)) (d := (1 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (5 : Fin 6))
+        (c := (0 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (5 : Fin 6))
+        (c := (0 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (3 : Fin 6))
+        (c := (4 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (4 : Fin 6))
+        (c := (3 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (3 : Fin 6)) (j := (4 : Fin 6))
+        (c := (0 : Fin 6)) (d := (1 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (3 : Fin 6)) (j := (4 : Fin 6))
+        (c := (0 : Fin 6)) (d := (2 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (3 : Fin 6)) (j := (4 : Fin 6))
+        (c := (0 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (0 : Fin 6)) (j := (5 : Fin 6))
+        (c := (3 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (3 : Fin 6)) (j := (5 : Fin 6))
+        (c := (0 : Fin 6)) (d := (1 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (3 : Fin 6)) (j := (5 : Fin 6))
+        (c := (0 : Fin 6)) (d := (2 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (3 : Fin 6)) (j := (5 : Fin 6))
+        (c := (0 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (4 : Fin 6)) (j := (5 : Fin 6))
+        (c := (0 : Fin 6)) (d := (1 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (4 : Fin 6)) (j := (5 : Fin 6))
+        (c := (0 : Fin 6)) (d := (2 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (4 : Fin 6)) (j := (5 : Fin 6))
+        (c := (0 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (2 : Fin 6))
+        (c := (3 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (2 : Fin 6))
+        (c := (3 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (3 : Fin 6))
+        (c := (2 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (3 : Fin 6))
+        (c := (2 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (3 : Fin 6))
+        (c := (1 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (3 : Fin 6))
+        (c := (1 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (2 : Fin 6))
+        (c := (4 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (4 : Fin 6))
+        (c := (2 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (4 : Fin 6))
+        (c := (2 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (4 : Fin 6))
+        (c := (1 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (4 : Fin 6))
+        (c := (1 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (5 : Fin 6))
+        (c := (2 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (5 : Fin 6))
+        (c := (2 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (5 : Fin 6))
+        (c := (1 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (5 : Fin 6))
+        (c := (1 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (3 : Fin 6))
+        (c := (4 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (4 : Fin 6))
+        (c := (3 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (3 : Fin 6)) (j := (4 : Fin 6))
+        (c := (1 : Fin 6)) (d := (2 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (3 : Fin 6)) (j := (4 : Fin 6))
+        (c := (1 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (1 : Fin 6)) (j := (5 : Fin 6))
+        (c := (3 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (3 : Fin 6)) (j := (5 : Fin 6))
+        (c := (1 : Fin 6)) (d := (2 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (3 : Fin 6)) (j := (5 : Fin 6))
+        (c := (1 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (4 : Fin 6)) (j := (5 : Fin 6))
+        (c := (1 : Fin 6)) (d := (2 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (4 : Fin 6)) (j := (5 : Fin 6))
+        (c := (1 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (3 : Fin 6))
+        (c := (4 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (4 : Fin 6))
+        (c := (3 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (3 : Fin 6)) (j := (4 : Fin 6))
+        (c := (2 : Fin 6)) (d := (5 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (2 : Fin 6)) (j := (5 : Fin 6))
+        (c := (3 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  constructor
+  · simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (3 : Fin 6)) (j := (5 : Fin 6))
+        (c := (2 : Fin 6)) (d := (4 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+  simpa [Finset.ext_iff] using
+      (not_both_sixPointBad_of_shared_pair
+        M hLoopless hE hRank hStrict order
+        (i := (4 : Fin 6)) (j := (5 : Fin 6))
+        (c := (2 : Fin 6)) (d := (3 : Fin 6))
+        (by decide) (by decide) (by decide)
+        (by decide) (by decide) (by decide))
+
+#print axioms Rank3KUM.linearSixBad_of_strict_two
+
 #print axioms Rank3KUM.not_both_sixPointBad_of_shared_pair
 
 #print axioms Rank3KUM.false_of_two_nonbase_triples_sharing_pair_strict_two
