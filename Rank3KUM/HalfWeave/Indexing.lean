@@ -1,5 +1,5 @@
 import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Tactic.Omega
+import Mathlib.Tactic
 
 namespace Rank3KUM.HalfWeave
 
