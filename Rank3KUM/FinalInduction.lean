@@ -1,4 +1,5 @@
 import Rank3KUM.FinalReduction
+import Rank3KUM.NearTightGeometry
 import Rank3KUM.SmallCases
 
 namespace Rank3KUM
@@ -10,9 +11,9 @@ noncomputable section
 variable {α : Type*}
 
 /--
-Strong induction completes the theorem once two sharply isolated inputs are
-available: the six-element case and a hitting basis for each nonconcurrent
-near-tight family in the strict cases with `k ≥ 3`.
+Strong induction completes the theorem from the single remaining
+six-element input.  The strict cases with `k ≥ 3` now obtain their
+near-tight hitting basis automatically.
 -/
 theorem rankThreeKUM_of_small_two_and_strict_deletion
     (hTwo :
@@ -23,22 +24,6 @@ theorem rankThreeKUM_of_small_two_and_strict_deletion
         UniformlyDense N 2 →
         ∃ order : Fin 6 ≃ N.E,
           CyclicBasisOrder3 N (by omega) order)
-    (hReducing :
-      ∀ (j : ℕ) (N : Matroid α),
-        3 ≤ j →
-        N.E.Finite →
-        N.eRank = 3 →
-        N.E.encard = ((3 * j : ℕ) : ℕ∞) →
-        UniformlyDense N j →
-        StrictlyUniformlyDense N j →
-        (¬ ∃ e : α, e ∈ N.E ∧
-          ∀ A : Set α, A ⊆ N.E →
-            N.eRk A = 2 →
-            A.ncard = 2 * j - 1 →
-            e ∈ A) →
-        ∃ D : Set α,
-          N.IsBase D ∧
-          HitsNearTightRankTwo N j D) :
     ∀ (k : ℕ) (M : Matroid α) (_hk : 0 < k),
       M.E.Finite →
       M.eRank = 3 →
@@ -66,20 +51,9 @@ theorem rankThreeKUM_of_small_two_and_strict_deletion
       intro hStrict
       have hLoopless : M.Loopless :=
         loopless_of_uniformlyDense M k hk hDense
-      obtain ⟨D, hD, hHits⟩ : ∃ D : Set α,
-          M.IsBase D ∧ HitsNearTightRankTwo M k D := by
-        by_cases hCommon :
-            ∃ e : α, e ∈ M.E ∧
-              ∀ A : Set α, A ⊆ M.E →
-                M.eRk A = 2 →
-                A.ncard = 2 * k - 1 →
-                e ∈ A
-        · exact
-            exists_isBase_hitsNearTight_of_common_point
-              M k hLoopless hCommon
-        · exact
-            hReducing k M hkThree hE hRank hEcard
-              hDense hStrict hCommon
+      obtain ⟨D, hD, hHits⟩ :=
+        exists_isBase_hitsNearTight_of_strict_rankThree
+          M k hkThree hLoopless hE hRank hEcard hStrict
       have hDelCard :
           (Matroid.delete M D).E.encard =
             ((3 * (k - 1) : ℕ) : ℕ∞) :=
