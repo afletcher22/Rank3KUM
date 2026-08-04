@@ -86,8 +86,7 @@ def interleaveOneTwo
     ((interleaveOneTwo hPX points pairs
       (interleavePosition k i 0) : (P ∪ X : Set α)) : α) =
       (points i : α) := by
-  simp [interleaveOneTwo, interleavePosition,
-    finThreeInterleaveEquiv]
+  simp [interleaveOneTwo, interleavePosition]
 
 @[simp] theorem interleaveOneTwo_pair_false
     {P X : Set α} {k : ℕ}
@@ -98,8 +97,7 @@ def interleaveOneTwo
     ((interleaveOneTwo hPX points pairs
       (interleavePosition k i 1) : (P ∪ X : Set α)) : α) =
       (pairs (i, false) : α) := by
-  simp [interleaveOneTwo, interleavePosition,
-    finThreeInterleaveEquiv]
+  simp [interleaveOneTwo, interleavePosition]
 
 @[simp] theorem interleaveOneTwo_pair_true
     {P X : Set α} {k : ℕ}
@@ -110,8 +108,7 @@ def interleaveOneTwo
     ((interleaveOneTwo hPX points pairs
       (interleavePosition k i 2) : (P ∪ X : Set α)) : α) =
       (pairs (i, true) : α) := by
-  simp [interleaveOneTwo, interleavePosition,
-    finThreeInterleaveEquiv]
+  simp [interleaveOneTwo, interleavePosition]
 
 end
 
