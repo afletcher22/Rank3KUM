@@ -234,17 +234,21 @@ theorem monotone_finSigmaFinEquiv_symm_fst
       (fun j : Fin (∑ i : Fin m, n i) =>
         (finSigmaFinEquiv.symm j).1) := by
   intro a b hab
-  let x := finSigmaFinEquiv.symm a
-  let y := finSigmaFinEquiv.symm b
+  let E :
+      ((i : Fin m) × Fin (n i)) ≃
+        Fin (∑ i : Fin m, n i) :=
+    finSigmaFinEquiv
+  let x := E.symm a
+  let y := E.symm b
   by_contra hxy
   have hyx : y.1 < x.1 :=
     lt_of_not_ge hxy
   have hxformula := finSigmaFinEquiv_apply x
   have hyformula := finSigmaFinEquiv_apply y
   have hxa : finSigmaFinEquiv x = a :=
-    finSigmaFinEquiv.apply_symm_apply a
+    E.apply_symm_apply a
   have hyb : finSigmaFinEquiv y = b :=
-    finSigmaFinEquiv.apply_symm_apply b
+    E.apply_symm_apply b
   rw [hxa] at hxformula
   rw [hyb] at hyformula
   rw [sum_fin_castLE_eq_finSigmaPrefix] at hxformula
