@@ -19,6 +19,64 @@ def HasDensityReducingBasis
     (M : Matroid α) (k : ℕ) : Prop :=
   ∃ D : Set α, DensityReducingBasis M k D
 
+/--
+A basis hits every near-tight rank-two set.  In the strict case these are
+exactly the possible `2k-1` obstructions to lowering the density parameter.
+-/
+def HitsNearTightRankTwo
+    (M : Matroid α) (k : ℕ) (D : Set α) : Prop :=
+  ∀ A : Set α, A ⊆ M.E →
+    M.eRk A = 2 →
+    A.ncard = 2 * k - 1 →
+    (A ∩ D).Nonempty
+
+/-- A hit rules out the sole rank-two obstruction inside the complement. -/
+theorem rankTwoComplementBound_of_hitsNearTight
+    (M : Matroid α) (k : ℕ)
+    (hE : M.E.Finite)
+    (hStrict : StrictlyUniformlyDense M k)
+    {D A : Set α}
+    (hHits : HitsNearTightRankTwo M k D)
+    (hAcomp : A ⊆ M.E \ D)
+    (hArank : M.eRk A = 2) :
+    A.encard ≤ ((k - 1 : ℕ) : ℕ∞) * 2 := by
+  have hAE : A ⊆ M.E :=
+    hAcomp.trans Set.sdiff_subset
+  have hAfin : A.Finite :=
+    hE.subset hAE
+  have hAnonempty : A.Nonempty := by
+    intro hAempty
+    rw [hAempty, M.eRk_empty] at hArank
+    simp at hArank
+  have hAproper : A ≠ M.E := by
+    intro hAEq
+    have hDempty : D = ∅ := by
+      apply Set.eq_empty_iff_forall_notMem.2
+      intro e heD
+      have heComp : e ∈ M.E \ D := by
+        rw [← hAEq]
+        exact hAcomp (hAE heD)
+      exact heComp.2 heD
+    subst D
+    have hhit :=
+      hHits A hAE hArank
+    simp at hhit
+  have hlt :=
+    StrictlyUniformlyDense.encard_lt_two_mul_k_of_eRk_eq_two
+      M k hStrict hAE hAnonempty hAproper hArank
+  have hltNat : A.ncard < 2 * k := by
+    rw [hAfin.cast_ncard_eq] at hlt
+    exact_mod_cast hlt
+  have hleNat : A.ncard ≤ (k - 1) * 2 := by
+    by_contra hnot
+    have hcard : A.ncard = 2 * k - 1 := by
+      omega
+    obtain ⟨e, heA, heD⟩ :=
+      hHits A hAE hArank hcard
+    exact (hAcomp heA).2 heD
+  rw [hAfin.cast_ncard_eq]
+  exact_mod_cast hleNat
+
 /-- Deletion density can be checked using the original rank on subsets of the complement. -/
 theorem uniformlyDense_delete_iff
     (M : Matroid α) (j : ℕ) (D : Set α) :
