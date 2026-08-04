@@ -383,6 +383,97 @@ theorem ncard_inter_le_k_sub_one_of_distinct_nearTight
 #print axioms Rank3KUM.ncard_inter_le_k_sub_one_of_distinct_nearTight
 
 /--
+Three pairwise-distinct nonconcurrent near-tight flats saturate all three
+strict rank-one intersection bounds, and their union is the whole ground set.
+-/
+theorem pairwise_intersections_ncard_eq_of_three_nearTight
+    (M : Matroid α) (k : ℕ)
+    (hk : 3 ≤ k)
+    (hLoopless : M.Loopless)
+    (hE : M.E.Finite)
+    (hRank : M.eRank = 3)
+    (hEcard : M.E.encard = ((3 * k : ℕ) : ℕ∞))
+    (hStrict : StrictlyUniformlyDense M k)
+    {A B C : Set α}
+    (hAE : A ⊆ M.E)
+    (hBE : B ⊆ M.E)
+    (hCE : C ⊆ M.E)
+    (hArank : M.eRk A = 2)
+    (hBrank : M.eRk B = 2)
+    (hCrank : M.eRk C = 2)
+    (hAcard : A.ncard = 2 * k - 1)
+    (hBcard : B.ncard = 2 * k - 1)
+    (hCcard : C.ncard = 2 * k - 1)
+    (hAB : A ≠ B)
+    (hAC : A ≠ C)
+    (hBC : B ≠ C)
+    (hABCempty : (A ∩ B) ∩ C = ∅) :
+    (A ∩ B).ncard = k - 1 ∧
+      (A ∩ C).ncard = k - 1 ∧
+      (B ∩ C).ncard = k - 1 ∧
+      (A ∪ B ∪ C).ncard = 3 * k := by
+  have hAfin : A.Finite := hE.subset hAE
+  have hBfin : B.Finite := hE.subset hBE
+  have hCfin : C.Finite := hE.subset hCE
+  have hABle : (A ∩ B).ncard ≤ k - 1 :=
+    ncard_inter_le_k_sub_one_of_distinct_nearTight
+      M k hk hLoopless hE hRank hEcard hStrict
+      hAE hBE hArank hBrank hAcard hBcard hAB
+  have hACle : (A ∩ C).ncard ≤ k - 1 :=
+    ncard_inter_le_k_sub_one_of_distinct_nearTight
+      M k hk hLoopless hE hRank hEcard hStrict
+      hAE hCE hArank hCrank hAcard hCcard hAC
+  have hBCle : (B ∩ C).ncard ≤ k - 1 :=
+    ncard_inter_le_k_sub_one_of_distinct_nearTight
+      M k hk hLoopless hE hRank hEcard hStrict
+      hBE hCE hBrank hCrank hBcard hCcard hBC
+  have hPairDisjoint :
+      Disjoint (A ∩ C) (B ∩ C) := by
+    apply Set.disjoint_left.2
+    intro x hxAC hxBC
+    have hxABC : x ∈ (A ∩ B) ∩ C :=
+      ⟨⟨hxAC.1, hxBC.1⟩, hxAC.2⟩
+    rw [hABCempty] at hxABC
+    exact hxABC
+  have hDistrib :
+      (A ∪ B) ∩ C = (A ∩ C) ∪ (B ∩ C) := by
+    ext x
+    simp only [Set.mem_inter_iff, Set.mem_union]
+    tauto
+  have hMiddleCard :
+      ((A ∪ B) ∩ C).ncard =
+        (A ∩ C).ncard + (B ∩ C).ncard := by
+    rw [hDistrib]
+    exact Set.ncard_union_eq hPairDisjoint
+      (hAfin.inter_of_left C) (hBfin.inter_of_left C)
+  have hEncard : M.E.ncard = 3 * k := by
+    have hcast :
+        (M.E.ncard : ℕ∞) = ((3 * k : ℕ) : ℕ∞) := by
+      rw [hE.cast_ncard_eq]
+      exact hEcard
+    exact_mod_cast hcast
+  have hUnionLe :
+      (A ∪ B ∪ C).ncard ≤ 3 * k := by
+    rw [← hEncard]
+    exact Set.ncard_le_ncard
+      (Set.union_subset
+        (Set.union_subset hAE hBE) hCE) hE
+  have hCountAB :=
+    Set.ncard_union_add_ncard_inter A B hAfin hBfin
+  have hCountABC :=
+    Set.ncard_union_add_ncard_inter
+      (A ∪ B) C (hAfin.union hBfin) hCfin
+  rw [hAcard, hBcard] at hCountAB
+  rw [hMiddleCard, hCcard] at hCountABC
+  constructor
+  · omega
+  constructor
+  · omega
+  constructor <;> omega
+
+#print axioms Rank3KUM.pairwise_intersections_ncard_eq_of_three_nearTight
+
+/--
 For three pairwise-distinct nonconcurrent rank-two flats, representatives of
 their three pairwise intersections can be chosen to form a basis.
 -/
