@@ -182,7 +182,7 @@ theorem closure_singleton_inter_flat_eq_empty_of_not_mem
     M.mem_ground_of_mem_closure hx.1
   have hxNotClosureEmpty :
       x ∉ M.closure ∅ := by
-    rw [← M.loops_eq_closure_empty,
+    rw [M.closure_empty,
       M.loops_eq_empty]
     simp
   have hxDiff :
