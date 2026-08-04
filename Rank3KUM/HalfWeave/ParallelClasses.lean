@@ -41,6 +41,59 @@ def closureFinpartition
   classical
   exact Finpartition.mem_part_ofSetoid_iff_rel
 
+
+/-- Every part of the closure partition inherits the uniform-density bound. -/
+theorem card_closureFinpartition_part_le
+    (M : Matroid α)
+    (k : ℕ)
+    (hDense : UniformlyDense M k)
+    (hLoopless : M.Loopless)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (p : Finset M.E)
+    (hp : p ∈ (closureFinpartition M).parts) :
+    p.card ≤ k := by
+  let P : Finpartition (Finset.univ : Finset M.E) :=
+    closureFinpartition M
+  obtain ⟨e, he⟩ :=
+    P.nonempty_of_mem_parts (by simpa [P] using hp)
+  have hpart : P.part e = p :=
+    P.part_eq_of_mem
+      (by simpa [P] using hp) he
+  have himage :
+      (fun x : M.E => (x : α)) ''
+          (↑p : Set M.E) ⊆
+        M.closure ({(e : α)} : Set α) := by
+    rintro _ ⟨x, hx, rfl⟩
+    have hxpart : x ∈ P.part e := by
+      rw [hpart]
+      exact hx
+    have hclosure :
+        M.closure ({(e : α)} : Set α) =
+          M.closure ({(x : α)} : Set α) :=
+      (mem_closureFinpartition_part_iff M e x).1
+        (by simpa [P] using hxpart)
+    rw [hclosure]
+    exact M.mem_closure_self (x : α) x.property
+  have hcardENat : (p.card : ℕ∞) ≤ (k : ℕ∞) := by
+    calc
+      (p.card : ℕ∞) =
+          (↑p : Set M.E).encard := by simp
+      _ =
+          ((fun x : M.E => (x : α)) ''
+            (↑p : Set M.E)).encard :=
+        (Subtype.val_injective.encard_image
+          (↑p : Set M.E)).symm
+      _ ≤ (M.closure
+          ({(e : α)} : Set α)).encard :=
+        Set.encard_mono himage
+      _ ≤ (k : ℕ∞) :=
+        closure_singleton_encard_le
+          M k hDense hLoopless e.property
+  exact_mod_cast hcardENat
+
+#print axioms Rank3KUM.HalfWeave.card_closureFinpartition_part_le
+
 /-- Rank two forces the closure partition to have at least two parts. -/
 theorem two_le_card_closureFinpartition_parts
     (M : Matroid α)
