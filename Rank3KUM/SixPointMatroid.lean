@@ -210,6 +210,65 @@ theorem false_of_two_nonbase_triples_sharing_pair_strict_two
   rw [hUCard] at hLtFour
   exact (lt_irrefl (4 : ℕ∞)) hLtFour
 
+/-- The ground-set image of a finite set of positions in a six-point enumeration. -/
+def finSixSet
+    (M : Matroid α)
+    (order : Fin 6 ≃ M.E)
+    (A : Finset (Fin 6)) : Set α :=
+  (fun i : Fin 6 => (order i : α)) ''
+    (A : Set (Fin 6))
+
+/-- A position triple is bad when its ground-set image is not a basis. -/
+def SixPointBad
+    (M : Matroid α)
+    (order : Fin 6 ≃ M.E)
+    (A : Finset (Fin 6)) : Prop :=
+  ¬ M.IsBase (finSixSet M order A)
+
+/--
+Two literal position triples with a common pair and distinct remaining
+vertices cannot both be bad in the strict `k = 2` case.
+-/
+theorem not_both_sixPointBad_of_shared_pair
+    (M : Matroid α)
+    (hLoopless : M.Loopless)
+    (hE : M.E.Finite)
+    (hRank : M.eRank = 3)
+    (hStrict : StrictlyUniformlyDense M 2)
+    (order : Fin 6 ≃ M.E)
+    {i j c d : Fin 6}
+    (hij : i ≠ j)
+    (hic : i ≠ c)
+    (hid : i ≠ d)
+    (hjc : j ≠ c)
+    (hjd : j ≠ d)
+    (hcd : c ≠ d) :
+    ¬ (SixPointBad M order {i, j, c} ∧
+      SixPointBad M order {i, j, d}) := by
+  have hval :
+      ∀ {u v : Fin 6}, u ≠ v →
+        (order u : α) ≠ (order v : α) := by
+    intro u v huv hEq
+    apply huv
+    apply order.injective
+    exact Subtype.ext hEq
+  rintro ⟨hBadC, hBadD⟩
+  apply
+    false_of_two_nonbase_triples_sharing_pair_strict_two
+      M hLoopless hE hRank hStrict
+      (order i).property (order j).property
+      (order c).property (order d).property
+      (hval hij) (hval hic) (hval hid)
+      (hval hjc) (hval hjd) (hval hcd)
+  · simpa [SixPointBad, finSixSet,
+      Set.image_insert, Set.image_singleton,
+      or_comm, or_left_comm, or_assoc] using hBadC
+  · simpa [SixPointBad, finSixSet,
+      Set.image_insert, Set.image_singleton,
+      or_comm, or_left_comm, or_assoc] using hBadD
+
+#print axioms Rank3KUM.not_both_sixPointBad_of_shared_pair
+
 #print axioms Rank3KUM.false_of_two_nonbase_triples_sharing_pair_strict_two
 
 #print axioms Rank3KUM.pair_indep_of_strict_two
