@@ -246,7 +246,10 @@ theorem sum_fin_castLE_eq_finSigmaPrefix
   intro i _
   have him : i.val < m :=
     i.isLt.trans c.isLt
-  simp [him]
+  rw [dif_pos him]
+  apply congrArg n
+  apply Fin.ext
+  rfl
 
 theorem finSigmaPrefix_succ
     {m : ℕ}
