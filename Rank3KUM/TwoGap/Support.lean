@@ -38,7 +38,9 @@ theorem mem_fundamentalSupport_iff_exchange_isBase
       exact (Set.mem_insert_iff.mp hd_insert).resolve_left hde
     have hI : M.Indep (insert e D \ {d}) :=
       (hD.indep.mem_fundCircuit_iff heclD heD).mp hdC
-    exact ⟨hdD, hD.exchange_isBase_of_indep' hdD heD hI⟩
+    refine ⟨hdD, ?_⟩
+    simpa [exchangeSet] using
+      hD.exchange_isBase_of_indep' hdD heD hI
   · rintro ⟨hdD, hbase⟩
     have hde : d ≠ e := by
       intro h
@@ -77,9 +79,11 @@ theorem fundamentalSupport_eq_singleton_isCircuit_pair
     calc
       M.fundCircuit e D =
           insert e (M.fundCircuit e D \ {e}) := by
-        rw [Set.insert_sdiff_singleton,
-          Set.insert_eq_of_mem (M.mem_fundCircuit e D)]
-      _ = insert e {d} := by rw [hsupp]
+        rw [insert_sdiff_singleton,
+          insert_eq_of_mem (M.mem_fundCircuit e D)]
+      _ = insert e {d} := by
+        change insert e (FundamentalSupport M D e) = insert e {d}
+        rw [hsupp]
       _ = ({e, d} : Set α) := rfl
   rwa [hFC] at hC
 
