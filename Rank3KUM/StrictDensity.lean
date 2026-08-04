@@ -76,7 +76,8 @@ theorem rankTwoComplementBound_of_hitsNearTight
     obtain ⟨e, heA, heD⟩ :=
       hHits A hAE hArank hcard
     exact (hAcomp heA).2 heD
-  rw [← hAfin.cast_ncard_eq]
+  rw [← hAfin.cast_ncard_eq,
+    ← ENat.natCast_mul]
   exact_mod_cast hleNat
 
 /-- Two near-tight sets on a `3k`-element ground set overlap in at least `k-2` elements. -/
@@ -314,7 +315,10 @@ theorem uniformlyDense_delete_of_strict_of_rank_two_bound
     have hleCast :
         (A.ncard : ℕ∞) ≤ ((k - 1 : ℕ) : ℕ∞) := by
       exact_mod_cast hleNat
-    simpa [hr] using hleCast
+    have hArankOne : M.eRk A = 1 := by
+      simpa using hr
+    rw [hArankOne, mul_one]
+    exact hleCast
   · have hArankTwo : M.eRk A = 2 := by
       simpa using hr
     rw [hArankTwo]
@@ -381,6 +385,8 @@ theorem eRank_delete_eq_three_of_strict
       _ = 3 := hRank
   obtain ⟨r, hr, hrle⟩ :=
     ENat.le_natCast_iff.mp hrleThree
+  have hrleNat : r ≤ 3 := by
+    exact_mod_cast hrle
   have hrleTwo : M.eRk (M.E \ D) ≤ 2 := by
     rw [hr]
     have hrne : r ≠ 3 := by
@@ -397,8 +403,8 @@ theorem eRank_delete_eq_three_of_strict
   have hComplementNonempty : (M.E \ D).Nonempty := by
     apply Set.encard_ne_zero.mp
     rw [hComplementCard]
-    norm_num
-    omega
+    exact_mod_cast
+      (show 3 * (k - 1) ≠ 0 by omega)
   have hComplementProper : M.E \ D ≠ M.E := by
     intro heq
     obtain ⟨e, heD⟩ := hDnonempty
@@ -416,7 +422,7 @@ theorem eRank_delete_eq_three_of_strict
     calc
       (k : ℕ∞) * M.eRk (M.E \ D) ≤
           (k : ℕ∞) * 2 := by
-        exact mul_le_mul_left' hrleTwo _
+        gcongr
       _ = ((2 * k : ℕ) : ℕ∞) := by
         rw [Nat.mul_comm]
         exact (ENat.natCast_mul k 2).symm
