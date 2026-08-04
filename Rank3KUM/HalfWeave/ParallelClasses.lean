@@ -651,6 +651,62 @@ theorem two_le_card_closureFinpartition_parts
 #print axioms Rank3KUM.HalfWeave.mem_closureFinpartition_part_iff
 #print axioms Rank3KUM.HalfWeave.two_le_card_closureFinpartition_parts
 
+/-- The canonical sorted closure blocks satisfy the half-weave hypotheses. -/
+def sortedClosureBlockModel
+    (M : Matroid α)
+    (k : ℕ)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (hcard : Fintype.card M.E = 2 * k)
+    (hDense : UniformlyDense M k)
+    (hLoopless : M.Loopless)
+    (hRank : M.eRank = 2) :
+    SortedBlockModel k
+      (closureFinpartition M).parts.card where
+  block := sortedClosureBlock M k hcard
+  monotone_block :=
+    monotone_sortedClosureBlock M k hcard
+  surjective_block :=
+    sortedClosureBlock_surjective M k hcard
+  two_le_m :=
+    two_le_card_closureFinpartition_parts M hRank
+  fiber_card_le := by
+    intro c
+    rw [card_fiberFinset_sortedClosureBlock]
+    exact
+      card_closureFinpartition_part_le
+        M k hDense hLoopless
+        (sortedClosurePartsEquiv M c).1
+        (sortedClosurePartsEquiv M c).2
+  fiber_card_antitone := by
+    intro c d hcd
+    rw [card_fiberFinset_sortedClosureBlock,
+      card_fiberFinset_sortedClosureBlock]
+    exact antitone_sortedClosureParts_card M hcd
+
+/-- Uniform density canonically supplies the sorted rank-two enumeration. -/
+def rankTwoSortedEnumerationOfUniformlyDense
+    (M : Matroid α)
+    (k : ℕ)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (hcard : Fintype.card M.E = 2 * k)
+    (hDense : UniformlyDense M k)
+    (hLoopless : M.Loopless)
+    (hRank : M.eRank = 2) :
+    RankTwoSortedEnumeration M k
+      (closureFinpartition M).parts.card :=
+  RankTwoSortedEnumeration.ofClosureBlocks
+    M hLoopless
+    (sortedClosureGroundEquiv M k hcard)
+    (sortedClosureBlockModel
+      M k hcard hDense hLoopless hRank)
+    (sortedClosureBlock_eq_iff_closure_eq
+      M k hcard)
+
+#print axioms Rank3KUM.HalfWeave.sortedClosureBlockModel
+#print axioms Rank3KUM.HalfWeave.rankTwoSortedEnumerationOfUniformlyDense
+
 end
 
 end Rank3KUM.HalfWeave
