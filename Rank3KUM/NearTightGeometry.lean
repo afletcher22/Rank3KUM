@@ -228,8 +228,10 @@ theorem exists_nonconcurrent_three_nearTight
       (A ∩ B) ∩ C = ∅ := by
   obtain ⟨A, hAE, hArank, hAcard⟩ := hExists
   have hAnonempty : A.Nonempty := by
-    apply Set.ncard_ne_zero.mp
-    rw [hAcard]
+    apply Set.nonempty_iff_ne_empty.2
+    intro hAempty
+    rw [hAempty] at hAcard
+    simp at hAcard
     omega
   obtain ⟨a, haA⟩ := hAnonempty
   have hFailA :
