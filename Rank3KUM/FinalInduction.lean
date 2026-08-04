@@ -31,6 +31,11 @@ theorem rankThreeKUM_of_small_two_and_strict_deletion
         N.E.encard = ((3 * j : ℕ) : ℕ∞) →
         UniformlyDense N j →
         StrictlyUniformlyDense N j →
+        (¬ ∃ e : α, e ∈ N.E ∧
+          ∀ A : Set α, A ⊆ N.E →
+            N.eRk A = 2 →
+            A.ncard = 2 * j - 1 →
+            e ∈ A) →
         ∃ D : Set α,
           N.IsBase D ∧
           HitsNearTightRankTwo N j D) :
@@ -60,9 +65,22 @@ theorem rankThreeKUM_of_small_two_and_strict_deletion
         exists_cyclicBasisOrder3_of_strict_case
           M k hk hE hRank hEcard hDense
       intro hStrict
-      obtain ⟨D, hD, hHits⟩ :=
-        hReducing k M hkThree hE hRank hEcard
-          hDense hStrict
+      have hLoopless : M.Loopless :=
+        loopless_of_uniformlyDense M k hk hDense
+      obtain ⟨D, hD, hHits⟩ : ∃ D : Set α,
+          M.IsBase D ∧ HitsNearTightRankTwo M k D := by
+        by_cases hCommon :
+            ∃ e : α, e ∈ M.E ∧
+              ∀ A : Set α, A ⊆ M.E →
+                M.eRk A = 2 →
+                A.ncard = 2 * k - 1 →
+                e ∈ A
+        · exact
+            exists_isBase_hitsNearTight_of_common_point
+              M k hLoopless hCommon
+        · exact
+            hReducing k M hkThree hE hRank hEcard
+              hDense hStrict hCommon
       have hDelCard :
           (Matroid.delete M D).E.encard =
             ((3 * (k - 1) : ℕ) : ℕ∞) :=
