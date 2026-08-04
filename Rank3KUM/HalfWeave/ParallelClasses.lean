@@ -79,7 +79,7 @@ theorem nodup_sortedClosureParts
         (closureFinpartition M).parts =>
           q.1.card ≤ p.1.card)
       ((closureFinpartition M).parts.attach.toList)).nodup_iff.mpr
-  simp
+  exact Finset.nodup_toList _
 
 theorem pairwise_sortedClosureParts
     (M : Matroid α)
