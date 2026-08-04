@@ -77,7 +77,8 @@ theorem exists_cyclicBasisOrder3_of_ground_encard_three
           (order (2 : Fin 3) : α)} : Set α) := by
     fin_cases i <;>
       ext x <;>
-      simp [cyclicIndex, or_comm, or_left_comm, or_assoc]
+      simp [cyclicIndex] <;>
+      tauto
   rw [hwindow, hAll]
   exact hGroundBase
 
