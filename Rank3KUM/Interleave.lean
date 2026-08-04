@@ -136,10 +136,12 @@ theorem cyclicIndex_interleave_one_two
   · have hieq : i.val + 1 = k := by omega
     have hwrap : (i.val + 1) % k = 0 := by
       rw [hieq, Nat.mod_self]
-    rw [hwrap]
+    have hnum :
+        (1 : Fin 3).val + 3 * i.val + 2 = 3 * k := by
+      norm_num
+      omega
+    rw [hnum, hwrap, Nat.mod_self]
     norm_num
-    have hnum : 1 + 3 * i.val + 2 = 3 * k := by omega
-    rw [hnum, Nat.mod_self]
 
 /-- The third residue advances to the next block's point. -/
 theorem cyclicIndex_interleave_two_one
@@ -154,10 +156,12 @@ theorem cyclicIndex_interleave_two_one
   · have hieq : i.val + 1 = k := by omega
     have hwrap : (i.val + 1) % k = 0 := by
       rw [hieq, Nat.mod_self]
-    rw [hwrap]
+    have hnum :
+        (2 : Fin 3).val + 3 * i.val + 1 = 3 * k := by
+      norm_num
+      omega
+    rw [hnum, hwrap, Nat.mod_self]
     norm_num
-    have hnum : 2 + 3 * i.val + 1 = 3 * k := by omega
-    rw [hnum, Nat.mod_self]
 
 /-- Two steps from the third residue reaches the next block's first pair entry. -/
 theorem cyclicIndex_interleave_two_two
@@ -172,12 +176,13 @@ theorem cyclicIndex_interleave_two_two
   · have hieq : i.val + 1 = k := by omega
     have hwrap : (i.val + 1) % k = 0 := by
       rw [hieq, Nat.mod_self]
-    rw [hwrap]
-    norm_num
-    have hnum : 2 + 3 * i.val + 2 = 3 * k + 1 := by omega
-    rw [hnum, Nat.add_mod, Nat.mod_self,
+    have hnum :
+        (2 : Fin 3).val + 3 * i.val + 2 = 3 * k + 1 := by
+      norm_num
+      omega
+    rw [hnum, hwrap, Nat.add_mod, Nat.mod_self,
       Nat.mod_eq_of_lt (by omega)]
-    simp
+    norm_num
 
 @[simp] theorem interleaveOneTwo_point
     {P X : Set α} {k : ℕ}
@@ -257,15 +262,18 @@ theorem cyclicBasisOrder3_interleaveOneTwo
       apply Fin.ext
       rfl
   rcases hj with rfl | rfl | rfl
-  · simpa only [cyclicIndex_interleave_zero_one,
+  · simpa only [interleavePositionEquiv_apply,
+      cyclicIndex_interleave_zero_one,
       cyclicIndex_interleave_zero_two,
       interleaveOneTwo_point, interleaveOneTwo_pair_false,
       interleaveOneTwo_pair_true] using hzero i
-  · simpa only [cyclicIndex_interleave_one_one,
+  · simpa only [interleavePositionEquiv_apply,
+      cyclicIndex_interleave_one_one,
       cyclicIndex_interleave_one_two,
       interleaveOneTwo_point, interleaveOneTwo_pair_false,
       interleaveOneTwo_pair_true] using hone i
-  · simpa only [cyclicIndex_interleave_two_one,
+  · simpa only [interleavePositionEquiv_apply,
+      cyclicIndex_interleave_two_one,
       cyclicIndex_interleave_two_two,
       interleaveOneTwo_point, interleaveOneTwo_pair_false,
       interleaveOneTwo_pair_true] using htwo i
