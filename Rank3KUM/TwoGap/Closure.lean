@@ -26,6 +26,16 @@ theorem closure_pair_inter_closure_pair_eq
       M.mem_ground_of_mem_closure hx.1
     have hbE : b ∈ M.E :=
       hB.subset_ground (by simp)
+    have habE : ({a, b} : Set α) ⊆ M.E :=
+      hB.subset_ground (by intro z hz; simp_all)
+    have hcbE : ({c, b} : Set α) ⊆ M.E :=
+      hB.subset_ground (by intro z hz; simp_all)
+    have hxbE : ({x, b} : Set α) ⊆ M.E := by
+      intro z hz
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+      rcases hz with rfl | rfl
+      · exact hxE
+      · exact hbE
     have hxb_ne : x ≠ b := by
       intro h
       subst x
@@ -44,19 +54,20 @@ theorem closure_pair_inter_closure_pair_eq
     have hxc :
         x ∈ M.closure (insert c ({b} : Set α)) \
             M.closure ({b} : Set α) := by
-      exact ⟨by simpa [insert_comm] using hx.2, hxb⟩
+      have hcb : ({c, b} : Set α) = ({b, c} : Set α) := by
+        ext z
+        simp [or_comm]
+      exact ⟨by rw [hcb]; exact hx.2, hxb⟩
     have hcl_a := M.closure_insert_congr hxa
     have hcl_c := M.closure_insert_congr hxc
     have ha_cl : a ∈ M.closure ({x, b} : Set α) := by
       rw [hcl_a]
-      exact M.mem_closure_of_mem (by simp)
-        (hB.subset_ground (by simp))
+      exact M.mem_closure_of_mem (by simp) habE
     have hb_cl : b ∈ M.closure ({x, b} : Set α) :=
-      M.mem_closure_of_mem (by simp) (by simpa using hbE)
+      M.mem_closure_of_mem (by simp) hxbE
     have hc_cl : c ∈ M.closure ({x, b} : Set α) := by
       rw [hcl_c]
-      exact M.mem_closure_of_mem (by simp)
-        (hB.subset_ground (by simp))
+      exact M.mem_closure_of_mem (by simp) hcbE
     have htriple :
         ({a, b, c} : Set α) ⊆ M.closure ({x, b} : Set α) := by
       intro z hz
