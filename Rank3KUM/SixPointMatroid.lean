@@ -1,3 +1,4 @@
+import Rank3KUM.CyclicOrder
 import Rank3KUM.StrictDensity
 import Rank3KUM.SixPointCombinatorics
 
@@ -996,6 +997,68 @@ theorem linearSixBad_of_strict_two
         (c := (2 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide))
+
+/-- A certified good alternative produces a cyclic basis order. -/
+theorem exists_cyclicBasisOrder3_of_sixPointGoodAlternatives
+    (M : Matroid α)
+    (enum : Fin 6 ≃ M.E)
+    (hGood :
+      SixPointGoodAlternatives
+        (SixPointBad M enum)) :
+    ∃ order : Fin 6 ≃ M.E,
+      CyclicBasisOrder3 M (by omega) order := by
+  classical
+  rcases hGood with h | h | h | h | h | h | h | h
+  · refine ⟨sixPointPerm1.trans enum, ?_⟩
+    intro i
+    fin_cases i <;>
+      simp [SixPointBad, finSixSet,
+        sixPointPerm1, cyclicIndex] at h ⊢ <;>
+      tauto
+  · refine ⟨sixPointPerm2.trans enum, ?_⟩
+    intro i
+    fin_cases i <;>
+      simp [SixPointBad, finSixSet,
+        sixPointPerm2, cyclicIndex] at h ⊢ <;>
+      tauto
+  · refine ⟨sixPointPerm3.trans enum, ?_⟩
+    intro i
+    fin_cases i <;>
+      simp [SixPointBad, finSixSet,
+        sixPointPerm3, cyclicIndex] at h ⊢ <;>
+      tauto
+  · refine ⟨sixPointPerm4.trans enum, ?_⟩
+    intro i
+    fin_cases i <;>
+      simp [SixPointBad, finSixSet,
+        sixPointPerm4, cyclicIndex] at h ⊢ <;>
+      tauto
+  · refine ⟨sixPointPerm5.trans enum, ?_⟩
+    intro i
+    fin_cases i <;>
+      simp [SixPointBad, finSixSet,
+        sixPointPerm5, cyclicIndex] at h ⊢ <;>
+      tauto
+  · refine ⟨sixPointPerm6.trans enum, ?_⟩
+    intro i
+    fin_cases i <;>
+      simp [SixPointBad, finSixSet,
+        sixPointPerm6, cyclicIndex] at h ⊢ <;>
+      tauto
+  · refine ⟨sixPointPerm7.trans enum, ?_⟩
+    intro i
+    fin_cases i <;>
+      simp [SixPointBad, finSixSet,
+        sixPointPerm7, cyclicIndex] at h ⊢ <;>
+      tauto
+  · refine ⟨sixPointPerm8.trans enum, ?_⟩
+    intro i
+    fin_cases i <;>
+      simp [SixPointBad, finSixSet,
+        sixPointPerm8, cyclicIndex] at h ⊢ <;>
+      tauto
+
+#print axioms Rank3KUM.exists_cyclicBasisOrder3_of_sixPointGoodAlternatives
 
 #print axioms Rank3KUM.linearSixBad_of_strict_two
 
