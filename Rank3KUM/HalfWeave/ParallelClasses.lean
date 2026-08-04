@@ -156,6 +156,9 @@ theorem antitone_sortedClosureParts_card
   have hj :
       sortedClosurePartsEquiv M j = L.get j' := by
     simp [sortedClosurePartsEquiv, L, j']
+  change
+    ((sortedClosurePartsEquiv M j).1).card ≤
+      ((sortedClosurePartsEquiv M i).1).card
   rw [hi, hj]
   exact hrel
 
