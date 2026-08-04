@@ -57,13 +57,13 @@ theorem firstGapWorks_of_distinct_symmetricPartners
     have hsub : d (0 : Fin 3) = d (1 : Fin 3) :=
       Subtype.ext (hd0.trans h)
     have hidx : (0 : Fin 3) = 1 := d.injective hsub
-    norm_num at hidx
+    omega
   have h21 : w ≠ (d 1 : α) := by
     intro h
     have hsub : d (2 : Fin 3) = d (1 : Fin 3) :=
       Subtype.ext (hd2.trans h)
     have hidx : (2 : Fin 3) = 1 := d.injective hsub
-    norm_num at hidx
+    omega
   have hub : u ≠ b := by
     intro h
     exact hu'.2.1 (by simpa [h])
@@ -87,25 +87,49 @@ theorem firstGapWorks_of_distinct_symmetricPartners
   have h2 : M.IsBase ({a, u, (d 1 : α)} : Set α) := by
     have heq :
         exchangeSet D w a = ({u, (d 1 : α), a} : Set α) := by
-      rw [hDset]
-      exact exchangeSet_triple_remove_third huw.symm h21 haw
-    rw [← heq]
-    exact hw'.2.2.1
+      calc
+        exchangeSet D w a =
+            exchangeSet ({u, (d 1 : α), w} : Set α) w a :=
+          congrArg (fun X : Set α => exchangeSet X w a) hDset
+        _ = ({u, (d 1 : α), a} : Set α) :=
+          exchangeSet_triple_remove_third huw.symm h21 haw
+    have hbase : M.IsBase ({u, (d 1 : α), a} : Set α) := by
+      rw [← heq]
+      exact hw'.2.2.1
+    have hset :
+        ({u, (d 1 : α), a} : Set α) =
+          ({a, u, (d 1 : α)} : Set α) := by
+      ext t
+      simp [or_comm, or_left_comm, or_assoc]
+    rw [← hset]
+    exact hbase
   have h3 : M.IsBase ({(d 1 : α), w, b} : Set α) := by
     have heq :
         exchangeSet D u b = ({b, (d 1 : α), w} : Set α) := by
-      rw [hDset]
-      exact exchangeSet_triple_remove_first h01 huw hbu
-    rw [← heq]
-    exact hu'.2.2.1
+      calc
+        exchangeSet D u b =
+            exchangeSet ({u, (d 1 : α), w} : Set α) u b :=
+          congrArg (fun X : Set α => exchangeSet X u b) hDset
+        _ = ({b, (d 1 : α), w} : Set α) :=
+          exchangeSet_triple_remove_first h01 huw hbu
+    have hbase : M.IsBase ({b, (d 1 : α), w} : Set α) := by
+      rw [← heq]
+      exact hu'.2.2.1
+    have hset :
+        ({b, (d 1 : α), w} : Set α) =
+          ({(d 1 : α), w, b} : Set α) := by
+      ext t
+      simp [or_comm, or_left_comm, or_assoc]
+    rw [← hset]
+    exact hbase
   have h4 : M.IsBase ({w, b, c} : Set α) := by
     rw [← exchangeSet_triple_remove_first hab hca.symm hwa]
     exact hw'.2.2.2
 
   refine ⟨d, ?_, ?_, ?_, ?_⟩
   · simpa [hd0] using h1
-  · simpa [hd0, insert_comm, insert_left_comm, insert_assoc] using h2
-  · simpa [hd2, insert_comm, insert_left_comm, insert_assoc] using h3
+  · simpa [hd0] using h2
+  · simpa [hd2] using h3
   · simpa [hd2] using h4
 
 /-- Two unequal symmetric partners construct a valid second-gap ordering. -/
@@ -135,13 +159,13 @@ theorem secondGapWorks_of_distinct_symmetricPartners
     have hsub : d (0 : Fin 3) = d (1 : Fin 3) :=
       Subtype.ext (hd0.trans h)
     have hidx : (0 : Fin 3) = 1 := d.injective hsub
-    norm_num at hidx
+    omega
   have h21 : w ≠ (d 1 : α) := by
     intro h
     have hsub : d (2 : Fin 3) = d (1 : Fin 3) :=
       Subtype.ext (hd2.trans h)
     have hidx : (2 : Fin 3) = 1 := d.injective hsub
-    norm_num at hidx
+    omega
   have huc : u ≠ c := by
     intro h
     exact hu'.2.1 (by simpa [h])
@@ -165,25 +189,49 @@ theorem secondGapWorks_of_distinct_symmetricPartners
   have h2 : M.IsBase ({b, u, (d 1 : α)} : Set α) := by
     have heq :
         exchangeSet D w b = ({u, (d 1 : α), b} : Set α) := by
-      rw [hDset]
-      exact exchangeSet_triple_remove_third huw.symm h21 hbw
-    rw [← heq]
-    exact hw'.2.2.1
+      calc
+        exchangeSet D w b =
+            exchangeSet ({u, (d 1 : α), w} : Set α) w b :=
+          congrArg (fun X : Set α => exchangeSet X w b) hDset
+        _ = ({u, (d 1 : α), b} : Set α) :=
+          exchangeSet_triple_remove_third huw.symm h21 hbw
+    have hbase : M.IsBase ({u, (d 1 : α), b} : Set α) := by
+      rw [← heq]
+      exact hw'.2.2.1
+    have hset :
+        ({u, (d 1 : α), b} : Set α) =
+          ({b, u, (d 1 : α)} : Set α) := by
+      ext t
+      simp [or_comm, or_left_comm, or_assoc]
+    rw [← hset]
+    exact hbase
   have h3 : M.IsBase ({(d 1 : α), w, c} : Set α) := by
     have heq :
         exchangeSet D u c = ({c, (d 1 : α), w} : Set α) := by
-      rw [hDset]
-      exact exchangeSet_triple_remove_first h01 huw hcu
-    rw [← heq]
-    exact hu'.2.2.1
+      calc
+        exchangeSet D u c =
+            exchangeSet ({u, (d 1 : α), w} : Set α) u c :=
+          congrArg (fun X : Set α => exchangeSet X u c) hDset
+        _ = ({c, (d 1 : α), w} : Set α) :=
+          exchangeSet_triple_remove_first h01 huw hcu
+    have hbase : M.IsBase ({c, (d 1 : α), w} : Set α) := by
+      rw [← heq]
+      exact hu'.2.2.1
+    have hset :
+        ({c, (d 1 : α), w} : Set α) =
+          ({(d 1 : α), w, c} : Set α) := by
+      ext t
+      simp [or_comm, or_left_comm, or_assoc]
+    rw [← hset]
+    exact hbase
   have h4 : M.IsBase ({w, c, q} : Set α) := by
     rw [← exchangeSet_triple_remove_first hbc hqb.symm hwb]
     exact hw'.2.2.2
 
   refine ⟨d, ?_, ?_, ?_, ?_⟩
   · simpa [hd0] using h1
-  · simpa [hd0, insert_comm, insert_left_comm, insert_assoc] using h2
-  · simpa [hd2, insert_comm, insert_left_comm, insert_assoc] using h3
+  · simpa [hd0] using h2
+  · simpa [hd2] using h3
   · simpa [hd2] using h4
 
 /-- If the first gap does not work, its two partner sets are blocked. -/
