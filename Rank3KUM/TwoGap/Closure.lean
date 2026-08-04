@@ -73,8 +73,9 @@ theorem closure_pair_inter_closure_pair_eq
     have hcontra := hpairBase.encard_eq_eRank
     rw [Set.encard_pair hxb_ne, hRank] at hcontra
     norm_num at hcontra
-  · exact Set.inter_subset_inter
-      (M.closure_subset_closure (by intro z hz; simp_all))
-      (M.closure_subset_closure (by intro z hz; simp_all))
+  · intro x hx
+    constructor
+    · exact M.closure_subset_closure (by intro z hz; simp_all) hx
+    · exact M.closure_subset_closure (by intro z hz; simp_all) hx
 
 end Rank3KUM.TwoGap
