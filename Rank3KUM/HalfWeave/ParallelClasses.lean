@@ -295,6 +295,79 @@ theorem part_sortedClosureGroundEquiv
     part_sortedClosureCoordinatesEquiv M
       (sortedClosureSigmaEquiv M k hcard j)
 
+theorem mem_sortedClosurePart_iff_block_eq
+    (M : Matroid α)
+    (k : ℕ)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (hcard : Fintype.card M.E = 2 * k)
+    (j : Fin (2 * k))
+    (c : Fin (closureFinpartition M).parts.card) :
+    sortedClosureGroundEquiv M k hcard j ∈
+        (sortedClosurePartsEquiv M c).1 ↔
+      sortedClosureBlock M k hcard j = c := by
+  let P : Finpartition (Finset.univ : Finset M.E) :=
+    closureFinpartition M
+  rw [← P.part_eq_iff_mem
+    (sortedClosurePartsEquiv M c).2]
+  rw [part_sortedClosureGroundEquiv]
+  constructor
+  · intro h
+    apply (sortedClosurePartsEquiv M).injective
+    exact Subtype.ext h
+  · intro h
+    subst c
+    rfl
+
+/-- Every block fiber is in bijection with its sorted closure part. -/
+theorem card_fiberFinset_sortedClosureBlock
+    (M : Matroid α)
+    (k : ℕ)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (hcard : Fintype.card M.E = 2 * k)
+    (c : Fin (closureFinpartition M).parts.card) :
+    (fiberFinset
+      (sortedClosureBlock M k hcard) c).card =
+        ((sortedClosurePartsEquiv M c).1).card := by
+  exact
+    Finset.card_bijective
+      (sortedClosureGroundEquiv M k hcard)
+      (sortedClosureGroundEquiv M k hcard).bijective
+      (fun j => by
+        simp only [fiberFinset, Finset.mem_filter,
+          Finset.mem_univ, true_and]
+        exact
+          (mem_sortedClosurePart_iff_block_eq
+            M k hcard j c).symm)
+
+/-- Every sorted closure label occurs among the flattened ground positions. -/
+theorem sortedClosureBlock_surjective
+    (M : Matroid α)
+    (k : ℕ)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (hcard : Fintype.card M.E = 2 * k) :
+    Function.Surjective
+      (sortedClosureBlock M k hcard) := by
+  intro c
+  have hpart :
+      ((sortedClosurePartsEquiv M c).1).Nonempty :=
+    (closureFinpartition M).nonempty_of_mem_parts
+      (sortedClosurePartsEquiv M c).2
+  have hpos :
+      0 < ((sortedClosurePartsEquiv M c).1).card :=
+    Finset.card_pos.mpr hpart
+  have hfiber :
+      0 <
+        (fiberFinset
+          (sortedClosureBlock M k hcard) c).card := by
+    rw [card_fiberFinset_sortedClosureBlock]
+    exact hpos
+  obtain ⟨j, hj⟩ := Finset.card_pos.mp hfiber
+  refine ⟨j, ?_⟩
+  simpa [fiberFinset] using hj
+
 #print axioms Rank3KUM.HalfWeave.groundUnivFinsetEquiv
 #print axioms Rank3KUM.HalfWeave.closurePartsEnumeration
 #print axioms Rank3KUM.HalfWeave.sortedClosureCoordinatesEquiv
