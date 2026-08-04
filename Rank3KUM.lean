@@ -21,3 +21,4 @@ import Rank3KUM.SpliceWrap
 import Rank3KUM.CyclicRotate
 import Rank3KUM.Splicing
 import Rank3KUM.Interleave
+import Rank3KUM.TightFlatAutomatic
