@@ -182,7 +182,7 @@ theorem false_of_unequal_singleton_partner_pairs
     exact hrD
 
   have hBaseTBC : M.IsBase ({t, b, c} : Set α) := by
-    rw [← exchangeSet_triple_remove_first hab hac hta.symm]
+    rw [← exchangeSet_triple_remove_first hab hac hta]
     exact htXCa'.2.2.2
   have hBaseABS : M.IsBase ({a, b, s} : Set α) := by
     rw [← exchangeSet_triple_remove_third hac.symm hbc.symm hsc]
@@ -388,7 +388,18 @@ theorem false_of_unequal_singleton_partner_pairs
         congrArg (fun X : Set α => X \ {r}) hDset
       _ = ({t, s} : Set α) := by
         ext x
-        simp [htr, hrs]
+        simp only [Set.mem_sdiff, Set.mem_insert_iff,
+          Set.mem_singleton_iff]
+        constructor
+        · rintro ⟨hx, hxr⟩
+          rcases hx with rfl | rfl | rfl
+          · exact Or.inl rfl
+          · exact (hxr rfl).elim
+          · exact Or.inr rfl
+        · intro hx
+          rcases hx with rfl | rfl
+          · exact ⟨Or.inl rfl, htr⟩
+          · exact ⟨Or.inr (Or.inr rfl), hrs.symm⟩
   have hrNotCl : r ∉ M.closure (D \ {r}) :=
     hD.indep.notMem_closure_sdiff_of_mem hrD
   rw [hDWithoutR] at hrNotCl
