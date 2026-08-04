@@ -1,0 +1,4 @@
+
+# Lean generated files
+.lake/
+*.log
