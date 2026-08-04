@@ -19,6 +19,26 @@ def HasDensityReducingBasis
     (M : Matroid α) (k : ℕ) : Prop :=
   ∃ D : Set α, DensityReducingBasis M k D
 
+/-- Deletion density can be checked using the original rank on subsets of the complement. -/
+theorem uniformlyDense_delete_iff
+    (M : Matroid α) (j : ℕ) (D : Set α) :
+    UniformlyDense (Matroid.delete M D) j ↔
+      ∀ A : Set α, A ⊆ M.E \ D →
+        A.encard ≤ (j : ℕ∞) * M.eRk A := by
+  constructor
+  · intro h A hA
+    have hAdelete : A ⊆ (Matroid.delete M D).E := by
+      simpa using hA
+    have hbound := h A hAdelete
+    simpa [Matroid.delete_eq_restrict,
+      M.restrict_eRk_eq hA] using hbound
+  · intro h A hA
+    have hAcomp : A ⊆ M.E \ D := by
+      simpa using hA
+    have hbound := h A hAcomp
+    simpa [Matroid.delete_eq_restrict,
+      M.restrict_eRk_eq hAcomp] using hbound
+
 /-- Every nonempty proper ground-set subset satisfies the density bound strictly. -/
 def StrictlyUniformlyDense
     (M : Matroid α) (k : ℕ) : Prop :=
