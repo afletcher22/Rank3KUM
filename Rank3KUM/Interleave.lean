@@ -541,9 +541,11 @@ theorem exists_cyclicBasisOrder3_of_sortedEnumeration_tight_flat
   letI : Fintype (M.E \ X : Set α) :=
     hComplementFinite.fintype
   have hNcard : (M.E \ X).ncard = k := by
-    apply ENat.coe_injective
-    rw [hComplementFinite.cast_ncard_eq]
-    exact hComplementCard
+    have hcast :
+        ((M.E \ X).ncard : ℕ∞) = (k : ℕ∞) := by
+      rw [hComplementFinite.cast_ncard_eq]
+      exact hComplementCard
+    exact_mod_cast hcast
   have hNatCard : Nat.card (M.E \ X : Set α) = k := by
     simpa only [Nat.card_coe_set_eq] using hNcard
   let points : Fin k ≃ (M.E \ X : Set α) :=
