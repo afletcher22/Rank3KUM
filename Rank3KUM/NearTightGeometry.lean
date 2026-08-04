@@ -470,6 +470,167 @@ theorem pairwise_intersections_ncard_eq_of_three_nearTight
 #print axioms Rank3KUM.pairwise_intersections_ncard_eq_of_three_nearTight
 
 /--
+No near-tight rank-two flat can avoid representatives of all three pairwise
+intersections of a nonconcurrent near-tight triple.
+-/
+theorem false_of_nearTight_avoids_three_pairwise_representatives
+    (M : Matroid α) (k : ℕ)
+    (hk : 3 ≤ k)
+    (hLoopless : M.Loopless)
+    (hE : M.E.Finite)
+    (hRank : M.eRank = 3)
+    (hEcard : M.E.encard = ((3 * k : ℕ) : ℕ∞))
+    (hStrict : StrictlyUniformlyDense M k)
+    {A B C H : Set α}
+    (hAE : A ⊆ M.E)
+    (hBE : B ⊆ M.E)
+    (hCE : C ⊆ M.E)
+    (hHE : H ⊆ M.E)
+    (hArank : M.eRk A = 2)
+    (hBrank : M.eRk B = 2)
+    (hCrank : M.eRk C = 2)
+    (hHrank : M.eRk H = 2)
+    (hAcard : A.ncard = 2 * k - 1)
+    (hBcard : B.ncard = 2 * k - 1)
+    (hCcard : C.ncard = 2 * k - 1)
+    (hHcard : H.ncard = 2 * k - 1)
+    (hAB : A ≠ B)
+    (hAC : A ≠ C)
+    (hBC : B ≠ C)
+    (hABCempty : (A ∩ B) ∩ C = ∅)
+    {x y z : α}
+    (hx : x ∈ A ∩ B)
+    (hy : y ∈ A ∩ C)
+    (hz : z ∈ B ∩ C)
+    (hxH : x ∉ H)
+    (hyH : y ∉ H)
+    (hzH : z ∉ H) :
+    False := by
+  have hAfin : A.Finite := hE.subset hAE
+  have hBfin : B.Finite := hE.subset hBE
+  have hCfin : C.Finite := hE.subset hCE
+  have hABfin : (A ∩ B).Finite := hAfin.inter_of_left B
+  have hACfin : (A ∩ C).Finite := hAfin.inter_of_left C
+  have hBCfin : (B ∩ C).Finite := hBfin.inter_of_left C
+  have hAflat : M.IsFlat A :=
+    isFlat_of_strict_rankTwo_ncard_eq
+      M k hE hRank hStrict hAE hArank hAcard
+  have hBflat : M.IsFlat B :=
+    isFlat_of_strict_rankTwo_ncard_eq
+      M k hE hRank hStrict hBE hBrank hBcard
+  have hCflat : M.IsFlat C :=
+    isFlat_of_strict_rankTwo_ncard_eq
+      M k hE hRank hStrict hCE hCrank hCcard
+  have hHflat : M.IsFlat H :=
+    isFlat_of_strict_rankTwo_ncard_eq
+      M k hE hRank hStrict hHE hHrank hHcard
+  obtain ⟨hABcard, hACcard, hBCcard, _hUnionCard⟩ :=
+    pairwise_intersections_ncard_eq_of_three_nearTight
+      M k hk hLoopless hE hRank hEcard hStrict
+      hAE hBE hCE hArank hBrank hCrank
+      hAcard hBcard hCcard hAB hAC hBC hABCempty
+  have hABACDisjoint :
+      Disjoint (A ∩ B) (A ∩ C) := by
+    apply Set.disjoint_left.2
+    intro u huAB huAC
+    have huABC : u ∈ (A ∩ B) ∩ C :=
+      ⟨huAB, huAC.2⟩
+    rw [hABCempty] at huABC
+    exact huABC
+  have hPairUnionBCDisjoint :
+      Disjoint ((A ∩ B) ∪ (A ∩ C)) (B ∩ C) := by
+    apply Set.disjoint_left.2
+    intro u huUnion huBC
+    rcases huUnion with huAB | huAC
+    · have huABC : u ∈ (A ∩ B) ∩ C :=
+        ⟨huAB, huBC.2⟩
+      rw [hABCempty] at huABC
+      exact huABC
+    · have huABC : u ∈ (A ∩ B) ∩ C :=
+        ⟨⟨huAC.1, huBC.1⟩, huAC.2⟩
+      rw [hABCempty] at huABC
+      exact huABC
+  let P : Set α :=
+    ((A ∩ B) ∪ (A ∩ C)) ∪ (B ∩ C)
+  have hPcard : P.ncard = 3 * k - 3 := by
+    dsimp [P]
+    rw [Set.ncard_union_eq hPairUnionBCDisjoint
+          (hABfin.union hACfin) hBCfin,
+        Set.ncard_union_eq hABACDisjoint
+          hABfin hACfin,
+        hABcard, hACcard, hBCcard]
+    omega
+  have hPE : P ⊆ M.E := by
+    intro u hu
+    rcases hu with (huAB | huAC) | huBC
+    · exact hAE huAB.1
+    · exact hAE huAC.1
+    · exact hBE huBC.1
+  have hEncard : M.E.ncard = 3 * k := by
+    have hcast :
+        (M.E.ncard : ℕ∞) = ((3 * k : ℕ) : ℕ∞) := by
+      rw [hE.cast_ncard_eq]
+      exact hEcard
+    exact_mod_cast hcast
+  have hResidualCard : (M.E \ P).ncard = 3 := by
+    rw [Set.ncard_sdiff' hPE hE, hEncard, hPcard]
+    omega
+  have hABClosure :
+      A ∩ B ⊆ M.closure ({x} : Set α) :=
+    inter_subset_closure_singleton_of_distinct_rankTwo_flats
+      M hLoopless hE hRank hAflat hBflat
+      hArank hBrank (by omega) hAB hx
+  have hACClosure :
+      A ∩ C ⊆ M.closure ({y} : Set α) :=
+    inter_subset_closure_singleton_of_distinct_rankTwo_flats
+      M hLoopless hE hRank hAflat hCflat
+      hArank hCrank (by omega) hAC hy
+  have hBCClosure :
+      B ∩ C ⊆ M.closure ({z} : Set α) :=
+    inter_subset_closure_singleton_of_distinct_rankTwo_flats
+      M hLoopless hE hRank hBflat hCflat
+      hBrank hCrank (by omega) hBC hz
+  have hXHempty :
+      M.closure ({x} : Set α) ∩ H = ∅ :=
+    closure_singleton_inter_flat_eq_empty_of_not_mem
+      M hLoopless hHflat (hAE hx.1) hxH
+  have hYHempty :
+      M.closure ({y} : Set α) ∩ H = ∅ :=
+    closure_singleton_inter_flat_eq_empty_of_not_mem
+      M hLoopless hHflat (hAE hy.1) hyH
+  have hZHempty :
+      M.closure ({z} : Set α) ∩ H = ∅ :=
+    closure_singleton_inter_flat_eq_empty_of_not_mem
+      M hLoopless hHflat (hBE hz.1) hzH
+  have hHResidual : H ⊆ M.E \ P := by
+    intro u huH
+    refine ⟨hHE huH, ?_⟩
+    intro huP
+    rcases huP with (huAB | huAC) | huBC
+    · have huEmpty :
+          u ∈ M.closure ({x} : Set α) ∩ H :=
+        ⟨hABClosure huAB, huH⟩
+      rw [hXHempty] at huEmpty
+      exact huEmpty
+    · have huEmpty :
+          u ∈ M.closure ({y} : Set α) ∩ H :=
+        ⟨hACClosure huAC, huH⟩
+      rw [hYHempty] at huEmpty
+      exact huEmpty
+    · have huEmpty :
+          u ∈ M.closure ({z} : Set α) ∩ H :=
+        ⟨hBCClosure huBC, huH⟩
+      rw [hZHempty] at huEmpty
+      exact huEmpty
+  have hHle : H.ncard ≤ 3 := by
+    rw [← hResidualCard]
+    exact Set.ncard_le_ncard hHResidual hE.sdiff
+  rw [hHcard] at hHle
+  omega
+
+#print axioms Rank3KUM.false_of_nearTight_avoids_three_pairwise_representatives
+
+/--
 For three pairwise-distinct nonconcurrent rank-two flats, representatives of
 their three pairwise intersections can be chosen to form a basis.
 -/
