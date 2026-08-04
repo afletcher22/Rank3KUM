@@ -60,7 +60,7 @@ theorem rankTwoComplementBound_of_hitsNearTight
     StrictlyUniformlyDense.encard_lt_two_mul_k_of_eRk_eq_two
       M k hStrict hAE hAnonempty hAproper hArank
   have hltNat : A.ncard < 2 * k := by
-    rw [hAfin.cast_ncard_eq] at hlt
+    rw [← hAfin.cast_ncard_eq] at hlt
     exact_mod_cast hlt
   have hleNat : A.ncard ≤ (k - 1) * 2 := by
     by_contra hnot
@@ -69,7 +69,7 @@ theorem rankTwoComplementBound_of_hitsNearTight
     obtain ⟨e, heA, heD⟩ :=
       hHits A hAE hArank hcard
     exact (hAcomp heA).2 heD
-  rw [hAfin.cast_ncard_eq]
+  rw [← hAfin.cast_ncard_eq]
   exact_mod_cast hleNat
 
 /-- Deletion density can be checked using the original rank on subsets of the complement. -/
