@@ -68,12 +68,14 @@ def interleaveOneTwo
     (hPX : Disjoint P X)
     (points : Fin k ≃ P)
     (pairs : Fin k × Bool ≃ X) :
-    Fin (3 * k) ≃ (P ∪ X : Set α) :=
-  (finCongr (Nat.mul_comm 3 k)).trans
-    (finProdFinEquiv.symm.trans
-      ((finThreeInterleaveEquiv k).trans
-        ((Equiv.sumCongr points pairs).trans
-          (Equiv.Set.union hPX).symm)))
+    Fin (3 * k) ≃ (P ∪ X : Set α) := by
+  classical
+  exact
+    (finCongr (Nat.mul_comm 3 k)).trans
+      (finProdFinEquiv.symm.trans
+        ((finThreeInterleaveEquiv k).trans
+          ((Equiv.sumCongr points pairs).trans
+            (Equiv.Set.union hPX).symm)))
 
 @[simp] theorem interleaveOneTwo_point
     {P X : Set α} {k : ℕ}
