@@ -24,3 +24,4 @@ import Rank3KUM.Interleave
 import Rank3KUM.TightFlatAutomatic
 import Rank3KUM.ContractInterleave
 import Rank3KUM.TightSetReduction
+import Rank3KUM.InductionStep
