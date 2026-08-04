@@ -92,6 +92,31 @@ theorem pairwise_sortedClosureParts
 #print axioms Rank3KUM.HalfWeave.nodup_sortedClosureParts
 #print axioms Rank3KUM.HalfWeave.pairwise_sortedClosureParts
 
+
+/-- Enumerate closure parts in their nonincreasing-size order. -/
+def sortedClosurePartsEquiv
+    (M : Matroid α)
+    [Fintype M.E]
+    [DecidableEq M.E] :
+    Fin (closureFinpartition M).parts.card ≃
+      (closureFinpartition M).parts := by
+  let L := sortedClosureParts M
+  have hlength :
+      L.length = (closureFinpartition M).parts.card := by
+    simpa [L] using length_sortedClosureParts M
+  have hnodup : L.Nodup := by
+    simpa [L] using nodup_sortedClosureParts M
+  have hall :
+      ∀ p : (closureFinpartition M).parts,
+        p ∈ L := by
+    intro p
+    simpa [L] using mem_sortedClosureParts M p
+  exact
+    (finCongr hlength.symm).trans
+      (hnodup.getEquivOfForallMemList _ hall)
+
+#print axioms Rank3KUM.HalfWeave.sortedClosurePartsEquiv
+
 /-- Every part of the closure partition inherits the uniform-density bound. -/
 theorem card_closureFinpartition_part_le
     (M : Matroid α)
