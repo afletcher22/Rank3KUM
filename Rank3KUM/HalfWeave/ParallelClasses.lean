@@ -235,12 +235,27 @@ theorem part_sortedClosureCoordinatesEquiv
     (closureFinpartition M).part
         (sortedClosureCoordinatesEquiv M z) =
       (sortedClosurePartsEquiv M z.1).1 := by
-  have h :=
-    congrArg (fun q => q.1.1)
-      ((closurePartsEnumeration M).apply_symm_apply
-        ((Equiv.sigmaCongrLeft
-          (sortedClosurePartsEquiv M)) z))
-  simpa [sortedClosureCoordinatesEquiv] using h
+  let q :=
+    (Equiv.sigmaCongrLeft
+      (sortedClosurePartsEquiv M)) z
+  change
+    (closureFinpartition M).part
+        ((closurePartsEnumeration M).symm q) =
+      (sortedClosurePartsEquiv M z.1).1
+  calc
+    (closureFinpartition M).part
+        ((closurePartsEnumeration M).symm q) =
+      ((closurePartsEnumeration M
+        ((closurePartsEnumeration M).symm q)).1).1 := by
+          symm
+          exact
+            closurePartsEnumeration_part M
+              ((closurePartsEnumeration M).symm q)
+    _ = q.1.1 := by
+      exact congrArg (fun x => x.1.1)
+        ((closurePartsEnumeration M).apply_symm_apply q)
+    _ = (sortedClosurePartsEquiv M z.1).1 := by
+      rfl
 
 /-- A ground-set enumeration in which closure classes form sorted contiguous blocks. -/
 def sortedClosureGroundEquiv
