@@ -34,6 +34,7 @@ def HitsNearTightRankTwo
 theorem rankTwoComplementBound_of_hitsNearTight
     (M : Matroid α) (k : ℕ)
     (hE : M.E.Finite)
+    (hRank : M.eRank = 3)
     (hStrict : StrictlyUniformlyDense M k)
     {D A : Set α}
     (hHits : HitsNearTightRankTwo M k D)
@@ -50,17 +51,10 @@ theorem rankTwoComplementBound_of_hitsNearTight
     simp at hArank
   have hAproper : A ≠ M.E := by
     intro hAEq
-    have hDempty : D = ∅ := by
-      apply Set.eq_empty_iff_forall_notMem.2
-      intro e heD
-      have heComp : e ∈ M.E \ D := by
-        rw [← hAEq]
-        exact hAcomp (hAE heD)
-      exact heComp.2 heD
-    subst D
-    have hhit :=
-      hHits A hAE hArank
-    simp at hhit
+    have hground : M.eRk A = M.eRank := by
+      rw [hAEq, M.eRk_ground]
+    rw [hArank, hRank] at hground
+    norm_num at hground
   have hlt :=
     StrictlyUniformlyDense.encard_lt_two_mul_k_of_eRk_eq_two
       M k hStrict hAE hAnonempty hAproper hArank
