@@ -187,10 +187,10 @@ theorem uniformlyDense_delete_of_strict_of_rank_two_bound
     have hDempty : D = ∅ := by
       apply Set.eq_empty_iff_forall_notMem.2
       intro e heD
-      have heComp : e ∈ M.E \ D := by
-        rw [← hAEq]
-        exact hAcomp (hD.subset_ground heD)
-      exact heComp.2 heD
+      have heA : e ∈ A := by
+        rw [hAEq]
+        exact hD.subset_ground heD
+      exact (hAcomp heA).2 heD
     have hDcard : D.encard = (3 : ℕ∞) :=
       hD.encard_eq_eRank.trans hRank
     rw [hDempty] at hDcard
@@ -219,17 +219,19 @@ theorem uniformlyDense_delete_of_strict_of_rank_two_bound
       StrictlyUniformlyDense.encard_lt_k_of_eRk_eq_one
         M k hStrict hAE hAnonempty hAproper (by simpa using hr)
     have hltNat : A.ncard < k := by
-      rw [hAfin.cast_ncard_eq] at hlt
+      rw [← hAfin.cast_ncard_eq] at hlt
       exact_mod_cast hlt
     have hleNat : A.ncard ≤ k - 1 := by
       omega
-    rw [hAfin.cast_ncard_eq]
+    rw [← hAfin.cast_ncard_eq]
     have hleCast :
         (A.ncard : ℕ∞) ≤ ((k - 1 : ℕ) : ℕ∞) := by
       exact_mod_cast hleNat
     simpa [hr] using hleCast
-  · exact
-      hRankTwo A hAcomp (by simpa using hr)
+  · have hArankTwo : M.eRk A = 2 := by
+      simpa using hr
+    rw [hArankTwo]
+    exact hRankTwo A hAcomp hArankTwo
   · have hcard :
         A.encard ≤ ((3 * (k - 1) : ℕ) : ℕ∞) := by
       calc
