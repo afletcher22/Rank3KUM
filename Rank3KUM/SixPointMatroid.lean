@@ -78,6 +78,140 @@ theorem pair_indep_of_strict_two
     rw [Set.ncard_pair hab]
   omega
 
+/--
+In the strict `k = 2` case, two nonbasis triples cannot share a pair.
+-/
+theorem false_of_two_nonbase_triples_sharing_pair_strict_two
+    (M : Matroid α)
+    (hLoopless : M.Loopless)
+    (hE : M.E.Finite)
+    (hRank : M.eRank = 3)
+    (hStrict : StrictlyUniformlyDense M 2)
+    {a b c d : α}
+    (haE : a ∈ M.E)
+    (hbE : b ∈ M.E)
+    (hcE : c ∈ M.E)
+    (hdE : d ∈ M.E)
+    (hab : a ≠ b)
+    (hac : a ≠ c)
+    (had : a ≠ d)
+    (hbc : b ≠ c)
+    (hbd : b ≠ d)
+    (hcd : c ≠ d)
+    (hABC :
+      ¬ M.IsBase (insert c ({a, b} : Set α)))
+    (hABD :
+      ¬ M.IsBase (insert d ({a, b} : Set α))) :
+    False := by
+  letI : M.Loopless := hLoopless
+  have hPairIndep : M.Indep ({a, b} : Set α) :=
+    pair_indep_of_strict_two
+      M hLoopless hE hRank hStrict haE hbE hab
+  have hcNotPair : c ∉ ({a, b} : Set α) := by
+    simp [hac.symm, hbc.symm]
+  have hdNotPair : d ∉ ({a, b} : Set α) := by
+    simp [had.symm, hbd.symm]
+  have hcClosure :
+      c ∈ M.closure ({a, b} : Set α) := by
+    by_contra hcNotClosure
+    have hTripleIndep :
+        M.Indep (insert c ({a, b} : Set α)) :=
+      (hPairIndep.notMem_closure_iff_of_notMem
+        hcNotPair hcE).1 hcNotClosure
+    have hTripleCard :
+        (insert c ({a, b} : Set α)).encard = 3 := by
+      rw [Set.encard_insert_of_notMem hcNotPair,
+        Set.encard_pair hab]
+      norm_num
+    apply hABC
+    apply hTripleIndep.isBase_of_eRk_ge (by simp)
+    calc
+      M.eRank = 3 := hRank
+      _ = (insert c ({a, b} : Set α)).encard :=
+        hTripleCard.symm
+      _ = M.eRk (insert c ({a, b} : Set α)) :=
+        hTripleIndep.eRk_eq_encard.symm
+  have hdClosure :
+      d ∈ M.closure ({a, b} : Set α) := by
+    by_contra hdNotClosure
+    have hTripleIndep :
+        M.Indep (insert d ({a, b} : Set α)) :=
+      (hPairIndep.notMem_closure_iff_of_notMem
+        hdNotPair hdE).1 hdNotClosure
+    have hTripleCard :
+        (insert d ({a, b} : Set α)).encard = 3 := by
+      rw [Set.encard_insert_of_notMem hdNotPair,
+        Set.encard_pair hab]
+      norm_num
+    apply hABD
+    apply hTripleIndep.isBase_of_eRk_ge (by simp)
+    calc
+      M.eRank = 3 := hRank
+      _ = (insert d ({a, b} : Set α)).encard :=
+        hTripleCard.symm
+      _ = M.eRk (insert d ({a, b} : Set α)) :=
+        hTripleIndep.eRk_eq_encard.symm
+  let U : Set α :=
+    insert c (insert d ({a, b} : Set α))
+  have hUSubsetClosure :
+      U ⊆ M.closure ({a, b} : Set α) := by
+    intro x hx
+    change x ∈ insert c (insert d ({a, b} : Set α)) at hx
+    simp only [Set.mem_insert_iff,
+      Set.mem_singleton_iff] at hx
+    rcases hx with rfl | rfl | rfl | rfl
+    · exact hcClosure
+    · exact hdClosure
+    · exact M.mem_closure_self a haE
+    · exact M.mem_closure_self b hbE
+  have hURankLe : M.eRk U ≤ 2 := by
+    calc
+      M.eRk U ≤ M.eRk (M.closure ({a, b} : Set α)) :=
+        M.eRk_mono hUSubsetClosure
+      _ = M.eRk ({a, b} : Set α) :=
+        M.eRk_closure_eq
+      _ = ({a, b} : Set α).encard :=
+        hPairIndep.eRk_eq_encard
+      _ = 2 := Set.encard_pair hab
+  have hUE : U ⊆ M.E := by
+    intro x hx
+    change x ∈ insert c (insert d ({a, b} : Set α)) at hx
+    simp only [Set.mem_insert_iff,
+      Set.mem_singleton_iff] at hx
+    rcases hx with rfl | rfl | rfl | rfl
+    · exact hcE
+    · exact hdE
+    · exact haE
+    · exact hbE
+  have hUNonempty : U.Nonempty := by
+    exact ⟨c, by simp [U]⟩
+  have hUProper : U ≠ M.E := by
+    intro hEq
+    have hGroundRank : M.eRk U = M.eRank := by
+      rw [hEq, M.eRk_ground]
+    have hThreeLeTwo : (3 : ℕ∞) ≤ 2 := by
+      rw [← hRank, ← hGroundRank]
+      exact hURankLe
+    norm_num at hThreeLeTwo
+  have hUCard : U.encard = 4 := by
+    dsimp [U]
+    rw [Set.encard_insert_of_notMem,
+      Set.encard_insert_of_notMem hdNotPair,
+      Set.encard_pair hab]
+    · norm_num
+    · simp [hac.symm, hbc.symm, hcd]
+  have hLt := hStrict U hUE hUNonempty hUProper
+  have hLtFour : U.encard < (4 : ℕ∞) := by
+    refine hLt.trans_le ?_
+    calc
+      (2 : ℕ∞) * M.eRk U ≤ (2 : ℕ∞) * 2 := by
+        gcongr
+      _ = 4 := by norm_num
+  rw [hUCard] at hLtFour
+  exact (lt_irrefl (4 : ℕ∞)) hLtFour
+
+#print axioms Rank3KUM.false_of_two_nonbase_triples_sharing_pair_strict_two
+
 #print axioms Rank3KUM.pair_indep_of_strict_two
 
 end Rank3KUM
