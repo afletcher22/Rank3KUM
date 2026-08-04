@@ -185,6 +185,27 @@ theorem k_sub_two_le_ncard_inter_of_nearTight
   rw [hAcard, hBcard, hEncard] at hCount hUnionLe
   omega
 
+/-- For `k ≥ 3`, any two near-tight sets have a common point. -/
+theorem inter_nonempty_of_nearTight
+    (M : Matroid α) (k : ℕ)
+    (hk : 3 ≤ k)
+    (hE : M.E.Finite)
+    (hEcard : M.E.encard = ((3 * k : ℕ) : ℕ∞))
+    {A B : Set α}
+    (hAE : A ⊆ M.E)
+    (hBE : B ⊆ M.E)
+    (hAcard : A.ncard = 2 * k - 1)
+    (hBcard : B.ncard = 2 * k - 1) :
+    (A ∩ B).Nonempty := by
+  have hle :=
+    k_sub_two_le_ncard_inter_of_nearTight
+      M k hE hEcard hAE hBE hAcard hBcard
+  apply Set.nonempty_iff_ne_empty.2
+  intro hempty
+  rw [hempty] at hle
+  simp at hle
+  omega
+
 /-- Every near-tight rank-two set in the strict case is already a flat. -/
 theorem isFlat_of_strict_rankTwo_ncard_eq
     (M : Matroid α) (k : ℕ)
