@@ -19,3 +19,4 @@ import Rank3KUM.CyclicOrder
 import Rank3KUM.SpliceWrap
 import Rank3KUM.CyclicRotate
 import Rank3KUM.Splicing
+import Rank3KUM.Interleave
