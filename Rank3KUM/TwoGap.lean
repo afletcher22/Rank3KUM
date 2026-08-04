@@ -1,4 +1,4 @@
-import Mathlib.Combinatorics.Matroid.Rank
+import Mathlib.Combinatorics.Matroid.Rank.ENat
 import Mathlib.Combinatorics.Matroid.Circuit
 
 namespace Rank3KUM.TwoGap
