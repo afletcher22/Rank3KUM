@@ -452,13 +452,12 @@ theorem cyclicBasisOrder3_interleaveOneTwo_of_sortedEnumeration
     M hk hRank hPX hPground hXflat points pairs
   · intro i
     apply (Matroid.isBase_restrict_iff hXflat.subset_ground).mp
-    simpa [pairs, restrictGroundEquiv] using
+    simpa [pairs] using
       (HalfWeave.rankTwoWoven_successor_isBase
         (Matroid.restrict M X) D hk hRestrictRank (i, false))
   · intro i
     apply (Matroid.isBase_restrict_iff hXflat.subset_ground).mp
-    simpa [pairs, restrictGroundEquiv,
-      halfWeave_cyclicSucc_eq_cyclicIndex] using
+    simpa [pairs, halfWeave_cyclicSucc_eq_cyclicIndex] using
       (HalfWeave.rankTwoWoven_successor_isBase
         (Matroid.restrict M X) D hk hRestrictRank (i, true))
 
