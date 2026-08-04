@@ -30,4 +30,5 @@ import Rank3KUM.NearTightGeometry
 import Rank3KUM.FinalReduction
 import Rank3KUM.SmallCases
 import Rank3KUM.SixPointCombinatorics
+import Rank3KUM.SixPointMatroid
 import Rank3KUM.FinalInduction
