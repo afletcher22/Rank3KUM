@@ -224,6 +224,23 @@ def sortedClosureCoordinatesEquiv
       (sortedClosurePartsEquiv M)).trans
     (closurePartsEnumeration M).symm
 
+theorem part_sortedClosureCoordinatesEquiv
+    (M : Matroid α)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (z :
+      (i : Fin (closureFinpartition M).parts.card) ×
+        Fin ((sortedClosurePartsEquiv M i).1).card) :
+    (closureFinpartition M).part
+        (sortedClosureCoordinatesEquiv M z) =
+      (sortedClosurePartsEquiv M z.1).1 := by
+  have h :=
+    congrArg (fun q => q.1.1)
+      ((closurePartsEnumeration M).apply_symm_apply
+        ((Equiv.sigmaCongrLeft
+          (sortedClosurePartsEquiv M)) z))
+  simpa [sortedClosureCoordinatesEquiv] using h
+
 /-- A ground-set enumeration in which closure classes form sorted contiguous blocks. -/
 def sortedClosureGroundEquiv
     (M : Matroid α)
