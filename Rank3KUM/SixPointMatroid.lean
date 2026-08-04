@@ -1,4 +1,5 @@
 import Rank3KUM.CyclicOrder
+import Rank3KUM.FinalReduction
 import Rank3KUM.StrictDensity
 import Rank3KUM.SixPointCombinatorics
 
@@ -1057,6 +1058,62 @@ theorem exists_cyclicBasisOrder3_of_sixPointGoodAlternatives
       simp [SixPointBad, finSixSet,
         sixPointPerm8, cyclicIndex] at h ⊢ <;>
       tauto
+
+/-- The strict six-element rank-three case has a cyclic basis order. -/
+theorem exists_cyclicBasisOrder3_of_strict_two
+    (M : Matroid α)
+    (hLoopless : M.Loopless)
+    (hE : M.E.Finite)
+    (hRank : M.eRank = 3)
+    (hEcard : M.E.encard = (6 : ℕ∞))
+    (hStrict : StrictlyUniformlyDense M 2) :
+    ∃ order : Fin 6 ≃ M.E,
+      CyclicBasisOrder3 M (by omega) order := by
+  have hEncard : M.E.ncard = 6 := by
+    have hcast : (M.E.ncard : ℕ∞) = (6 : ℕ∞) := by
+      rw [hE.cast_ncard_eq]
+      exact hEcard
+    exact_mod_cast hcast
+  letI : Fintype M.E := hE.fintype
+  have hNatCard : Nat.card M.E = 6 := by
+    simpa only [Nat.card_coe_set_eq] using hEncard
+  let enum : Fin 6 ≃ M.E :=
+    (Finite.equivFinOfCardEq hNatCard).symm
+  have hLinear :
+      LinearSixBad (SixPointBad M enum) :=
+    linearSixBad_of_strict_two
+      M hLoopless hE hRank hStrict enum
+  have hGood :
+      SixPointGoodAlternatives
+        (SixPointBad M enum) :=
+    sixPointGoodAlternatives_of_linear
+      (SixPointBad M enum) hLinear
+  exact
+    exists_cyclicBasisOrder3_of_sixPointGoodAlternatives
+      M enum hGood
+
+/-- The complete six-element uniformly dense rank-three case. -/
+theorem exists_cyclicBasisOrder3_of_ground_encard_six
+    (M : Matroid α)
+    (hE : M.E.Finite)
+    (hRank : M.eRank = 3)
+    (hEcard : M.E.encard = (6 : ℕ∞))
+    (hDense : UniformlyDense M 2) :
+    ∃ order : Fin 6 ≃ M.E,
+      CyclicBasisOrder3 M (by omega) order := by
+  have hLoopless : M.Loopless :=
+    loopless_of_uniformlyDense M 2 (by omega) hDense
+  apply
+    exists_cyclicBasisOrder3_of_strict_case
+      M 2 (by omega) hE hRank
+      (by simpa using hEcard) hDense
+  intro hStrict
+  simpa using
+    exists_cyclicBasisOrder3_of_strict_two
+      M hLoopless hE hRank hEcard hStrict
+
+#print axioms Rank3KUM.exists_cyclicBasisOrder3_of_strict_two
+#print axioms Rank3KUM.exists_cyclicBasisOrder3_of_ground_encard_six
 
 #print axioms Rank3KUM.exists_cyclicBasisOrder3_of_sixPointGoodAlternatives
 
