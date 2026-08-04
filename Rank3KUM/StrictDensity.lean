@@ -1,4 +1,5 @@
 import Rank3KUM.UniformDensity
+import Mathlib.Combinatorics.Matroid.Minor.Delete
 
 namespace Rank3KUM
 
