@@ -180,9 +180,9 @@ theorem cyclicIndex_interleave_two_two
         (2 : Fin 3).val + 3 * i.val + 2 = 3 * k + 1 := by
       norm_num
       omega
-    rw [hnum, hwrap, Nat.add_mod, Nat.mod_self,
-      Nat.mod_eq_of_lt (by omega)]
-    norm_num
+    rw [hnum, hwrap]
+    have hone_lt : 1 < 3 * k := by omega
+    simp [Nat.add_mod, Nat.mod_eq_of_lt hone_lt]
 
 @[simp] theorem interleaveOneTwo_point
     {P X : Set α} {k : ℕ}
@@ -262,21 +262,18 @@ theorem cyclicBasisOrder3_interleaveOneTwo
       apply Fin.ext
       rfl
   rcases hj with rfl | rfl | rfl
-  · simpa only [interleavePositionEquiv_apply,
-      cyclicIndex_interleave_zero_one,
-      cyclicIndex_interleave_zero_two,
-      interleaveOneTwo_point, interleaveOneTwo_pair_false,
-      interleaveOneTwo_pair_true] using hzero i
-  · simpa only [interleavePositionEquiv_apply,
-      cyclicIndex_interleave_one_one,
-      cyclicIndex_interleave_one_two,
-      interleaveOneTwo_point, interleaveOneTwo_pair_false,
-      interleaveOneTwo_pair_true] using hone i
-  · simpa only [interleavePositionEquiv_apply,
-      cyclicIndex_interleave_two_one,
-      cyclicIndex_interleave_two_two,
-      interleaveOneTwo_point, interleaveOneTwo_pair_false,
-      interleaveOneTwo_pair_true] using htwo i
+  · rw [interleavePositionEquiv_apply,
+      cyclicIndex_interleave_zero_one k hk i,
+      cyclicIndex_interleave_zero_two k hk i]
+    simpa using hzero i
+  · rw [interleavePositionEquiv_apply,
+      cyclicIndex_interleave_one_one k hk i,
+      cyclicIndex_interleave_one_two k hk i]
+    simpa using hone i
+  · rw [interleavePositionEquiv_apply,
+      cyclicIndex_interleave_two_one k hk i,
+      cyclicIndex_interleave_two_two k hk i]
+    simpa using htwo i
 
 #print axioms Rank3KUM.cyclicBasisOrder3_interleaveOneTwo
 
