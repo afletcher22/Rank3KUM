@@ -48,69 +48,80 @@ theorem cyclicBasisOrder3_appendBlock_wrap
               (Fin.castAdd 3 j) 1 =
             Fin.castAdd 3 j₁ := by
         apply Fin.ext
-        simp [cyclicIndex, j₁]
-        omega
+        change (j.val + 1) % (m + 3) = j.val + 1
+        rw [Nat.mod_eq_of_lt (by omega)]
       have hnew₂ :
           cyclicIndex (m + 3) (by omega)
               (Fin.castAdd 3 j) 2 =
             Fin.castAdd 3 j₂ := by
         apply Fin.ext
-        simp [cyclicIndex, j₂]
-        omega
+        change (j.val + 2) % (m + 3) = j.val + 2
+        rw [Nat.mod_eq_of_lt (by omega)]
       have hold₁ :
           cyclicIndex m (by omega) j 1 = j₁ := by
         apply Fin.ext
-        simp [cyclicIndex, j₁]
-        omega
+        change (j.val + 1) % m = j.val + 1
+        rw [Nat.mod_eq_of_lt (by omega)]
       have hold₂ :
           cyclicIndex m (by omega) j 2 = j₂ := by
         apply Fin.ext
-        simp [cyclicIndex, j₂]
-        omega
+        change (j.val + 2) % m = j.val + 2
+        rw [Nat.mod_eq_of_lt hj]
       have hs := hsmall j
       rw [hold₁, hold₂] at hs
-      simpa [hnew₁, hnew₂] using hs
+      rw [hnew₁, hnew₂,
+        appendBlockOrder_old, appendBlockOrder_old,
+        appendBlockOrder_old]
+      exact hs
     · have hjcase : j.val = m - 2 ∨ j.val = m - 1 := by
         omega
       rcases hjcase with hjlast₂ | hjlast
       · have hjEq : j = (⟨m - 2, by omega⟩ : Fin m) := by
           apply Fin.ext
           exact hjlast₂
-        subst j
         have hnew₁ :
             cyclicIndex (m + 3) (by omega)
                 (Fin.castAdd 3 (⟨m - 2, by omega⟩ : Fin m)) 1 =
               Fin.castAdd 3 (⟨m - 1, by omega⟩ : Fin m) := by
           apply Fin.ext
-          simp [cyclicIndex]
+          change (m - 2 + 1) % (m + 3) = m - 1
+          rw [Nat.mod_eq_of_lt (by omega)]
           omega
         have hnew₂ :
             cyclicIndex (m + 3) (by omega)
                 (Fin.castAdd 3 (⟨m - 2, by omega⟩ : Fin m)) 2 =
               Fin.natAdd m (0 : Fin 3) := by
           apply Fin.ext
-          simp [cyclicIndex]
+          change (m - 2 + 2) % (m + 3) = m
+          rw [Nat.mod_eq_of_lt (by omega)]
           omega
-        simpa [hnew₁, hnew₂] using hleft₁
+        rw [hjEq, hnew₁, hnew₂,
+          appendBlockOrder_old, appendBlockOrder_old,
+          appendBlockOrder_block]
+        exact hleft₁
       · have hjEq : j = (⟨m - 1, by omega⟩ : Fin m) := by
           apply Fin.ext
           exact hjlast
-        subst j
         have hnew₁ :
             cyclicIndex (m + 3) (by omega)
                 (Fin.castAdd 3 (⟨m - 1, by omega⟩ : Fin m)) 1 =
               Fin.natAdd m (0 : Fin 3) := by
           apply Fin.ext
-          simp [cyclicIndex]
+          change (m - 1 + 1) % (m + 3) = m
+          rw [Nat.mod_eq_of_lt (by omega)]
           omega
         have hnew₂ :
             cyclicIndex (m + 3) (by omega)
                 (Fin.castAdd 3 (⟨m - 1, by omega⟩ : Fin m)) 2 =
               Fin.natAdd m (1 : Fin 3) := by
           apply Fin.ext
-          simp [cyclicIndex]
+          change (m - 1 + 2) % (m + 3) = m + 1
+          rw [Nat.mod_eq_of_lt (by omega)]
           omega
-        simpa [hnew₁, hnew₂] using hleft₂
+        rw [hjEq, hnew₁, hnew₂,
+          appendBlockOrder_old, appendBlockOrder_block,
+          appendBlockOrder_block]
+        exact hleft₂
   · intro j
     fin_cases j
     · have hnew₁ :
@@ -118,47 +129,60 @@ theorem cyclicBasisOrder3_appendBlock_wrap
               (Fin.natAdd m (0 : Fin 3)) 1 =
             Fin.natAdd m (1 : Fin 3) := by
         apply Fin.ext
-        simp [cyclicIndex]
-        omega
+        change (m + 0 + 1) % (m + 3) = m + 1
+        rw [Nat.mod_eq_of_lt (by omega)]
       have hnew₂ :
           cyclicIndex (m + 3) (by omega)
               (Fin.natAdd m (0 : Fin 3)) 2 =
             Fin.natAdd m (2 : Fin 3) := by
         apply Fin.ext
-        simp [cyclicIndex]
-        omega
-      have hset := TwoGap.set_eq_triple_of_fin3_equiv block
-      rw [hset] at hD
-      simpa [hnew₁, hnew₂] using hD
+        change (m + 0 + 2) % (m + 3) = m + 2
+        rw [Nat.mod_eq_of_lt (by omega)]
+      have hDb :
+          M.IsBase
+            ({(block 0 : α), (block 1 : α), (block 2 : α)} : Set α) := by
+        rw [← TwoGap.set_eq_triple_of_fin3_equiv block]
+        exact hD
+      rw [hnew₁, hnew₂,
+        appendBlockOrder_block, appendBlockOrder_block,
+        appendBlockOrder_block]
+      exact hDb
     · have hnew₁ :
           cyclicIndex (m + 3) (by omega)
               (Fin.natAdd m (1 : Fin 3)) 1 =
             Fin.natAdd m (2 : Fin 3) := by
         apply Fin.ext
-        simp [cyclicIndex]
-        omega
+        change (m + 1 + 1) % (m + 3) = m + 2
+        rw [Nat.mod_eq_of_lt (by omega)]
       have hnew₂ :
           cyclicIndex (m + 3) (by omega)
               (Fin.natAdd m (1 : Fin 3)) 2 =
             Fin.castAdd 3 (⟨0, by omega⟩ : Fin m) := by
         apply Fin.ext
-        simp [cyclicIndex]
-        omega
-      simpa [hnew₁, hnew₂] using hright₁
+        change (m + 1 + 2) % (m + 3) = 0
+        rw [show m + 1 + 2 = m + 3 by omega, Nat.mod_self]
+      rw [hnew₁, hnew₂,
+        appendBlockOrder_block, appendBlockOrder_block,
+        appendBlockOrder_old]
+      exact hright₁
     · have hnew₁ :
           cyclicIndex (m + 3) (by omega)
               (Fin.natAdd m (2 : Fin 3)) 1 =
             Fin.castAdd 3 (⟨0, by omega⟩ : Fin m) := by
         apply Fin.ext
-        simp [cyclicIndex]
-        omega
+        change (m + 2 + 1) % (m + 3) = 0
+        rw [show m + 2 + 1 = m + 3 by omega, Nat.mod_self]
       have hnew₂ :
           cyclicIndex (m + 3) (by omega)
               (Fin.natAdd m (2 : Fin 3)) 2 =
             Fin.castAdd 3 (⟨1, by omega⟩ : Fin m) := by
         apply Fin.ext
-        simp [cyclicIndex]
-        omega
-      simpa [hnew₁, hnew₂] using hright₂
+        change (m + 2 + 2) % (m + 3) = 1
+        rw [show m + 2 + 2 = (m + 3) + 1 by omega]
+        simp [Nat.add_mod, Nat.mod_eq_of_lt (by omega : 1 < m + 3)]
+      rw [hnew₁, hnew₂,
+        appendBlockOrder_block, appendBlockOrder_old,
+        appendBlockOrder_old]
+      exact hright₂
 
 end Rank3KUM
