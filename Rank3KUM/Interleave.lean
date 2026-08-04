@@ -446,18 +446,32 @@ theorem cyclicBasisOrder3_interleaveOneTwo_of_sortedEnumeration
   let pairs : Fin k × Bool ≃ X :=
     (HalfWeave.rankTwoWoven D hk).trans
       (restrictGroundEquiv M X)
+  have hpairs_coe (p : Fin k × Bool) :
+      (pairs p : α) =
+        ((HalfWeave.rankTwoWoven D hk p :
+          (Matroid.restrict M X).E) : α) := by
+    change
+      ((((HalfWeave.rankTwoWoven D hk).trans
+        (restrictGroundEquiv M X)) p : X) : α) =
+        ((HalfWeave.rankTwoWoven D hk p :
+          (Matroid.restrict M X).E) : α)
+    exact restrictGroundEquiv_trans_apply_coe
+      M X (HalfWeave.rankTwoWoven D hk) p
   change CyclicBasisOrder3 M (by omega)
     (interleaveOneTwo hPX points pairs)
   apply cyclicBasisOrder3_interleaveOneTwo_of_flat_pairs
     M hk hRank hPX hPground hXflat points pairs
   · intro i
     apply (Matroid.isBase_restrict_iff hXflat.subset_ground).mp
-    simpa [pairs] using
+    rw [hpairs_coe (i, false), hpairs_coe (i, true)]
+    simpa using
       (HalfWeave.rankTwoWoven_successor_isBase
         (Matroid.restrict M X) D hk hRestrictRank (i, false))
   · intro i
     apply (Matroid.isBase_restrict_iff hXflat.subset_ground).mp
-    simpa [pairs, halfWeave_cyclicSucc_eq_cyclicIndex] using
+    rw [hpairs_coe (i, true),
+      hpairs_coe (cyclicIndex k hk i 1, false)]
+    simpa [halfWeave_cyclicSucc_eq_cyclicIndex] using
       (HalfWeave.rankTwoWoven_successor_isBase
         (Matroid.restrict M X) D hk hRestrictRank (i, true))
 
