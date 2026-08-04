@@ -72,6 +72,38 @@ theorem rankTwoComplementBound_of_hitsNearTight
   rw [← hAfin.cast_ncard_eq]
   exact_mod_cast hleNat
 
+/-- Two near-tight sets on a `3k`-element ground set overlap in at least `k-2` elements. -/
+theorem k_sub_two_le_ncard_inter_of_nearTight
+    (M : Matroid α) (k : ℕ)
+    (hE : M.E.Finite)
+    (hEcard : M.E.encard = ((3 * k : ℕ) : ℕ∞))
+    {A B : Set α}
+    (hAE : A ⊆ M.E)
+    (hBE : B ⊆ M.E)
+    (hAcard : A.ncard = 2 * k - 1)
+    (hBcard : B.ncard = 2 * k - 1) :
+    k - 2 ≤ (A ∩ B).ncard := by
+  have hEncard : M.E.ncard = 3 * k := by
+    have hcast :
+        (M.E.ncard : ℕ∞) =
+          ((3 * k : ℕ) : ℕ∞) := by
+      rw [hE.cast_ncard_eq]
+      exact hEcard
+    exact_mod_cast hcast
+  have hAfin : A.Finite :=
+    hE.subset hAE
+  have hBfin : B.Finite :=
+    hE.subset hBE
+  have hUnionLe :
+      (A ∪ B).ncard ≤ M.E.ncard :=
+    Set.ncard_le_ncard
+      (Set.union_subset hAE hBE) hE
+  have hCount :=
+    Set.ncard_union_add_ncard_inter
+      A B hAfin hBfin
+  rw [hAcard, hBcard, hEncard] at hCount hUnionLe
+  omega
+
 /-- Every near-tight rank-two set in the strict case is already a flat. -/
 theorem isFlat_of_strict_rankTwo_ncard_eq
     (M : Matroid α) (k : ℕ)
