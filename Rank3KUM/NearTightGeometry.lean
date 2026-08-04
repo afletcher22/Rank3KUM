@@ -761,6 +761,100 @@ theorem exists_isBase_of_pairwise_intersections_three_flats
 
 #print axioms Rank3KUM.exists_isBase_of_pairwise_intersections_three_flats
 
+/--
+Every strictly uniformly dense rank-three instance with `k ≥ 3` has a basis
+that hits every near-tight rank-two flat.
+-/
+theorem exists_isBase_hitsNearTight_of_strict_rankThree
+    (M : Matroid α) (k : ℕ)
+    (hk : 3 ≤ k)
+    (hLoopless : M.Loopless)
+    (hE : M.E.Finite)
+    (hRank : M.eRank = 3)
+    (hEcard : M.E.encard = ((3 * k : ℕ) : ℕ∞))
+    (hStrict : StrictlyUniformlyDense M k) :
+    ∃ D : Set α,
+      M.IsBase D ∧ HitsNearTightRankTwo M k D := by
+  by_cases hExists :
+      ∃ A : Set α, A ⊆ M.E ∧
+        M.eRk A = 2 ∧
+        A.ncard = 2 * k - 1
+  · by_cases hCommon :
+        ∃ e : α, e ∈ M.E ∧
+          ∀ A : Set α, A ⊆ M.E →
+            M.eRk A = 2 →
+            A.ncard = 2 * k - 1 →
+            e ∈ A
+    · exact
+        exists_isBase_hitsNearTight_of_common_point
+          M k hLoopless hCommon
+    · obtain ⟨A, B, C, hA, hB, hC,
+          hAB, hAC, hBC, hABCempty⟩ :=
+        exists_nonconcurrent_three_nearTight
+          M k hk hLoopless hE hRank hEcard
+          hStrict hExists hCommon
+      rcases hA with ⟨hAE, hArank, hAcard⟩
+      rcases hB with ⟨hBE, hBrank, hBcard⟩
+      rcases hC with ⟨hCE, hCrank, hCcard⟩
+      have hAflat : M.IsFlat A :=
+        isFlat_of_strict_rankTwo_ncard_eq
+          M k hE hRank hStrict hAE hArank hAcard
+      have hBflat : M.IsFlat B :=
+        isFlat_of_strict_rankTwo_ncard_eq
+          M k hE hRank hStrict hBE hBrank hBcard
+      have hCflat : M.IsFlat C :=
+        isFlat_of_strict_rankTwo_ncard_eq
+          M k hE hRank hStrict hCE hCrank hCcard
+      have hABnonempty : (A ∩ B).Nonempty :=
+        inter_nonempty_of_nearTight
+          M k hk hE hEcard hAE hBE hAcard hBcard
+      have hACnonempty : (A ∩ C).Nonempty :=
+        inter_nonempty_of_nearTight
+          M k hk hE hEcard hAE hCE hAcard hCcard
+      have hBCnonempty : (B ∩ C).Nonempty :=
+        inter_nonempty_of_nearTight
+          M k hk hE hEcard hBE hCE hBcard hCcard
+      obtain ⟨x, hx, y, hy, z, hz, hD⟩ :=
+        exists_isBase_of_pairwise_intersections_three_flats
+          M hLoopless hRank hAflat hBflat hCflat
+          hABnonempty hACnonempty hBCnonempty hABCempty
+      refine ⟨({x, y, z} : Set α), hD, ?_⟩
+      intro H hHE hHrank hHcard
+      apply Set.nonempty_iff_ne_empty.2
+      intro hHitEmpty
+      have hxH : x ∉ H := by
+        intro hxH
+        have hxHit :
+            x ∈ H ∩ ({x, y, z} : Set α) :=
+          ⟨hxH, by simp⟩
+        rw [hHitEmpty] at hxHit
+        exact hxHit
+      have hyH : y ∉ H := by
+        intro hyH
+        have hyHit :
+            y ∈ H ∩ ({x, y, z} : Set α) :=
+          ⟨hyH, by simp⟩
+        rw [hHitEmpty] at hyHit
+        exact hyHit
+      have hzH : z ∉ H := by
+        intro hzH
+        have hzHit :
+            z ∈ H ∩ ({x, y, z} : Set α) :=
+          ⟨hzH, by simp⟩
+        rw [hHitEmpty] at hzHit
+        exact hzHit
+      exact
+        false_of_nearTight_avoids_three_pairwise_representatives
+          M k hk hLoopless hE hRank hEcard hStrict
+          hAE hBE hCE hHE hArank hBrank hCrank hHrank
+          hAcard hBcard hCcard hHcard
+          hAB hAC hBC hABCempty hx hy hz hxH hyH hzH
+  · exact
+      exists_isBase_hitsNearTight_of_no_nearTight
+        M k hExists
+
+#print axioms Rank3KUM.exists_isBase_hitsNearTight_of_strict_rankThree
+
 #print axioms Rank3KUM.inter_subset_closure_singleton_of_distinct_rankTwo_flats
 
 #print axioms Rank3KUM.eRk_inter_le_one_of_distinct_rankTwo_flats
