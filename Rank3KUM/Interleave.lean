@@ -56,7 +56,7 @@ def finThreeInterleaveEquiv (k : ℕ) :
 /-- The equivalence enumerating three-position blocks. -/
 def interleavePositionEquiv (k : ℕ) :
     Fin k × Fin 3 ≃ Fin (3 * k) :=
-  finProdFinEquiv.trans (finCongr (Nat.mul_comm k 3))
+  finProdFinEquiv.trans (finCongr (Nat.mul_comm 3 k)).symm
 
 /-- The position of residue `j` in the `i`th three-element block. -/
 def interleavePosition (k : ℕ) (i : Fin k) (j : Fin 3) :
@@ -94,6 +94,7 @@ theorem cyclicIndex_interleave_zero_one
   apply Fin.ext
   simp only [cyclicIndex_val, interleavePosition_val]
   rw [Nat.mod_eq_of_lt (by omega)]
+  omega
 
 /-- Two steps from the first residue reaches the third residue. -/
 theorem cyclicIndex_interleave_zero_two
@@ -103,6 +104,7 @@ theorem cyclicIndex_interleave_zero_two
   apply Fin.ext
   simp only [cyclicIndex_val, interleavePosition_val]
   rw [Nat.mod_eq_of_lt (by omega)]
+  omega
 
 /-- The second residue advances to the third within its block. -/
 theorem cyclicIndex_interleave_one_one
@@ -112,6 +114,7 @@ theorem cyclicIndex_interleave_one_one
   apply Fin.ext
   simp only [cyclicIndex_val, interleavePosition_val]
   rw [Nat.mod_eq_of_lt (by omega)]
+  omega
 
 /-- Two steps from the second residue reaches the next block's point. -/
 theorem cyclicIndex_interleave_one_two
@@ -123,9 +126,8 @@ theorem cyclicIndex_interleave_one_two
   by_cases hi : i.val + 1 < k
   · rw [Nat.mod_eq_of_lt hi, Nat.mod_eq_of_lt (by omega)]
     omega
-  · have hieq : i.val + 1 = k := by omega
-    rw [hieq, Nat.mod_self]
-    simp
+  · have hnum : 1 + 3 * i.val + 2 = 3 * k := by omega
+    rw [hnum, Nat.mod_self]
 
 /-- The third residue advances to the next block's point. -/
 theorem cyclicIndex_interleave_two_one
@@ -137,9 +139,8 @@ theorem cyclicIndex_interleave_two_one
   by_cases hi : i.val + 1 < k
   · rw [Nat.mod_eq_of_lt hi, Nat.mod_eq_of_lt (by omega)]
     omega
-  · have hieq : i.val + 1 = k := by omega
-    rw [hieq, Nat.mod_self]
-    simp
+  · have hnum : 2 + 3 * i.val + 1 = 3 * k := by omega
+    rw [hnum, Nat.mod_self]
 
 /-- Two steps from the third residue reaches the next block's first pair entry. -/
 theorem cyclicIndex_interleave_two_two
@@ -151,8 +152,9 @@ theorem cyclicIndex_interleave_two_two
   by_cases hi : i.val + 1 < k
   · rw [Nat.mod_eq_of_lt hi, Nat.mod_eq_of_lt (by omega)]
     omega
-  · have hieq : i.val + 1 = k := by omega
-    rw [hieq, Nat.mod_self]
+  · have hnum : 2 + 3 * i.val + 2 = 3 * k + 1 := by omega
+    rw [hnum, Nat.add_mod, Nat.mod_self,
+      Nat.mod_eq_of_lt (by omega)]
     simp
 
 @[simp] theorem interleaveOneTwo_point
