@@ -54,24 +54,22 @@ theorem firstGapWorks_of_distinct_symmetricPartners
     simpa [hd0, hd2] using hDset0
   have h01 : u ≠ (d 1 : α) := by
     intro h
-    have hne := fin3_equiv_coe_ne d (by norm_num : (0 : Fin 3) ≠ 1)
-    apply hne
-    simpa [hd0] using h
+    have hsub : d (0 : Fin 3) = d (1 : Fin 3) :=
+      Subtype.ext (hd0.trans h)
+    have hidx : (0 : Fin 3) = 1 := d.injective hsub
+    norm_num at hidx
   have h21 : w ≠ (d 1 : α) := by
     intro h
-    have hne := fin3_equiv_coe_ne d (by norm_num : (2 : Fin 3) ≠ 1)
-    apply hne
-    simpa [hd2] using h
+    have hsub : d (2 : Fin 3) = d (1 : Fin 3) :=
+      Subtype.ext (hd2.trans h)
+    have hidx : (2 : Fin 3) = 1 := d.injective hsub
+    norm_num at hidx
   have hub : u ≠ b := by
     intro h
-    apply hu'.2.1
-    subst u
-    simp
+    exact hu'.2.1 (by simpa [h])
   have hwa : w ≠ a := by
     intro h
-    apply hw'.2.1
-    subst w
-    simp
+    exact hw'.2.1 (by simpa [h])
   have hbu : b ≠ u := by
     intro h
     apply hbD
@@ -84,7 +82,7 @@ theorem firstGapWorks_of_distinct_symmetricPartners
     exact hw'.1
 
   have h1 : M.IsBase ({p, a, u} : Set α) := by
-    rw [← exchangeSet_triple_remove_third hpb hab hub]
+    rw [← exchangeSet_triple_remove_third hpb.symm hba hub]
     exact hu'.2.2.2
   have h2 : M.IsBase ({a, u, (d 1 : α)} : Set α) := by
     have heq :
@@ -101,7 +99,7 @@ theorem firstGapWorks_of_distinct_symmetricPartners
     rw [← heq]
     exact hu'.2.2.1
   have h4 : M.IsBase ({w, b, c} : Set α) := by
-    rw [← exchangeSet_triple_remove_first hba hca hwa]
+    rw [← exchangeSet_triple_remove_first hab hca.symm hwa]
     exact hw'.2.2.2
 
   refine ⟨d, ?_, ?_, ?_, ?_⟩
@@ -134,24 +132,22 @@ theorem secondGapWorks_of_distinct_symmetricPartners
     simpa [hd0, hd2] using hDset0
   have h01 : u ≠ (d 1 : α) := by
     intro h
-    have hne := fin3_equiv_coe_ne d (by norm_num : (0 : Fin 3) ≠ 1)
-    apply hne
-    simpa [hd0] using h
+    have hsub : d (0 : Fin 3) = d (1 : Fin 3) :=
+      Subtype.ext (hd0.trans h)
+    have hidx : (0 : Fin 3) = 1 := d.injective hsub
+    norm_num at hidx
   have h21 : w ≠ (d 1 : α) := by
     intro h
-    have hne := fin3_equiv_coe_ne d (by norm_num : (2 : Fin 3) ≠ 1)
-    apply hne
-    simpa [hd2] using h
+    have hsub : d (2 : Fin 3) = d (1 : Fin 3) :=
+      Subtype.ext (hd2.trans h)
+    have hidx : (2 : Fin 3) = 1 := d.injective hsub
+    norm_num at hidx
   have huc : u ≠ c := by
     intro h
-    apply hu'.2.1
-    subst u
-    simp
+    exact hu'.2.1 (by simpa [h])
   have hwb : w ≠ b := by
     intro h
-    apply hw'.2.1
-    subst w
-    simp
+    exact hw'.2.1 (by simpa [h])
   have hcu : c ≠ u := by
     intro h
     apply hcD
@@ -164,7 +160,7 @@ theorem secondGapWorks_of_distinct_symmetricPartners
     exact hw'.1
 
   have h1 : M.IsBase ({a, b, u} : Set α) := by
-    rw [← exchangeSet_triple_remove_third hac hbc huc]
+    rw [← exchangeSet_triple_remove_third hac.symm hcb huc]
     exact hu'.2.2.2
   have h2 : M.IsBase ({b, u, (d 1 : α)} : Set α) := by
     have heq :
@@ -181,7 +177,7 @@ theorem secondGapWorks_of_distinct_symmetricPartners
     rw [← heq]
     exact hu'.2.2.1
   have h4 : M.IsBase ({w, c, q} : Set α) := by
-    rw [← exchangeSet_triple_remove_first hcb hqb hwb]
+    rw [← exchangeSet_triple_remove_first hbc hqb.symm hwb]
     exact hw'.2.2.2
 
   refine ⟨d, ?_, ?_, ?_, ?_⟩
