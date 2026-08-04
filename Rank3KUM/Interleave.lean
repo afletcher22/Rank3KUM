@@ -218,6 +218,36 @@ theorem cyclicIndex_interleave_two_two
   simp [interleaveOneTwo, interleavePosition]
 
 /--
+A basis of a rank-two flat extends to a basis of a rank-three matroid after
+adjoining any ground element outside the flat.
+-/
+theorem isBase_insert_pair_of_isBasis_flat_rank3
+    (M : Matroid α) {X : Set α}
+    (hRank : M.eRank = 3)
+    (hXflat : M.IsFlat X)
+    {e f g : α}
+    (heE : e ∈ M.E)
+    (heX : e ∉ X)
+    (hfg : f ≠ g)
+    (hpair : M.IsBasis ({f, g} : Set α) X) :
+    M.IsBase ({e, f, g} : Set α) := by
+  have hepair : e ∉ ({f, g} : Set α) := by
+    intro he
+    exact heX (hpair.subset he)
+  have hclosure : M.closure ({f, g} : Set α) = X := by
+    calc
+      M.closure ({f, g} : Set α) = M.closure X :=
+        hpair.closure_eq_closure
+      _ = X := (Matroid.isFlat_iff_closure_eq.mp hXflat)
+  have htriple : M.Indep ({e, f, g} : Set α) := by
+    exact
+      (hpair.indep.insert_indep_iff_of_notMem hepair).2
+        ⟨heE, by simpa [hclosure] using heX⟩
+  apply htriple.isBase_of_eRk_ge (Set.toFinite {e, f, g})
+  rw [hRank, htriple.eRk_eq_encard]
+  simp [hepair, hfg]
+
+/--
 If each point with its pair, each pair with the next point, and the shifted
 pair-point-pair window are bases, the interleaved enumeration is cyclic.
 -/
@@ -276,6 +306,81 @@ theorem cyclicBasisOrder3_interleaveOneTwo
     simpa using htwo i
 
 #print axioms Rank3KUM.cyclicBasisOrder3_interleaveOneTwo
+
+/--
+A cyclic adjacent-basis order on a rank-two flat interleaves with any
+enumeration of outside points to give a cyclic rank-three basis order.
+-/
+theorem cyclicBasisOrder3_interleaveOneTwo_of_flat_pairs
+    (M : Matroid α) {P X : Set α} {k : ℕ}
+    (hk : 0 < k)
+    (hRank : M.eRank = 3)
+    (hPX : Disjoint P X)
+    (hPground : P ⊆ M.E)
+    (hXflat : M.IsFlat X)
+    (points : Fin k ≃ P)
+    (pairs : Fin k × Bool ≃ X)
+    (hwithin : ∀ i : Fin k,
+      M.IsBasis
+        ({(pairs (i, false) : α),
+          (pairs (i, true) : α)} : Set α) X)
+    (hacross : ∀ i : Fin k,
+      M.IsBasis
+        ({(pairs (i, true) : α),
+          (pairs (cyclicIndex k hk i 1, false) : α)} : Set α) X) :
+    CyclicBasisOrder3 M (by omega)
+      (interleaveOneTwo hPX points pairs) := by
+  have hpoint_ground (i : Fin k) :
+      (points i : α) ∈ M.E :=
+    hPground (points i).property
+  have hpoint_not_mem (i : Fin k) :
+      (points i : α) ∉ X := by
+    intro hiX
+    exact Set.disjoint_left.1 hPX (points i).property hiX
+  have hwithin_ne (i : Fin k) :
+      (pairs (i, false) : α) ≠
+        (pairs (i, true) : α) := by
+    intro h
+    have hinput :
+        (i, false) = (i, true) :=
+      pairs.injective (Subtype.ext h)
+    have hbool := congrArg Prod.snd hinput
+    simp at hbool
+  have hacross_ne (i : Fin k) :
+      (pairs (i, true) : α) ≠
+        (pairs (cyclicIndex k hk i 1, false) : α) := by
+    intro h
+    have hinput :
+        (i, true) =
+          (cyclicIndex k hk i 1, false) :=
+      pairs.injective (Subtype.ext h)
+    have hbool := congrArg Prod.snd hinput
+    simp at hbool
+  apply cyclicBasisOrder3_interleaveOneTwo
+    M hk hPX points pairs
+  · intro i
+    exact
+      isBase_insert_pair_of_isBasis_flat_rank3
+        M hRank hXflat
+        (hpoint_ground i) (hpoint_not_mem i)
+        (hwithin_ne i) (hwithin i)
+  · intro i
+    simpa [insert_comm, insert_left_comm, insert_assoc] using
+      (isBase_insert_pair_of_isBasis_flat_rank3
+        M hRank hXflat
+        (hpoint_ground (cyclicIndex k hk i 1))
+        (hpoint_not_mem (cyclicIndex k hk i 1))
+        (hwithin_ne i) (hwithin i))
+  · intro i
+    simpa [insert_comm, insert_left_comm, insert_assoc] using
+      (isBase_insert_pair_of_isBasis_flat_rank3
+        M hRank hXflat
+        (hpoint_ground (cyclicIndex k hk i 1))
+        (hpoint_not_mem (cyclicIndex k hk i 1))
+        (hacross_ne i) (hacross i))
+
+#print axioms Rank3KUM.isBase_insert_pair_of_isBasis_flat_rank3
+#print axioms Rank3KUM.cyclicBasisOrder3_interleaveOneTwo_of_flat_pairs
 
 end
 
