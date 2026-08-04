@@ -15,3 +15,4 @@ import Rank3KUM.TwoGap.EqualDisjointAC
 import Rank3KUM.TwoGap.EqualDisjointRest
 import Rank3KUM.TwoGap.EqualContradiction
 import Rank3KUM.TwoGap.Final
+import Rank3KUM.CyclicOrder
