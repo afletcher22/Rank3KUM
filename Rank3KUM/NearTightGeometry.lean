@@ -356,11 +356,7 @@ theorem ncard_inter_le_k_sub_one_of_distinct_nearTight
     simpa using hxIndep.eRk_eq_encard
   have hInterRankGe : (1 : ℕ∞) ≤ M.eRk (A ∩ B) := by
     rw [← hSingletonRank]
-    apply M.eRk_mono
-    intro y hy
-    simpa only [Set.mem_singleton_iff] at hy
-    subst y
-    exact hx
+    exact M.eRk_mono (Set.singleton_subset_iff.2 hx)
   have hInterRank : M.eRk (A ∩ B) = 1 :=
     le_antisymm hInterRankLe hInterRankGe
   have hInterFinite : (A ∩ B).Finite :=
