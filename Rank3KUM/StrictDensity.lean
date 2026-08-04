@@ -6,6 +6,18 @@ open Set
 
 variable {α : Type*}
 
+/-- A basis whose deletion preserves rank and drops the density parameter by one. -/
+def DensityReducingBasis
+    (M : Matroid α) (k : ℕ) (D : Set α) : Prop :=
+  M.IsBase D ∧
+    (Matroid.delete M D).eRank = M.eRank ∧
+    UniformlyDense (Matroid.delete M D) (k - 1)
+
+/-- The strict-density induction needs one density-reducing basis. -/
+def HasDensityReducingBasis
+    (M : Matroid α) (k : ℕ) : Prop :=
+  ∃ D : Set α, DensityReducingBasis M k D
+
 /-- Every nonempty proper ground-set subset satisfies the density bound strictly. -/
 def StrictlyUniformlyDense
     (M : Matroid α) (k : ℕ) : Prop :=
