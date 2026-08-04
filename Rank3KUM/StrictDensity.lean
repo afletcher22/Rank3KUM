@@ -289,8 +289,8 @@ theorem isFlat_of_strict_rankTwo_ncard_eq
     exact_mod_cast hClosureNcardLe
   have hClosureEq :
       M.closure A = A :=
-    hClosureFinite.eq_of_subset_of_encard_le
-      (M.subset_closure A hAE) hClosureEncardLe
+    (hAfin.eq_of_subset_of_encard_le
+      (M.subset_closure A hAE) hClosureEncardLe).symm
   exact Matroid.isFlat_iff_closure_eq.2 hClosureEq
 
 /-- Deletion density can be checked using the original rank on subsets of the complement. -/
