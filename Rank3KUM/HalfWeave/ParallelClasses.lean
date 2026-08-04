@@ -118,6 +118,48 @@ def sortedClosurePartsEquiv
 
 #print axioms Rank3KUM.HalfWeave.sortedClosurePartsEquiv
 
+/-- Sorted closure-part cardinalities are nonincreasing in their labels. -/
+theorem antitone_sortedClosureParts_card
+    (M : Matroid α)
+    [Fintype M.E]
+    [DecidableEq M.E] :
+    Antitone
+      (fun i : Fin (closureFinpartition M).parts.card =>
+        ((sortedClosurePartsEquiv M i).1).card) := by
+  intro i j hij
+  by_cases heq : i = j
+  · subst j
+    rfl
+  have hlt : i.val < j.val := by
+    omega
+  let L := sortedClosureParts M
+  have hlength :
+      L.length = (closureFinpartition M).parts.card := by
+    simpa [L] using length_sortedClosureParts M
+  let i' : Fin L.length :=
+    Fin.cast hlength.symm i
+  let j' : Fin L.length :=
+    Fin.cast hlength.symm j
+  have hpair :
+      L.Pairwise
+        (fun p q => q.1.card ≤ p.1.card) := by
+    simpa [L] using pairwise_sortedClosureParts M
+  have hrel :
+      (L.get j').1.card ≤ (L.get i').1.card := by
+    exact
+      (List.pairwise_iff_getElem.mp hpair)
+        i'.val j'.val i'.isLt j'.isLt
+        (by simpa [i', j'] using hlt)
+  have hi :
+      sortedClosurePartsEquiv M i = L.get i' := by
+    simp [sortedClosurePartsEquiv, L, i']
+  have hj :
+      sortedClosurePartsEquiv M j = L.get j' := by
+    simp [sortedClosurePartsEquiv, L, j']
+  rw [hi, hj]
+  exact hrel
+
+#print axioms Rank3KUM.HalfWeave.antitone_sortedClosureParts_card
 
 /-- The sizes of the sorted closure parts sum to the ground-set cardinality. -/
 theorem sum_sortedClosureParts_card
