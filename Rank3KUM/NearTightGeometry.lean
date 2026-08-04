@@ -348,6 +348,7 @@ theorem ncard_inter_le_k_sub_one_of_distinct_nearTight
     eRk_inter_le_one_of_distinct_rankTwo_flats
       M hE hRank hAflat hBflat hArank hBrank
       (by omega) hAB
+  have hInterNonempty' := hInterNonempty
   obtain ⟨x, hx⟩ := hInterNonempty
   have hxE : x ∈ M.E := hAE hx.1
   have hxIndep : M.Indep ({x} : Set α) :=
@@ -370,7 +371,7 @@ theorem ncard_inter_le_k_sub_one_of_distinct_nearTight
   have hLt :=
     StrictlyUniformlyDense.encard_lt_k_of_eRk_eq_one
       M k hStrict (Set.inter_subset_left.trans hAE)
-      hInterNonempty hInterProper hInterRank
+      hInterNonempty' hInterProper hInterRank
   have hNatLt : (A ∩ B).ncard < k := by
     rw [← hInterFinite.cast_ncard_eq] at hLt
     exact_mod_cast hLt
