@@ -17,6 +17,50 @@ def UniformlyDense (M : Matroid α) (k : ℕ) : Prop :=
 def Tight (M : Matroid α) (k : ℕ) (X : Set α) : Prop :=
   X ⊆ M.E ∧ X.encard = (k : ℕ∞) * M.eRk X
 
+
+/-- Uniform density is inherited by restriction to a ground-set subset. -/
+theorem UniformlyDense.restrict
+    (M : Matroid α)
+    (k : ℕ)
+    (hDense : UniformlyDense M k)
+    {R : Set α}
+    (hR : R ⊆ M.E) :
+    UniformlyDense (M.restrict R) k := by
+  intro A hA
+  have hAR : A ⊆ R := by
+    simpa using hA
+  have hAE : A ⊆ M.E :=
+    hAR.trans hR
+  simpa [M.restrict_eRk_eq hAR] using
+    hDense A hAE
+
+/-- In a loopless uniformly dense matroid, every parallel class has size at most `k`. -/
+theorem closure_singleton_encard_le
+    (M : Matroid α)
+    (k : ℕ)
+    (hDense : UniformlyDense M k)
+    (hLoopless : M.Loopless)
+    {e : α}
+    (he : e ∈ M.E) :
+    (M.closure ({e} : Set α)).encard ≤ (k : ℕ∞) := by
+  letI : M.Loopless := hLoopless
+  have heNonloop : M.IsNonloop e :=
+    Matroid.isNonloop_of_loopless he
+  calc
+    (M.closure ({e} : Set α)).encard
+        ≤ (k : ℕ∞) *
+            M.eRk (M.closure ({e} : Set α)) :=
+      hDense (M.closure ({e} : Set α))
+        (M.closure_subset_ground {e})
+    _ = (k : ℕ∞) * M.eRk ({e} : Set α) := by
+      rw [M.eRk_closure_eq]
+    _ = (k : ℕ∞) * ({e} : Set α).encard := by
+      rw [heNonloop.indep.eRk_eq_encard]
+    _ = (k : ℕ∞) := by simp
+
+#print axioms Rank3KUM.UniformlyDense.restrict
+#print axioms Rank3KUM.closure_singleton_encard_le
+
 /-- In a finite uniformly dense matroid, every tight set is a flat. -/
 theorem tight_isFlat
     (M : Matroid α)
