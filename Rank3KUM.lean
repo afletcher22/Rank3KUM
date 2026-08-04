@@ -8,3 +8,4 @@ import Rank3KUM.TwoGap.Ordering
 import Rank3KUM.TwoGap.Partners
 import Rank3KUM.TwoGap.RankThreeTools
 import Rank3KUM.TwoGap.Unequal
+import Rank3KUM.TwoGap.UnequalContradiction
