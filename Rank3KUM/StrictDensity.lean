@@ -37,6 +37,33 @@ def HitsNearTightRankTwo
     A.ncard = 2 * k - 1 →
     (A ∩ D).Nonempty
 
+/-- Strict density bounds every nonempty proper rank-one set by `k-1`. -/
+theorem StrictlyUniformlyDense.encard_lt_k_of_eRk_eq_one
+    (M : Matroid α) (k : ℕ)
+    (hStrict : StrictlyUniformlyDense M k)
+    {X : Set α}
+    (hXE : X ⊆ M.E)
+    (hXnonempty : X.Nonempty)
+    (hXproper : X ≠ M.E)
+    (hXrank : M.eRk X = 1) :
+    X.encard < (k : ℕ∞) := by
+  simpa [hXrank] using
+    hStrict X hXE hXnonempty hXproper
+
+/-- Strict density bounds every nonempty proper rank-two set below `2k`. -/
+theorem StrictlyUniformlyDense.encard_lt_two_mul_k_of_eRk_eq_two
+    (M : Matroid α) (k : ℕ)
+    (hStrict : StrictlyUniformlyDense M k)
+    {X : Set α}
+    (hXE : X ⊆ M.E)
+    (hXnonempty : X.Nonempty)
+    (hXproper : X ≠ M.E)
+    (hXrank : M.eRk X = 2) :
+    X.encard < ((2 * k : ℕ) : ℕ∞) := by
+  have h := hStrict X hXE hXnonempty hXproper
+  rw [hXrank] at h
+  simpa [Nat.mul_comm] using h
+
 /-- If there is no near-tight rank-two set, every basis satisfies the hitting condition. -/
 theorem exists_isBase_hitsNearTight_of_no_nearTight
     (M : Matroid α) (k : ℕ)
@@ -182,7 +209,8 @@ theorem k_sub_two_le_ncard_inter_of_nearTight
   have hCount :=
     Set.ncard_union_add_ncard_inter
       A B hAfin hBfin
-  rw [hAcard, hBcard, hEncard] at hCount hUnionLe
+  rw [hAcard, hBcard] at hCount
+  rw [hEncard] at hUnionLe
   omega
 
 /-- For `k ≥ 3`, any two near-tight sets have a common point. -/
@@ -303,33 +331,6 @@ theorem exists_nonempty_proper_tight_or_strictlyUniformlyDense
     exact lt_of_le_of_ne hle fun heq =>
       h ⟨X, ⟨hXE, heq⟩,
         hXnonempty, hXproper⟩
-
-/-- Strict density bounds every nonempty proper rank-one set by `k-1`. -/
-theorem StrictlyUniformlyDense.encard_lt_k_of_eRk_eq_one
-    (M : Matroid α) (k : ℕ)
-    (hStrict : StrictlyUniformlyDense M k)
-    {X : Set α}
-    (hXE : X ⊆ M.E)
-    (hXnonempty : X.Nonempty)
-    (hXproper : X ≠ M.E)
-    (hXrank : M.eRk X = 1) :
-    X.encard < (k : ℕ∞) := by
-  simpa [hXrank] using
-    hStrict X hXE hXnonempty hXproper
-
-/-- Strict density bounds every nonempty proper rank-two set below `2k`. -/
-theorem StrictlyUniformlyDense.encard_lt_two_mul_k_of_eRk_eq_two
-    (M : Matroid α) (k : ℕ)
-    (hStrict : StrictlyUniformlyDense M k)
-    {X : Set α}
-    (hXE : X ⊆ M.E)
-    (hXnonempty : X.Nonempty)
-    (hXproper : X ≠ M.E)
-    (hXrank : M.eRk X = 2) :
-    X.encard < ((2 * k : ℕ) : ℕ∞) := by
-  have h := hStrict X hXE hXnonempty hXproper
-  rw [hXrank] at h
-  simpa [Nat.mul_comm] using h
 
 /--
 In the strict case, after deleting a basis the density check is automatic in
