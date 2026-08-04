@@ -176,8 +176,7 @@ theorem rankTwoComplementBound_of_hitsNearTight
     obtain ⟨e, heA, heD⟩ :=
       hHits A hAE hArank hcard
     exact (hAcomp heA).2 heD
-  rw [← hAfin.cast_ncard_eq,
-    ← ENat.natCast_mul]
+  rw [← hAfin.cast_ncard_eq]
   exact_mod_cast hleNat
 
 /-- Two near-tight sets on a `3k`-element ground set overlap in at least `k-2` elements. -/
@@ -283,10 +282,15 @@ theorem isFlat_of_strict_rankTwo_ncard_eq
   have hClosureNcardLe :
       (M.closure A).ncard ≤ A.ncard := by
     omega
+  have hClosureEncardLe :
+      (M.closure A).encard ≤ A.encard := by
+    rw [← hClosureFinite.cast_ncard_eq,
+      ← hAfin.cast_ncard_eq]
+    exact_mod_cast hClosureNcardLe
   have hClosureEq :
       M.closure A = A :=
-    hClosureFinite.eq_of_subset_of_ncard_le
-      (M.subset_closure A hAE) hClosureNcardLe
+    hClosureFinite.eq_of_subset_of_encard_le
+      (M.subset_closure A hAE) hClosureEncardLe
   exact Matroid.isFlat_iff_closure_eq.2 hClosureEq
 
 /-- Deletion density can be checked using the original rank on subsets of the complement. -/
