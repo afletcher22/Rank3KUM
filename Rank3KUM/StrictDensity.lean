@@ -72,6 +72,61 @@ theorem rankTwoComplementBound_of_hitsNearTight
   rw [← hAfin.cast_ncard_eq]
   exact_mod_cast hleNat
 
+/-- Every near-tight rank-two set in the strict case is already a flat. -/
+theorem isFlat_of_strict_rankTwo_ncard_eq
+    (M : Matroid α) (k : ℕ)
+    (hE : M.E.Finite)
+    (hRank : M.eRank = 3)
+    (hStrict : StrictlyUniformlyDense M k)
+    {A : Set α}
+    (hAE : A ⊆ M.E)
+    (hArank : M.eRk A = 2)
+    (hAcard : A.ncard = 2 * k - 1) :
+    M.IsFlat A := by
+  have hAfin : A.Finite :=
+    hE.subset hAE
+  have hAnonempty : A.Nonempty := by
+    apply Set.nonempty_iff_ne_empty.2
+    intro hAempty
+    subst A
+    simp at hArank
+  have hAproper : A ≠ M.E := by
+    intro hAEq
+    have hground : M.eRk A = M.eRank := by
+      rw [hAEq, M.eRk_ground]
+    rw [hArank, hRank] at hground
+    norm_num at hground
+  have hClosureFinite :
+      (M.closure A).Finite :=
+    hE.subset (M.closure_subset_ground A)
+  have hClosureRank :
+      M.eRk (M.closure A) = 2 := by
+    rw [M.eRk_closure_eq, hArank]
+  have hClosureNonempty : (M.closure A).Nonempty :=
+    hAnonempty.mono (M.subset_closure A hAE)
+  have hClosureProper : M.closure A ≠ M.E := by
+    intro hEq
+    have hground : M.eRk (M.closure A) = M.eRank := by
+      rw [hEq, M.eRk_ground]
+    rw [hClosureRank, hRank] at hground
+    norm_num at hground
+  have hClosureLt :=
+    StrictlyUniformlyDense.encard_lt_two_mul_k_of_eRk_eq_two
+      M k hStrict (M.closure_subset_ground A)
+      hClosureNonempty hClosureProper hClosureRank
+  have hClosureNcardLt :
+      (M.closure A).ncard < 2 * k := by
+    rw [← hClosureFinite.cast_ncard_eq] at hClosureLt
+    exact_mod_cast hClosureLt
+  have hClosureNcardLe :
+      (M.closure A).ncard ≤ A.ncard := by
+    omega
+  have hClosureEq :
+      M.closure A = A :=
+    hClosureFinite.eq_of_subset_of_ncard_le
+      (M.subset_closure A hAE) hClosureNcardLe
+  exact Matroid.isFlat_iff_closure_eq.2 hClosureEq
+
 /-- Deletion density can be checked using the original rank on subsets of the complement. -/
 theorem uniformlyDense_delete_iff
     (M : Matroid α) (j : ℕ) (D : Set α) :
