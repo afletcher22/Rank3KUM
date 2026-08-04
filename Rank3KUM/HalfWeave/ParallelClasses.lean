@@ -364,6 +364,28 @@ def sortedClosureBlock
       Fin (closureFinpartition M).parts.card :=
   fun j => (sortedClosureSigmaEquiv M k hcard j).1
 
+theorem monotone_sortedClosureBlock
+    (M : Matroid α)
+    (k : ℕ)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (hcard : Fintype.card M.E = 2 * k) :
+    Monotone (sortedClosureBlock M k hcard) := by
+  have hsum :
+      (∑ i : Fin (closureFinpartition M).parts.card,
+        ((sortedClosurePartsEquiv M i).1).card) =
+          2 * k := by
+    rw [sum_sortedClosureParts_card M, hcard]
+  intro a b hab
+  change
+    (finSigmaFinEquiv.symm
+      (finCongr hsum.symm a)).1 ≤
+    (finSigmaFinEquiv.symm
+      (finCongr hsum.symm b)).1
+  apply monotone_finSigmaFinEquiv_symm_fst
+  change a.val ≤ b.val
+  exact hab
+
 theorem part_sortedClosureGroundEquiv
     (M : Matroid α)
     (k : ℕ)
