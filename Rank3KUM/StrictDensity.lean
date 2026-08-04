@@ -330,7 +330,7 @@ theorem eRank_delete_eq_three_of_strict
         exact mul_le_mul_left' hrleTwo _
       _ = ((2 * k : ℕ) : ℕ∞) := by
         rw [Nat.mul_comm]
-        exact ENat.natCast_mul k 2
+        exact (ENat.natCast_mul k 2).symm
   rw [hComplementCard] at hltTwo
   have hltNat : 3 * (k - 1) < 2 * k := by
     exact_mod_cast hltTwo
