@@ -7,6 +7,8 @@ namespace Rank3KUM
 
 open Set
 
+noncomputable section
+
 variable {α : Type*}
 
 /-- Add a natural offset to a finite cyclic index. -/
@@ -35,13 +37,14 @@ def CyclicBasisOrder3
         (σ (cyclicIndex n hn i 2) : α)} : Set α)
 
 /-- Append a disjoint three-element block after an enumeration. -/
-noncomputable def appendBlockOrder
+def appendBlockOrder
     {E D : Set α} {m : ℕ}
     (hED : Disjoint E D)
     (small : Fin m ≃ E)
     (block : Fin 3 ≃ D) :
-    Fin (m + 3) ≃ E ∪ D :=
-  finSumFinEquiv.symm.trans
+    Fin (m + 3) ≃ (E ∪ D : Set α) := by
+  classical
+  exact finSumFinEquiv.symm.trans
     ((Equiv.sumCongr small block).trans
       (Equiv.Set.union hED).symm)
 
@@ -51,8 +54,10 @@ noncomputable def appendBlockOrder
     (small : Fin m ≃ E)
     (block : Fin 3 ≃ D)
     (i : Fin m) :
-    ((appendBlockOrder hED small block (Fin.castAdd 3 i) : E ∪ D) : α) =
+    ((appendBlockOrder hED small block (Fin.castAdd 3 i) :
+        (E ∪ D : Set α)) : α) =
       (small i : α) := by
+  classical
   simp [appendBlockOrder]
 
 @[simp] theorem appendBlockOrder_block
@@ -61,16 +66,18 @@ noncomputable def appendBlockOrder
     (small : Fin m ≃ E)
     (block : Fin 3 ≃ D)
     (i : Fin 3) :
-    ((appendBlockOrder hED small block (Fin.natAdd m i) : E ∪ D) : α) =
+    ((appendBlockOrder hED small block (Fin.natAdd m i) :
+        (E ∪ D : Set α)) : α) =
       (block i : α) := by
+  classical
   simp [appendBlockOrder]
 
 /-- A basis of a rank-preserving deletion is also a basis of the original rank-three matroid. -/
 theorem isBase_of_delete_isBase_rank3
     (M : Matroid α) {D B : Set α}
     (hRank : M.eRank = 3)
-    (hDelRank : (M ＼ D).eRank = 3)
-    (hB : (M ＼ D).IsBase B) :
+    (hDelRank : (Matroid.delete M D).eRank = 3)
+    (hB : (Matroid.delete M D).IsBase B) :
     M.IsBase B := by
   have hI : M.Indep B := hB.indep.of_delete
   have hcard : B.encard = 3 :=
@@ -78,5 +85,7 @@ theorem isBase_of_delete_isBase_rank3
   have hfin : B.Finite := Set.finite_of_encard_eq_coe hcard
   apply hI.isBase_of_eRk_ge hfin
   exact (hRank.trans (hcard.symm.trans hI.eRk_eq_encard.symm)).le
+
+end
 
 end Rank3KUM
