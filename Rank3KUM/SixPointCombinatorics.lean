@@ -154,6 +154,38 @@ def LinearSixBad
   ¬ (Bad ({2, 3, 5} : Finset (Fin 6)) ∧ Bad ({3, 4, 5} : Finset (Fin 6))) ∧
   ¬ (Bad ({2, 4, 5} : Finset (Fin 6)) ∧ Bad ({3, 4, 5} : Finset (Fin 6)))
 
+/-- The eight concrete permutations certified by `SixPointGoodAlternatives`. -/
+def sixPointPerm1 : Equiv.Perm (Fin 6) :=
+  Equiv.refl (Fin 6)
+
+def sixPointPerm2 : Equiv.Perm (Fin 6) :=
+  Equiv.ofBijective
+    (![0, 2, 4, 1, 5, 3] : Fin 6 → Fin 6) (by decide)
+
+def sixPointPerm3 : Equiv.Perm (Fin 6) :=
+  Equiv.ofBijective
+    (![0, 1, 2, 5, 4, 3] : Fin 6 → Fin 6) (by decide)
+
+def sixPointPerm4 : Equiv.Perm (Fin 6) :=
+  Equiv.ofBijective
+    (![0, 4, 1, 3, 2, 5] : Fin 6 → Fin 6) (by decide)
+
+def sixPointPerm5 : Equiv.Perm (Fin 6) :=
+  Equiv.ofBijective
+    (![0, 1, 5, 3, 2, 4] : Fin 6 → Fin 6) (by decide)
+
+def sixPointPerm6 : Equiv.Perm (Fin 6) :=
+  Equiv.ofBijective
+    (![0, 3, 1, 4, 2, 5] : Fin 6 → Fin 6) (by decide)
+
+def sixPointPerm7 : Equiv.Perm (Fin 6) :=
+  Equiv.ofBijective
+    (![0, 2, 1, 3, 5, 4] : Fin 6 → Fin 6) (by decide)
+
+def sixPointPerm8 : Equiv.Perm (Fin 6) :=
+  Equiv.ofBijective
+    (![0, 1, 5, 3, 4, 2] : Fin 6 → Fin 6) (by decide)
+
 /-- The propositional core of the six-point certificate. -/
 private theorem sixPointSAT
     (p012 p013 p014 p015 p023 p024 p025 p034 p035 p045 p123 p124 p125 p134 p135 p145 p234 p235 p245 p345 : Prop)
