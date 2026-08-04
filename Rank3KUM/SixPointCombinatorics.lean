@@ -64,6 +64,7 @@ def SixPointGoodAlternatives
 A family of bad triples in which two distinct members never share two
 vertices satisfies one of the eight certified cyclic-order alternatives.
 -/
+set_option maxHeartbeats 1000000 in
 theorem sixPointGoodAlternatives_of_linear
     (Bad : Finset (Fin 6) → Prop)
     (hlinear :
