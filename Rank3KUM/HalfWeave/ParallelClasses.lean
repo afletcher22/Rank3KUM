@@ -117,6 +117,34 @@ def sortedClosurePartsEquiv
 
 #print axioms Rank3KUM.HalfWeave.sortedClosurePartsEquiv
 
+
+/-- The sizes of the sorted closure parts sum to the ground-set cardinality. -/
+theorem sum_sortedClosureParts_card
+    (M : Matroid α)
+    [Fintype M.E]
+    [DecidableEq M.E] :
+    (∑ i : Fin (closureFinpartition M).parts.card,
+      ((sortedClosurePartsEquiv M i).1).card) =
+        Fintype.card M.E := by
+  let P : Finpartition (Finset.univ : Finset M.E) :=
+    closureFinpartition M
+  calc
+    (∑ i : Fin (closureFinpartition M).parts.card,
+      ((sortedClosurePartsEquiv M i).1).card) =
+        ∑ p : (closureFinpartition M).parts,
+          p.1.card := by
+      refine Fintype.sum_equiv
+        (sortedClosurePartsEquiv M) _ _ ?_
+      intro i
+      rfl
+    _ = ∑ p ∈ (closureFinpartition M).parts,
+        p.card := by simp
+    _ = (Finset.univ : Finset M.E).card := by
+      simpa [P] using P.sum_card_parts
+    _ = Fintype.card M.E := by simp
+
+#print axioms Rank3KUM.HalfWeave.sum_sortedClosureParts_card
+
 /-- Every part of the closure partition inherits the uniform-density bound. -/
 theorem card_closureFinpartition_part_le
     (M : Matroid α)
