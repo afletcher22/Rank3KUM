@@ -8,6 +8,35 @@ noncomputable section
 
 variable {α : Type*}
 
+/-- Deleting a basis from a rank-three ground set of size `3k` leaves `3(k-1)` elements. -/
+theorem delete_ground_encard_eq_three_mul_pred
+    (M : Matroid α) (k : ℕ)
+    (hk : 0 < k)
+    (hRank : M.eRank = 3)
+    (hEcard : M.E.encard = ((3 * k : ℕ) : ℕ∞))
+    {D : Set α}
+    (hD : M.IsBase D) :
+    (Matroid.delete M D).E.encard =
+      ((3 * (k - 1) : ℕ) : ℕ∞) := by
+  have hDcard : D.encard = (3 : ℕ∞) :=
+    hD.encard_eq_eRank.trans hRank
+  rw [Matroid.delete_ground]
+  apply ENat.add_right_injective_of_ne_top
+    (ENat.natCast_ne_top 3)
+  calc
+    (3 : ℕ∞) + (M.E \ D).encard =
+        D.encard + (M.E \ D).encard := by
+      rw [hDcard]
+    _ = M.E.encard := by
+      rw [← Set.encard_union_eq Set.disjoint_sdiff_right,
+        Set.union_sdiff_cancel hD.subset_ground]
+    _ = ((3 * k : ℕ) : ℕ∞) := hEcard
+    _ = (3 : ℕ∞) +
+        ((3 * (k - 1) : ℕ) : ℕ∞) := by
+      rw [← ENat.natCast_add]
+      congr 1
+      omega
+
 /--
 The induction splice in the natural `3k` parametrization: once deleting a
 three-element basis leaves a cyclic order on `3(k-1)` elements, the two-gap
@@ -56,6 +85,7 @@ theorem exists_cyclicBasisOrder3_of_cyclic_basis_deletion
   rw [hcyclic 1, hcyclic 2]
   exact hi
 
+#print axioms Rank3KUM.delete_ground_encard_eq_three_mul_pred
 #print axioms Rank3KUM.exists_cyclicBasisOrder3_of_cyclic_basis_deletion
 
 end
