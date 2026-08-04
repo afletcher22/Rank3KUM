@@ -93,7 +93,7 @@ theorem exists_cyclicBasisOrder3_of_tight_rank_two
   have hComplementCard :
       (M.E \ X).encard = (k : ℕ∞) := by
     apply ENat.add_right_injective_of_ne_top
-      (by simp : ((2 * k : ℕ) : ℕ∞) ≠ ⊤)
+      (ENat.natCast_ne_top (2 * k))
     calc
       ((2 * k : ℕ) : ℕ∞) + (M.E \ X).encard =
           X.encard + (M.E \ X).encard := by
@@ -108,7 +108,7 @@ theorem exists_cyclicBasisOrder3_of_tight_rank_two
       (M.restrict X).eRank = 2 := by
     rw [Matroid.eRank_def,
       Matroid.restrict_ground_eq,
-      M.restrict_eRk_eq hX.1, hXrank]
+      M.restrict_eRk_eq Set.Subset.rfl, hXrank]
   exact
     exists_cyclicBasisOrder3_of_uniformlyDense_rankTwo_flat
       M k hk hE hRank hDense hRestrictRank
