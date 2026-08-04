@@ -45,6 +45,7 @@ theorem isBase_insert_pair_of_contract_isBase_rank3
     (Set.toFinite {e, f, g})
   rw [hRank, htriple.eRk_eq_encard,
     Set.encard_insert_of_notMem heNot, hpaircard]
+  norm_num
 
 /-- Contracted ground elements are value-identical to elements of the complement. -/
 def contractGroundEquiv (M : Matroid α) (X : Set α) :
