@@ -59,6 +59,39 @@ theorem pair_indep_of_closure_ne
     (heNonloop.closure_eq_closure_iff_eq_or_dep
       hfNonloop).2 (Or.inr hdep)
 
+
+/-- A rank-two matroid has two ground elements in different singleton-closure classes. -/
+theorem exists_pair_closure_ne_of_eRank_eq_two
+    {α : Type*}
+    (M : Matroid α)
+    (hRank : M.eRank = 2) :
+    ∃ e f : α,
+      e ∈ M.E ∧ f ∈ M.E ∧
+        M.closure ({e} : Set α) ≠
+          M.closure ({f} : Set α) := by
+  obtain ⟨B, hB⟩ := M.exists_isBase
+  have hBcard : B.encard = 2 := by
+    rw [hB.encard_eq_eRank, hRank]
+  obtain ⟨e, f, hef, rfl⟩ :=
+    Set.encard_eq_two.mp hBcard
+  have heE : e ∈ M.E :=
+    hB.subset_ground (by simp)
+  have hfE : f ∈ M.E :=
+    hB.subset_ground (by simp)
+  refine ⟨e, f, heE, hfE, ?_⟩
+  intro hclosure
+  have heNonloop : M.IsNonloop e :=
+    hB.indep.isNonloop_of_mem (by simp)
+  have hfNonloop : M.IsNonloop f :=
+    hB.indep.isNonloop_of_mem (by simp)
+  rcases
+      (heNonloop.closure_eq_closure_iff_eq_or_dep
+        hfNonloop).1 hclosure with heq | hdep
+  · exact hef heq
+  · exact hdep hB.indep
+
+#print axioms Rank3KUM.HalfWeave.exists_pair_closure_ne_of_eRank_eq_two
+
 /--
 To construct a sorted rank-two enumeration, it is enough to label exactly
 the singleton-closure classes.  The matroid independence field is then
