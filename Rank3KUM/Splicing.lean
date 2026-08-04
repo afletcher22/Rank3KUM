@@ -110,35 +110,7 @@ theorem contiguousBasisSplicing
   have hcq : c ≠ q := by simpa [c, q] using hne hicq
 
   have hdistinct : List.Pairwise (· ≠ ·) [p, a, b, c, q] := by
-    apply List.pairwise_cons.2
-    constructor
-    · intro x hx
-      simp only [List.mem_cons, List.mem_singleton] at hx
-      rcases hx with rfl | rfl | rfl | rfl
-      · exact hpa
-      · exact hpb
-      · exact hpc
-      · exact hpq
-    · apply List.pairwise_cons.2
-      constructor
-      · intro x hx
-        simp only [List.mem_cons, List.mem_singleton] at hx
-        rcases hx with rfl | rfl | rfl
-        · exact hab
-        · exact hac
-        · exact haq
-      · apply List.pairwise_cons.2
-        constructor
-        · intro x hx
-          simp only [List.mem_cons, List.mem_singleton] at hx
-          rcases hx with rfl | rfl
-          · exact hbc
-          · exact hbq
-        · apply List.pairwise_cons.2
-          constructor
-          · intro x hx
-            simpa only [List.mem_singleton] using hx ▸ hcq
-          · simp
+    simp [hpa, hpb, hpc, hpq, hab, hac, haq, hbc, hbq, hcq]
 
   have hout (i : Fin m) : (small i : α) ∈ M.E \ D := by
     simpa [Matroid.delete_ground] using (small i).property
@@ -150,28 +122,30 @@ theorem contiguousBasisSplicing
 
   have hip₁ : cyclicIndex m (by omega) ip 1 = ia := by
     apply Fin.ext
-    simp [cyclicIndex, ip, ia]
+    change (m - 2 + 1) % m = m - 1
+    rw [Nat.mod_eq_of_lt (by omega)]
     omega
   have hip₂ : cyclicIndex m (by omega) ip 2 = ib := by
     apply Fin.ext
-    simp [cyclicIndex, ip, ib]
-    omega
+    change (m - 2 + 2) % m = 0
+    rw [show m - 2 + 2 = m by omega, Nat.mod_self]
   have hia₁ : cyclicIndex m (by omega) ia 1 = ib := by
     apply Fin.ext
-    simp [cyclicIndex, ia, ib]
-    omega
+    change (m - 1 + 1) % m = 0
+    rw [show m - 1 + 1 = m by omega, Nat.mod_self]
   have hia₂ : cyclicIndex m (by omega) ia 2 = ic := by
     apply Fin.ext
-    simp [cyclicIndex, ia, ic]
-    omega
+    change (m - 1 + 2) % m = 1
+    rw [show m - 1 + 2 = m + 1 by omega]
+    simp [Nat.mod_eq_of_lt (by omega : 1 < m)]
   have hib₁ : cyclicIndex m (by omega) ib 1 = ic := by
     apply Fin.ext
-    simp [cyclicIndex, ib, ic]
-    omega
+    change (0 + 1) % m = 1
+    rw [Nat.mod_eq_of_lt (by omega)]
   have hib₂ : cyclicIndex m (by omega) ib 2 = iq := by
     apply Fin.ext
-    simp [cyclicIndex, ib, iq]
-    omega
+    change (0 + 2) % m = 2
+    rw [Nat.mod_eq_of_lt (by omega)]
 
   have hP : M.IsBase ({p, a, b} : Set α) := by
     have hs := hsmallM ip
@@ -213,7 +187,7 @@ theorem contiguousBasisSplicing
     refine ⟨order, ?_⟩
     intro i
     have hi := hApp i
-    simpa [order, Equiv.setCongr] using hi
+    simpa only [order, Equiv.trans_apply, Equiv.setCongr_apply] using hi
   · rcases hSecond with ⟨block, h₁, h₂, h₃, h₄⟩
     let rotated : Fin m ≃ (Matroid.delete M D).E :=
       rotateOneOrder (by omega) small
@@ -224,62 +198,60 @@ theorem contiguousBasisSplicing
         ((rotated ⟨m - 2, by omega⟩ : (Matroid.delete M D).E) : α) = a := by
       have hidx :
           cyclicIndex m (by omega) (⟨m - 2, by omega⟩ : Fin m) 1 = ia := by
-        apply Fin.ext
-        simp [cyclicIndex, ia]
-        omega
+        simpa [ip] using hip₁
       change ((rotateOneOrder (by omega) small
         (⟨m - 2, by omega⟩ : Fin m) : (Matroid.delete M D).E) : α) = a
       rw [rotateOneOrder_apply, hidx]
-      rfl
     have hrotLast :
         ((rotated ⟨m - 1, by omega⟩ : (Matroid.delete M D).E) : α) = b := by
       have hidx :
           cyclicIndex m (by omega) (⟨m - 1, by omega⟩ : Fin m) 1 = ib := by
-        apply Fin.ext
-        simp [cyclicIndex, ib]
-        omega
+        simpa [ia] using hia₁
       change ((rotateOneOrder (by omega) small
         (⟨m - 1, by omega⟩ : Fin m) : (Matroid.delete M D).E) : α) = b
       rw [rotateOneOrder_apply, hidx]
-      rfl
     have hrotZero :
         ((rotated ⟨0, by omega⟩ : (Matroid.delete M D).E) : α) = c := by
       have hidx :
           cyclicIndex m (by omega) (⟨0, by omega⟩ : Fin m) 1 = ic := by
-        apply Fin.ext
-        simp [cyclicIndex, ic]
-        omega
+        simpa [ib] using hib₁
       change ((rotateOneOrder (by omega) small
         (⟨0, by omega⟩ : Fin m) : (Matroid.delete M D).E) : α) = c
       rw [rotateOneOrder_apply, hidx]
-      rfl
     have hrotOne :
         ((rotated ⟨1, by omega⟩ : (Matroid.delete M D).E) : α) = q := by
       have hidx :
           cyclicIndex m (by omega) (⟨1, by omega⟩ : Fin m) 1 = iq := by
         apply Fin.ext
-        simp [cyclicIndex, iq]
-        omega
+        change (1 + 1) % m = 2
+        rw [Nat.mod_eq_of_lt (by omega)]
       change ((rotateOneOrder (by omega) small
         (⟨1, by omega⟩ : Fin m) : (Matroid.delete M D).E) : α) = q
       rw [rotateOneOrder_apply, hidx]
-      rfl
 
     have hApp :
         CyclicBasisOrder3 M (by omega)
           (appendBlockOrder hED rotated block) :=
       cyclicBasisOrder3_appendBlock_wrap M (by omega) hED rotated block
         hrotSmall hD
-        (by simpa [hrotPen, hrotLast] using h₁)
-        (by simpa [hrotLast] using h₂)
-        (by simpa [hrotZero] using h₃)
-        (by simpa [hrotZero, hrotOne] using h₄)
+        (by
+          rw [hrotPen, hrotLast]
+          exact h₁)
+        (by
+          rw [hrotLast]
+          exact h₂)
+        (by
+          rw [hrotZero]
+          exact h₃)
+        (by
+          rw [hrotZero, hrotOne]
+          exact h₄)
     let order : Fin (m + 3) ≃ M.E :=
       (appendBlockOrder hED rotated block).trans (Equiv.setCongr hUnion)
     refine ⟨order, ?_⟩
     intro i
     have hi := hApp i
-    simpa [order, Equiv.setCongr] using hi
+    simpa only [order, Equiv.trans_apply, Equiv.setCongr_apply] using hi
 
 #print axioms Rank3KUM.contiguousBasisSplicing
 
