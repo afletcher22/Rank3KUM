@@ -140,7 +140,9 @@ theorem sum_sortedClosureParts_card
       rfl
     _ = ∑ p ∈ (closureFinpartition M).parts,
         p.card := by
-      exact Finset.sum_attach
+      exact
+        Finset.sum_attach
+          (f := fun p : Finset M.E => p.card)
     _ = (Finset.univ : Finset M.E).card := by
       simpa [P] using P.sum_card_parts
     _ = Fintype.card M.E := by simp
