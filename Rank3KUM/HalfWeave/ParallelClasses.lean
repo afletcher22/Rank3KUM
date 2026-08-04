@@ -24,7 +24,8 @@ def closureSetoid (M : Matroid α) : Setoid M.E where
 /-- The finite partition of the ground set into singleton-closure classes. -/
 def closureFinpartition
     (M : Matroid α)
-    [Fintype M.E] :
+    [Fintype M.E]
+    [DecidableEq M.E] :
     Finpartition (Finset.univ : Finset M.E) := by
   classical
   exact Finpartition.ofSetoid (closureSetoid M)
@@ -32,6 +33,7 @@ def closureFinpartition
 @[simp] theorem mem_closureFinpartition_part_iff
     (M : Matroid α)
     [Fintype M.E]
+    [DecidableEq M.E]
     (e f : M.E) :
     f ∈ (closureFinpartition M).part e ↔
       M.closure ({(e : α)} : Set α) =
@@ -43,6 +45,7 @@ def closureFinpartition
 theorem two_le_card_closureFinpartition_parts
     (M : Matroid α)
     [Fintype M.E]
+    [DecidableEq M.E]
     (hRank : M.eRank = 2) :
     2 ≤ (closureFinpartition M).parts.card := by
   obtain ⟨e, f, he, hf, hclosure⟩ :=
