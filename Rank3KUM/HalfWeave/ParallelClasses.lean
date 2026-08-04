@@ -1,6 +1,7 @@
 import Rank3KUM.HalfWeave.RankTwo
 import Rank3KUM.UniformDensity
 import Mathlib.Order.Partition.Finpartition
+import Mathlib.Algebra.BigOperators.Fin
 
 namespace Rank3KUM.HalfWeave
 
@@ -144,6 +145,31 @@ theorem sum_sortedClosureParts_card
     _ = Fintype.card M.E := by simp
 
 #print axioms Rank3KUM.HalfWeave.sum_sortedClosureParts_card
+
+
+/--
+Flatten the sorted family of closure parts into contiguous
+`(part index, offset)` coordinates.
+-/
+def sortedClosureSigmaEquiv
+    (M : Matroid α)
+    (k : ℕ)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (hcard : Fintype.card M.E = 2 * k) :
+    Fin (2 * k) ≃
+      (i : Fin (closureFinpartition M).parts.card) ×
+        Fin ((sortedClosurePartsEquiv M i).1).card := by
+  have hsum :
+      (∑ i : Fin (closureFinpartition M).parts.card,
+        ((sortedClosurePartsEquiv M i).1).card) =
+          2 * k := by
+    rw [sum_sortedClosureParts_card M, hcard]
+  exact
+    (finCongr hsum.symm).trans
+      finSigmaFinEquiv.symm
+
+#print axioms Rank3KUM.HalfWeave.sortedClosureSigmaEquiv
 
 /-- Every part of the closure partition inherits the uniform-density bound. -/
 theorem card_closureFinpartition_part_le
