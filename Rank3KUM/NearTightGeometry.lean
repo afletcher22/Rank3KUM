@@ -314,6 +314,75 @@ theorem exists_nonconcurrent_three_nearTight
 #print axioms Rank3KUM.exists_nonconcurrent_three_nearTight
 
 /--
+The intersection of two distinct near-tight rank-two flats has at most the
+strict rank-one maximum of `k - 1` elements.
+-/
+theorem ncard_inter_le_k_sub_one_of_distinct_nearTight
+    (M : Matroid α) (k : ℕ)
+    (hk : 3 ≤ k)
+    (hLoopless : M.Loopless)
+    (hE : M.E.Finite)
+    (hRank : M.eRank = 3)
+    (hEcard : M.E.encard = ((3 * k : ℕ) : ℕ∞))
+    (hStrict : StrictlyUniformlyDense M k)
+    {A B : Set α}
+    (hAE : A ⊆ M.E)
+    (hBE : B ⊆ M.E)
+    (hArank : M.eRk A = 2)
+    (hBrank : M.eRk B = 2)
+    (hAcard : A.ncard = 2 * k - 1)
+    (hBcard : B.ncard = 2 * k - 1)
+    (hAB : A ≠ B) :
+    (A ∩ B).ncard ≤ k - 1 := by
+  letI : M.Loopless := hLoopless
+  have hAflat : M.IsFlat A :=
+    isFlat_of_strict_rankTwo_ncard_eq
+      M k hE hRank hStrict hAE hArank hAcard
+  have hBflat : M.IsFlat B :=
+    isFlat_of_strict_rankTwo_ncard_eq
+      M k hE hRank hStrict hBE hBrank hBcard
+  have hInterNonempty : (A ∩ B).Nonempty :=
+    inter_nonempty_of_nearTight
+      M k hk hE hEcard hAE hBE hAcard hBcard
+  have hInterRankLe : M.eRk (A ∩ B) ≤ 1 :=
+    eRk_inter_le_one_of_distinct_rankTwo_flats
+      M hE hRank hAflat hBflat hArank hBrank
+      (by omega) hAB
+  obtain ⟨x, hx⟩ := hInterNonempty
+  have hxE : x ∈ M.E := hAE hx.1
+  have hxIndep : M.Indep ({x} : Set α) :=
+    (Matroid.isNonloop_of_loopless hxE).indep
+  have hSingletonRank : M.eRk ({x} : Set α) = 1 := by
+    simpa using hxIndep.eRk_eq_encard
+  have hInterRankGe : (1 : ℕ∞) ≤ M.eRk (A ∩ B) := by
+    rw [← hSingletonRank]
+    apply M.eRk_mono
+    intro y hy
+    simpa only [Set.mem_singleton_iff] at hy
+    subst y
+    exact hx
+  have hInterRank : M.eRk (A ∩ B) = 1 :=
+    le_antisymm hInterRankLe hInterRankGe
+  have hInterFinite : (A ∩ B).Finite :=
+    hE.subset (Set.inter_subset_left.trans hAE)
+  have hInterProper : A ∩ B ≠ M.E := by
+    intro hEq
+    have hGroundRank : M.eRk (A ∩ B) = M.eRank := by
+      rw [hEq, M.eRk_ground]
+    rw [hInterRank, hRank] at hGroundRank
+    norm_num at hGroundRank
+  have hLt :=
+    StrictlyUniformlyDense.encard_lt_k_of_eRk_eq_one
+      M k hStrict (Set.inter_subset_left.trans hAE)
+      hInterNonempty hInterProper hInterRank
+  have hNatLt : (A ∩ B).ncard < k := by
+    rw [← hInterFinite.cast_ncard_eq] at hLt
+    exact_mod_cast hLt
+  omega
+
+#print axioms Rank3KUM.ncard_inter_le_k_sub_one_of_distinct_nearTight
+
+/--
 For three pairwise-distinct nonconcurrent rank-two flats, representatives of
 their three pairwise intersections can be chosen to form a basis.
 -/
