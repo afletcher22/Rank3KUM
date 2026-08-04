@@ -53,11 +53,20 @@ def finThreeInterleaveEquiv (k : ℕ) :
     finThreeInterleaveEquiv k (i, 2) = Sum.inr (i, true) := by
   rfl
 
+/-- The equivalence enumerating three-position blocks. -/
+def interleavePositionEquiv (k : ℕ) :
+    Fin k × Fin 3 ≃ Fin (3 * k) :=
+  finProdFinEquiv.trans (finCongr (Nat.mul_comm k 3))
+
 /-- The position of residue `j` in the `i`th three-element block. -/
 def interleavePosition (k : ℕ) (i : Fin k) (j : Fin 3) :
     Fin (3 * k) :=
-  (finCongr (Nat.mul_comm 3 k)).symm
-    (finProdFinEquiv (i, j))
+  interleavePositionEquiv k (i, j)
+
+@[simp] theorem interleavePosition_val
+    (k : ℕ) (i : Fin k) (j : Fin 3) :
+    (interleavePosition k i j).val = j.val + 3 * i.val := by
+  rfl
 
 /--
 Interleave a `k`-element set with a `2k`-element set in blocks
@@ -76,6 +85,75 @@ def interleaveOneTwo
         ((finThreeInterleaveEquiv k).trans
           ((Equiv.sumCongr points pairs).trans
             (Equiv.Set.union hPX).symm)))
+
+/-- The first residue advances to the second within its block. -/
+theorem cyclicIndex_interleave_zero_one
+    (k : ℕ) (hk : 0 < k) (i : Fin k) :
+    cyclicIndex (3 * k) (by omega) (interleavePosition k i 0) 1 =
+      interleavePosition k i 1 := by
+  apply Fin.ext
+  simp only [cyclicIndex_val, interleavePosition_val]
+  rw [Nat.mod_eq_of_lt (by omega)]
+
+/-- Two steps from the first residue reaches the third residue. -/
+theorem cyclicIndex_interleave_zero_two
+    (k : ℕ) (hk : 0 < k) (i : Fin k) :
+    cyclicIndex (3 * k) (by omega) (interleavePosition k i 0) 2 =
+      interleavePosition k i 2 := by
+  apply Fin.ext
+  simp only [cyclicIndex_val, interleavePosition_val]
+  rw [Nat.mod_eq_of_lt (by omega)]
+
+/-- The second residue advances to the third within its block. -/
+theorem cyclicIndex_interleave_one_one
+    (k : ℕ) (hk : 0 < k) (i : Fin k) :
+    cyclicIndex (3 * k) (by omega) (interleavePosition k i 1) 1 =
+      interleavePosition k i 2 := by
+  apply Fin.ext
+  simp only [cyclicIndex_val, interleavePosition_val]
+  rw [Nat.mod_eq_of_lt (by omega)]
+
+/-- Two steps from the second residue reaches the next block's point. -/
+theorem cyclicIndex_interleave_one_two
+    (k : ℕ) (hk : 0 < k) (i : Fin k) :
+    cyclicIndex (3 * k) (by omega) (interleavePosition k i 1) 2 =
+      interleavePosition k (cyclicIndex k hk i 1) 0 := by
+  apply Fin.ext
+  simp only [cyclicIndex_val, interleavePosition_val]
+  by_cases hi : i.val + 1 < k
+  · rw [Nat.mod_eq_of_lt hi, Nat.mod_eq_of_lt (by omega)]
+    omega
+  · have hieq : i.val + 1 = k := by omega
+    rw [hieq, Nat.mod_self]
+    simp
+
+/-- The third residue advances to the next block's point. -/
+theorem cyclicIndex_interleave_two_one
+    (k : ℕ) (hk : 0 < k) (i : Fin k) :
+    cyclicIndex (3 * k) (by omega) (interleavePosition k i 2) 1 =
+      interleavePosition k (cyclicIndex k hk i 1) 0 := by
+  apply Fin.ext
+  simp only [cyclicIndex_val, interleavePosition_val]
+  by_cases hi : i.val + 1 < k
+  · rw [Nat.mod_eq_of_lt hi, Nat.mod_eq_of_lt (by omega)]
+    omega
+  · have hieq : i.val + 1 = k := by omega
+    rw [hieq, Nat.mod_self]
+    simp
+
+/-- Two steps from the third residue reaches the next block's first pair entry. -/
+theorem cyclicIndex_interleave_two_two
+    (k : ℕ) (hk : 0 < k) (i : Fin k) :
+    cyclicIndex (3 * k) (by omega) (interleavePosition k i 2) 2 =
+      interleavePosition k (cyclicIndex k hk i 1) 1 := by
+  apply Fin.ext
+  simp only [cyclicIndex_val, interleavePosition_val]
+  by_cases hi : i.val + 1 < k
+  · rw [Nat.mod_eq_of_lt hi, Nat.mod_eq_of_lt (by omega)]
+    omega
+  · have hieq : i.val + 1 = k := by omega
+    rw [hieq, Nat.mod_self]
+    simp
 
 @[simp] theorem interleaveOneTwo_point
     {P X : Set α} {k : ℕ}
@@ -109,6 +187,66 @@ def interleaveOneTwo
       (interleavePosition k i 2) : (P ∪ X : Set α)) : α) =
       (pairs (i, true) : α) := by
   simp [interleaveOneTwo, interleavePosition]
+
+/--
+If each point with its pair, each pair with the next point, and the shifted
+pair-point-pair window are bases, the interleaved enumeration is cyclic.
+-/
+theorem cyclicBasisOrder3_interleaveOneTwo
+    (M : Matroid α) {P X : Set α} {k : ℕ}
+    (hk : 0 < k)
+    (hPX : Disjoint P X)
+    (points : Fin k ≃ P)
+    (pairs : Fin k × Bool ≃ X)
+    (hzero : ∀ i : Fin k,
+      M.IsBase
+        ({(points i : α),
+          (pairs (i, false) : α),
+          (pairs (i, true) : α)} : Set α))
+    (hone : ∀ i : Fin k,
+      M.IsBase
+        ({(pairs (i, false) : α),
+          (pairs (i, true) : α),
+          (points (cyclicIndex k hk i 1) : α)} : Set α))
+    (htwo : ∀ i : Fin k,
+      M.IsBase
+        ({(pairs (i, true) : α),
+          (points (cyclicIndex k hk i 1) : α),
+          (pairs (cyclicIndex k hk i 1, false) : α)} : Set α)) :
+    CyclicBasisOrder3 M (by omega)
+      (interleaveOneTwo hPX points pairs) := by
+  intro pos
+  obtain ⟨⟨i, j⟩, rfl⟩ :=
+    (interleavePositionEquiv k).surjective pos
+  have hj :
+      j = (0 : Fin 3) ∨ j = (1 : Fin 3) ∨ j = (2 : Fin 3) := by
+    fin_cases j
+    · left
+      apply Fin.ext
+      rfl
+    · right
+      left
+      apply Fin.ext
+      rfl
+    · right
+      right
+      apply Fin.ext
+      rfl
+  rcases hj with rfl | rfl | rfl
+  · simpa only [cyclicIndex_interleave_zero_one,
+      cyclicIndex_interleave_zero_two,
+      interleaveOneTwo_point, interleaveOneTwo_pair_false,
+      interleaveOneTwo_pair_true] using hzero i
+  · simpa only [cyclicIndex_interleave_one_one,
+      cyclicIndex_interleave_one_two,
+      interleaveOneTwo_point, interleaveOneTwo_pair_false,
+      interleaveOneTwo_pair_true] using hone i
+  · simpa only [cyclicIndex_interleave_two_one,
+      cyclicIndex_interleave_two_two,
+      interleaveOneTwo_point, interleaveOneTwo_pair_false,
+      interleaveOneTwo_pair_true] using htwo i
+
+#print axioms Rank3KUM.cyclicBasisOrder3_interleaveOneTwo
 
 end
 
