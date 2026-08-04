@@ -181,6 +181,92 @@ theorem exists_cyclicBasisOrder3_of_contract_sortedEnumeration
 #print axioms Rank3KUM.isBasis_singleton_of_loopless_eRk_eq_one
 #print axioms Rank3KUM.exists_cyclicBasisOrder3_of_contract_sortedEnumeration
 
+/--
+Contracting a rank-one set whose singleton basis is `e` lowers the rank of
+every disjoint set union by exactly one.
+-/
+theorem eRk_union_eq_contract_eRk_add_one
+    (M : Matroid α) {X A : Set α} {e : α}
+    (heBasis : M.IsBasis ({e} : Set α) X)
+    (hA : A ⊆ (Matroid.contract M X).E) :
+    M.eRk (A ∪ X) =
+      (Matroid.contract M X).eRk A + 1 := by
+  obtain ⟨I, hI⟩ :=
+    (Matroid.contract M X).exists_isBasis A
+  have hI' :
+      (Matroid.contract M ({e} : Set α)).IsBasis I A := by
+    have h := hI
+    rw [heBasis.contract_eq_contract_delete] at h
+    exact h.of_delete
+  have hLift :
+      M.IsBasis (I ∪ ({e} : Set α))
+        (A ∪ ({e} : Set α)) :=
+    heBasis.indep.union_isBasis_union_of_contract_isBasis hI'
+  have heX : e ∈ X :=
+    heBasis.subset (by simp)
+  have heI : e ∉ I := by
+    intro he
+    have heA : e ∈ A := hI.subset he
+    have heComp : e ∈ M.E \ X := by
+      simpa using hA heA
+    exact heComp.2 heX
+  have hclosure :
+      M.closure (A ∪ ({e} : Set α)) =
+        M.closure (A ∪ X) :=
+    M.closure_union_congr_right heBasis.closure_eq_closure
+  calc
+    M.eRk (A ∪ X) =
+        M.eRk (M.closure (A ∪ X)) :=
+      (M.eRk_closure_eq _).symm
+    _ = M.eRk (M.closure
+        (A ∪ ({e} : Set α))) :=
+      congrArg M.eRk hclosure.symm
+    _ = M.eRk (A ∪ ({e} : Set α)) :=
+      M.eRk_closure_eq _
+    _ = (I ∪ ({e} : Set α)).encard :=
+      hLift.encard_eq_eRk.symm
+    _ = I.encard + 1 := by
+      rw [Set.union_singleton,
+        Set.encard_insert_of_notMem heI]
+    _ = (Matroid.contract M X).eRk A + 1 := by
+      rw [hI.encard_eq_eRk]
+
+/-- Uniform density is inherited by contraction of a tight rank-one set. -/
+theorem UniformlyDense.contract_tight_rank_one
+    (M : Matroid α) (k : ℕ)
+    (hDense : UniformlyDense M k)
+    {X : Set α}
+    (hX : Tight M k X)
+    (hXrank : M.eRk X = 1) :
+    UniformlyDense (Matroid.contract M X) k := by
+  obtain ⟨e, heX, heNonloop, hXclosure⟩ :=
+    (Matroid.eRk_eq_one_iff hX.1).mp hXrank
+  have heBasis : M.IsBasis ({e} : Set α) X :=
+    heNonloop.indep.isBasis_of_subset_of_subset_closure
+      (by simpa using heX) hXclosure
+  have hXcard : X.encard = (k : ℕ∞) :=
+    tight_encard_eq_k_of_eRk_eq_one M k hX hXrank
+  intro A hA
+  have hAcomp : A ⊆ M.E \ X := by
+    simpa using hA
+  have hAXsubset : A ∪ X ⊆ M.E :=
+    Set.union_subset
+      (hAcomp.trans Set.sdiff_subset) hX.1
+  have hdisjoint : Disjoint A X :=
+    Set.disjoint_sdiff_left.mono_left hAcomp
+  have hdense := hDense (A ∪ X) hAXsubset
+  have hrank :=
+    eRk_union_eq_contract_eRk_add_one
+      M heBasis hA
+  rw [Set.encard_union_eq hdisjoint, hXcard,
+    hrank, mul_add, mul_one] at hdense
+  exact
+    (ENat.add_le_add_iff_right
+      (by simp : (k : ℕ∞) ≠ ⊤)).mp hdense
+
+#print axioms Rank3KUM.eRk_union_eq_contract_eRk_add_one
+#print axioms Rank3KUM.UniformlyDense.contract_tight_rank_one
+
 end
 
 end Rank3KUM
