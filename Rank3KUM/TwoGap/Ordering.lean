@@ -24,7 +24,11 @@ theorem exists_fin3_equiv_with_endpoints
     Set.finite_of_encard_eq_coe hcard
   letI : Fintype D := hDfinite.fintype
   have hcardF : Fintype.card D = 3 := by
-    exact_mod_cast hcard
+    have hcardE : (Fintype.card D : ℕ∞) = (3 : ℕ∞) := by
+      calc
+        (Fintype.card D : ℕ∞) = D.encard := Set.coe_fintypeCard D
+        _ = 3 := hcard
+    exact_mod_cast hcardE
   let base : Fin 3 ≃ D :=
     (Fintype.equivFinOfCardEq hcardF).symm
   let U : D := ⟨u, huD⟩
@@ -36,7 +40,7 @@ theorem exists_fin3_equiv_with_endpoints
   have hfirst_two_ne_U : first 2 ≠ U := by
     intro h
     rw [← hfirst_zero] at h
-    exact (by norm_num : (2 : Fin 3) ≠ 0) (first.injective h)
+    exact (by decide : (2 : Fin 3) ≠ 0) (first.injective h)
   have hWU : W ≠ U := by
     intro h
     apply huw
@@ -46,7 +50,10 @@ theorem exists_fin3_equiv_with_endpoints
   refine ⟨result, ?_, ?_⟩
   · change ((result 0 : D) : α) = u
     have hresult_zero : result 0 = U := by
-      simp [result, hfirst_zero, hfirst_two_ne_U, hWU]
+      change (Equiv.swap (first 2) W) (first 0) = U
+      rw [hfirst_zero]
+      exact Equiv.swap_apply_of_ne_of_ne
+        hfirst_two_ne_U.symm hWU.symm
     exact congrArg Subtype.val hresult_zero
   · change ((result 2 : D) : α) = w
     have hresult_two : result 2 = W := by
