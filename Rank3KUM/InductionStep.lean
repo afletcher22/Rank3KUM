@@ -33,9 +33,8 @@ theorem delete_ground_encard_eq_three_mul_pred
     _ = ((3 * k : ℕ) : ℕ∞) := hEcard
     _ = (3 : ℕ∞) +
         ((3 * (k - 1) : ℕ) : ℕ∞) := by
-      rw [← ENat.natCast_add]
-      congr 1
-      omega
+      exact_mod_cast
+        (show 3 * k = 3 + 3 * (k - 1) by omega)
 
 /--
 The induction splice in the natural `3k` parametrization: once deleting a
