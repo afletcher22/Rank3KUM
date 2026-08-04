@@ -85,6 +85,31 @@ theorem exists_isBase_hitsNearTight_of_unique
   subst A
   exact ⟨e, heF, heD (by simp)⟩
 
+/--
+If all near-tight rank-two sets share a ground-set point, extend that point to
+a basis.  The resulting basis hits every possible deletion obstruction.
+-/
+theorem exists_isBase_hitsNearTight_of_common_point
+    (M : Matroid α) (k : ℕ)
+    (hLoopless : M.Loopless)
+    (hCommon :
+      ∃ e : α, e ∈ M.E ∧
+        ∀ A : Set α, A ⊆ M.E →
+          M.eRk A = 2 →
+          A.ncard = 2 * k - 1 →
+          e ∈ A) :
+    ∃ D : Set α,
+      M.IsBase D ∧ HitsNearTightRankTwo M k D := by
+  obtain ⟨e, heE, heCommon⟩ := hCommon
+  letI : M.Loopless := hLoopless
+  have heIndep : M.Indep ({e} : Set α) :=
+    (Matroid.isNonloop_of_loopless heE).indep
+  obtain ⟨D, hD, heD⟩ :=
+    heIndep.exists_isBase_superset
+  refine ⟨D, hD, ?_⟩
+  intro A hAE hArank hAcard
+  exact ⟨e, heCommon A hAE hArank hAcard, heD (by simp)⟩
+
 /-- A hit rules out the sole rank-two obstruction inside the complement. -/
 theorem rankTwoComplementBound_of_hitsNearTight
     (M : Matroid α) (k : ℕ)
