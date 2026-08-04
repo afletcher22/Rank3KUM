@@ -11,8 +11,8 @@ variable {α : Type*}
 
 /--
 Strong induction completes the theorem once two sharply isolated inputs are
-available: the six-element case and a density-reducing basis in every strict
-case with `k ≥ 3`.
+available: the six-element case and a hitting basis for each nonconcurrent
+near-tight family in the strict cases with `k ≥ 3`.
 -/
 theorem rankThreeKUM_of_small_two_and_strict_deletion
     (hTwo :
@@ -39,8 +39,7 @@ theorem rankThreeKUM_of_small_two_and_strict_deletion
         ∃ D : Set α,
           N.IsBase D ∧
           HitsNearTightRankTwo N j D) :
-    ∀ (k : ℕ) (M : Matroid α),
-      0 < k →
+    ∀ (k : ℕ) (M : Matroid α) (_hk : 0 < k),
       M.E.Finite →
       M.eRank = 3 →
       M.E.encard = ((3 * k : ℕ) : ℕ∞) →
