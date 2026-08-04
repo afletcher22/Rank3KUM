@@ -264,8 +264,38 @@ theorem UniformlyDense.contract_tight_rank_one
     (ENat.add_le_add_iff_right
       (by simp : (k : ℕ∞) ≠ ⊤)).mp hdense
 
+/-- Contracting a rank-one set from a rank-three matroid has rank two. -/
+theorem eRank_contract_eq_two_of_eRank_eq_three_eRk_eq_one
+    (M : Matroid α)
+    (hRank : M.eRank = 3)
+    {X : Set α}
+    (hXsubset : X ⊆ M.E)
+    (hXrank : M.eRk X = 1) :
+    (Matroid.contract M X).eRank = 2 := by
+  obtain ⟨e, heX, heNonloop, hXclosure⟩ :=
+    (Matroid.eRk_eq_one_iff hXsubset).mp hXrank
+  have heBasis : M.IsBasis ({e} : Set α) X :=
+    heNonloop.indep.isBasis_of_subset_of_subset_closure
+      (by simpa using heX) hXclosure
+  have hrank :=
+    eRk_union_eq_contract_eRk_add_one
+      M heBasis
+        (show (Matroid.contract M X).E ⊆
+          (Matroid.contract M X).E from Set.Subset.rfl)
+  rw [Matroid.contract_ground,
+    Set.sdiff_union_of_subset hXsubset,
+    M.eRk_ground, hRank,
+    (Matroid.contract M X).eRk_ground] at hrank
+  apply ENat.add_left_injective_of_ne_top
+    (by simp : (1 : ℕ∞) ≠ ⊤)
+  calc
+    (Matroid.contract M X).eRank + 1 = 3 :=
+      hrank.symm
+    _ = (2 : ℕ∞) + 1 := by norm_num
+
 #print axioms Rank3KUM.eRk_union_eq_contract_eRk_add_one
 #print axioms Rank3KUM.UniformlyDense.contract_tight_rank_one
+#print axioms Rank3KUM.eRank_contract_eq_two_of_eRank_eq_three_eRk_eq_one
 
 end
 
