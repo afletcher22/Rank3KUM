@@ -37,6 +37,20 @@ def HitsNearTightRankTwo
     A.ncard = 2 * k - 1 →
     (A ∩ D).Nonempty
 
+/-- If there is no near-tight rank-two set, every basis satisfies the hitting condition. -/
+theorem exists_isBase_hitsNearTight_of_no_nearTight
+    (M : Matroid α) (k : ℕ)
+    (hNone :
+      ¬ ∃ A : Set α, A ⊆ M.E ∧
+        M.eRk A = 2 ∧
+        A.ncard = 2 * k - 1) :
+    ∃ D : Set α,
+      M.IsBase D ∧ HitsNearTightRankTwo M k D := by
+  obtain ⟨D, hD⟩ := M.exists_isBase
+  refine ⟨D, hD, ?_⟩
+  intro A hAE hArank hAcard
+  exact (hNone ⟨A, hAE, hArank, hAcard⟩).elim
+
 /-- A hit rules out the sole rank-two obstruction inside the complement. -/
 theorem rankTwoComplementBound_of_hitsNearTight
     (M : Matroid α) (k : ℕ)
