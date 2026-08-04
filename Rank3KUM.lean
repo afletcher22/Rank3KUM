@@ -26,6 +26,7 @@ import Rank3KUM.ContractInterleave
 import Rank3KUM.TightSetReduction
 import Rank3KUM.InductionStep
 import Rank3KUM.StrictDensity
+import Rank3KUM.NearTightGeometry
 import Rank3KUM.FinalReduction
 import Rank3KUM.SmallCases
 import Rank3KUM.FinalInduction
