@@ -238,6 +238,31 @@ theorem uniformlyDense_delete_of_strict_of_rank_two_bound
           hComplementCard
     simpa [hr, Nat.mul_comm] using hcard
 
+/--
+A rank-preserving basis that hits every near-tight rank-two set is
+density-reducing.
+-/
+theorem uniformlyDense_delete_of_strict_of_hitsNearTight
+    (M : Matroid α) (k : ℕ)
+    (hk : 0 < k)
+    (hE : M.E.Finite)
+    (hRank : M.eRank = 3)
+    (hDense : UniformlyDense M k)
+    (hStrict : StrictlyUniformlyDense M k)
+    {D : Set α}
+    (hD : M.IsBase D)
+    (hComplementCard :
+      (M.E \ D).encard =
+        ((3 * (k - 1) : ℕ) : ℕ∞))
+    (hHits : HitsNearTightRankTwo M k D) :
+    UniformlyDense (Matroid.delete M D) (k - 1) := by
+  apply uniformlyDense_delete_of_strict_of_rank_two_bound
+    M k hk hE hRank hDense hStrict hD hComplementCard
+  intro A hAcomp hArank
+  exact
+    rankTwoComplementBound_of_hitsNearTight
+      M k hE hRank hStrict hHits hAcomp hArank
+
 #print axioms Rank3KUM.exists_nonempty_proper_tight_or_strictlyUniformlyDense
 #print axioms Rank3KUM.StrictlyUniformlyDense.encard_lt_k_of_eRk_eq_one
 #print axioms Rank3KUM.StrictlyUniformlyDense.encard_lt_two_mul_k_of_eRk_eq_two
