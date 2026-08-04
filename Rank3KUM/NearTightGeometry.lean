@@ -172,7 +172,7 @@ theorem closure_singleton_inter_flat_eq_empty_of_not_mem
     {F : Set α}
     (hFflat : M.IsFlat F)
     {e : α}
-    (heE : e ∈ M.E)
+    (_heE : e ∈ M.E)
     (heF : e ∉ F) :
     M.closure ({e} : Set α) ∩ F = ∅ := by
   letI : M.Loopless := hLoopless
@@ -180,20 +180,11 @@ theorem closure_singleton_inter_flat_eq_empty_of_not_mem
   intro x hx
   have hxE : x ∈ M.E :=
     M.mem_ground_of_mem_closure hx.1
-  have hxNotClosureEmpty :
-      x ∉ M.closure ∅ := by
-    rw [M.closure_empty,
-      M.loops_eq_empty]
-    simp
-  have hxDiff :
-      x ∈ M.closure (insert e ∅) \ M.closure ∅ := by
-    simpa using ⟨hx.1, hxNotClosureEmpty⟩
-  have heDiff :
-      e ∈ M.closure (insert x ∅) \ M.closure ∅ :=
-    (M.closure_exchange_iff).2 hxDiff
+  have hxNonloop : M.IsNonloop x :=
+    Matroid.isNonloop_of_loopless hxE
   have heClosureX :
-      e ∈ M.closure ({x} : Set α) := by
-    simpa using heDiff.1
+      e ∈ M.closure ({x} : Set α) :=
+    hxNonloop.mem_closure_singleton hx.1
   have hClosureXSubsetF :
       M.closure ({x} : Set α) ⊆ F := by
     calc
