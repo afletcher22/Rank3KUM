@@ -707,6 +707,33 @@ def rankTwoSortedEnumerationOfUniformlyDense
 #print axioms Rank3KUM.HalfWeave.sortedClosureBlockModel
 #print axioms Rank3KUM.HalfWeave.rankTwoSortedEnumerationOfUniformlyDense
 
+/-- Every finite uniformly dense rank-two matroid has the required cyclic adjacent-base order. -/
+theorem exists_cyclic_adjacent_base_order_of_uniformlyDense
+    (M : Matroid α)
+    (k : ℕ)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (hk : 0 < k)
+    (hcard : Fintype.card M.E = 2 * k)
+    (hDense : UniformlyDense M k)
+    (hRank : M.eRank = 2) :
+    ∃ order : Fin k × Bool ≃ M.E,
+      ∀ p : Fin k × Bool,
+        M.IsBase
+          ({((order p : M.E) : α),
+            ((order (weaveNext k hk p) : M.E) : α)} :
+              Set α) := by
+  have hLoopless : M.Loopless :=
+    loopless_of_uniformlyDense M k hk hDense
+  let D :=
+    rankTwoSortedEnumerationOfUniformlyDense
+      M k hcard hDense hLoopless hRank
+  exact
+    exists_cyclic_adjacent_base_order_of_sortedEnumeration
+      M hk hRank D
+
+#print axioms Rank3KUM.HalfWeave.exists_cyclic_adjacent_base_order_of_uniformlyDense
+
 end
 
 end Rank3KUM.HalfWeave
