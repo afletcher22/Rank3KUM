@@ -1,7 +1,7 @@
 # Rank3KUM
 
 A Lean 4 formalization of the **divisible case of the rank-three Kajitani–Ueno–Miyano
-cyclic ordering theorem**.
+cyclic ordering theorem** constructed by GPT-5.6 Sol and Opus 5.
 
 ## What is proved
 
