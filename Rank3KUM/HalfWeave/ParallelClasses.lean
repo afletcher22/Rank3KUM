@@ -104,14 +104,14 @@ def sortedClosurePartsEquiv
   let L := sortedClosureParts M
   have hlength :
       L.length = (closureFinpartition M).parts.card := by
-    simpa [L] using length_sortedClosureParts M
+    simp [L]
   have hnodup : L.Nodup := by
     simpa [L] using nodup_sortedClosureParts M
   have hall :
       ∀ p : (closureFinpartition M).parts,
         p ∈ L := by
     intro p
-    simpa [L] using mem_sortedClosureParts M p
+    simp [L]
   exact
     (finCongr hlength.symm).trans
       (hnodup.getEquivOfForallMemList _ hall)
@@ -135,7 +135,7 @@ theorem antitone_sortedClosureParts_card
   let L := sortedClosureParts M
   have hlength :
       L.length = (closureFinpartition M).parts.card := by
-    simpa [L] using length_sortedClosureParts M
+    simp [L]
   let i' : Fin L.length :=
     Fin.cast hlength.symm i
   let j' : Fin L.length :=

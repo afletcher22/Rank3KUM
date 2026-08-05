@@ -29,7 +29,7 @@ theorem isBase_insert_pair_of_contract_isBase_rank3
       ({f, g} : Set α) ∪ ({e} : Set α) =
         ({e, f, g} : Set α) := by
     ext x
-    simp [or_comm, or_left_comm, or_assoc]
+    simp
   have htriple : M.Indep ({e, f, g} : Set α) := by
     rw [hset] at hdata
     exact hdata.1
@@ -51,7 +51,7 @@ theorem isBase_insert_pair_of_contract_isBase_rank3
 def contractGroundEquiv (M : Matroid α) (X : Set α) :
     (Matroid.contract M X).E ≃ (M.E \ X : Set α) where
   toFun e := ⟨e, by simpa using e.property⟩
-  invFun e := ⟨e, by simpa using e.property⟩
+  invFun e := ⟨e, by simp⟩
   left_inv e := by
     apply Subtype.ext
     rfl
@@ -77,7 +77,7 @@ theorem isBasis_singleton_of_loopless_eRk_eq_one
     {e : α}
     (heX : e ∈ X) :
     M.IsBasis ({e} : Set α) X := by
-  letI : M.Loopless := hLoopless
+  let : M.Loopless := hLoopless
   have heNonloop : M.IsNonloop e :=
     Matroid.isNonloop_of_loopless (hXsubset heX)
   exact
@@ -155,7 +155,7 @@ theorem exists_cyclicBasisOrder3_of_contract_sortedEnumeration
           (hwithin i)
       convert hbase using 1
       ext x
-      simp [or_comm, or_left_comm, or_assoc]
+      simp [or_comm, or_left_comm]
     · intro i
       have hbase :=
         isBase_insert_pair_of_contract_isBase_rank3
@@ -164,7 +164,7 @@ theorem exists_cyclicBasisOrder3_of_contract_sortedEnumeration
           (hacross i)
       convert hbase using 1
       ext x
-      simp [or_comm, or_left_comm, or_assoc]
+      simp [or_left_comm]
   have hUnion : X ∪ (M.E \ X) = M.E :=
     Set.union_sdiff_cancel hXsubset
   let order : Fin (3 * k) ≃ M.E :=
@@ -333,13 +333,13 @@ theorem exists_cyclicBasisOrder3_of_tight_rank_one
     hE.subset hX.1
   have hComplementFinite : (M.E \ X).Finite :=
     hE.subset Set.sdiff_subset
-  letI : Fintype X := hXfinite.fintype
-  letI : Fintype (M.E \ X : Set α) :=
+  let : Fintype X := hXfinite.fintype
+  let : Fintype (M.E \ X : Set α) :=
     hComplementFinite.fintype
-  letI : Fintype (Matroid.contract M X).E :=
+  let : Fintype (Matroid.contract M X).E :=
     Fintype.ofEquiv (M.E \ X : Set α)
       (contractGroundEquiv M X).symm
-  letI : DecidableEq (Matroid.contract M X).E :=
+  let : DecidableEq (Matroid.contract M X).E :=
     Classical.decEq _
   have hXncard : X.ncard = k := by
     have hcast : (X.ncard : ℕ∞) = (k : ℕ∞) := by

@@ -48,7 +48,7 @@ theorem pair_indep_of_closure_ne
       M.closure ({e} : Set α) ≠
         M.closure ({f} : Set α)) :
     M.Indep ({e, f} : Set α) := by
-  letI : M.Loopless := hLoopless
+  let : M.Loopless := hLoopless
   have heNonloop : M.IsNonloop e :=
     Matroid.isNonloop_of_loopless he
   have hfNonloop : M.IsNonloop f :=

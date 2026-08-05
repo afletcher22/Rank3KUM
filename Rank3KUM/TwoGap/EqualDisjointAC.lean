@@ -119,7 +119,7 @@ theorem equal_singleton_residualSupport_a_disjoint_c
   have hSetDBC :
       ({d, b, c} : Set α) = ({b, c, d} : Set α) := by
     ext x
-    simp [or_comm, or_left_comm, or_assoc]
+    simp [or_comm, or_left_comm]
   have hBCDNot : ¬ M.IsBase ({b, c, d} : Set α) := by
     intro hbase
     apply hDBCNot

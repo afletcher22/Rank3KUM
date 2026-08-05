@@ -53,7 +53,7 @@ theorem closure_pair_inter_closure_pair_eq
     have hbxI : M.Indep ({x, b} : Set α) := by
       have hi :=
         (hbI.notMem_closure_iff_of_notMem
-          (by simpa [hxb_ne]) hxE).mp hxb
+          (by simp [hxb_ne]) hxE).mp hxb
       simpa [insert_comm] using hi
     have hxa :
         x ∈ M.closure (insert a ({b} : Set α)) \

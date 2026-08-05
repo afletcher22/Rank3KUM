@@ -114,7 +114,7 @@ theorem inter_subset_closure_singleton_of_distinct_rankTwo_flats
     {e : α}
     (he : e ∈ A ∩ B) :
     A ∩ B ⊆ M.closure ({e} : Set α) := by
-  letI : M.Loopless := hLoopless
+  let : M.Loopless := hLoopless
   have hInterRank :=
     eRk_inter_le_one_of_distinct_rankTwo_flats
       M hE hRank hAflat hBflat hArank hBrank
@@ -175,7 +175,7 @@ theorem closure_singleton_inter_flat_eq_empty_of_not_mem
     (_heE : e ∈ M.E)
     (heF : e ∉ F) :
     M.closure ({e} : Set α) ∩ F = ∅ := by
-  letI : M.Loopless := hLoopless
+  let : M.Loopless := hLoopless
   apply Set.eq_empty_iff_forall_notMem.2
   intro x hx
   have hxE : x ∈ M.E :=
@@ -334,7 +334,7 @@ theorem ncard_inter_le_k_sub_one_of_distinct_nearTight
     (hBcard : B.ncard = 2 * k - 1)
     (hAB : A ≠ B) :
     (A ∩ B).ncard ≤ k - 1 := by
-  letI : M.Loopless := hLoopless
+  let : M.Loopless := hLoopless
   have hAflat : M.IsFlat A :=
     isFlat_of_strict_rankTwo_ncard_eq
       M k hE hRank hStrict hAE hArank hAcard
@@ -670,7 +670,7 @@ theorem exists_isBase_of_pairwise_intersections_three_flats
       ⟨⟨hzA, hz.1⟩, hz.2⟩
     rw [hABCempty] at hzABC
     exact hzABC
-  letI : M.Loopless := hLoopless
+  let : M.Loopless := hLoopless
   have hxE : x ∈ M.E :=
     hAflat.subset_ground hx.1
   have hyE : y ∈ M.E :=
@@ -727,7 +727,7 @@ theorem exists_isBase_of_pairwise_intersections_three_flats
       insert z ({x, y} : Set α) =
         ({x, y, z} : Set α) := by
     ext u
-    simp [or_comm, or_left_comm, or_assoc]
+    simp [or_comm, or_left_comm]
   have hTripleIndep :
       M.Indep ({x, y, z} : Set α) := by
     rwa [hSetEq] at hInsertIndep

@@ -38,7 +38,7 @@ theorem fundamentalSupport_eq_singleton_of_residualSupport_eq_empty
   constructor
   · intro hd
     by_cases hdt : d = t
-    · simpa [hdt]
+    · simp [hdt]
     · have hdres : d ∈ ResidualSupport M D t e :=
         (mem_residualSupport M D t e d).2 ⟨hd, hdt⟩
       rw [hres] at hdres

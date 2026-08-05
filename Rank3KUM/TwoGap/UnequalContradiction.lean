@@ -23,7 +23,7 @@ theorem isBase_triple_of_indep_pair_notMem_closure_rank3
   have hSet :
       insert z ({x, y} : Set α) = ({x, y, z} : Set α) := by
     ext u
-    simp [or_comm, or_left_comm, or_assoc]
+    simp [or_comm, or_left_comm]
   have hTripleI : M.Indep ({x, y, z} : Set α) := by
     rwa [hSet] at hInsert
   by_contra hnot
@@ -255,7 +255,7 @@ theorem false_of_unequal_singleton_partner_pairs
   have hSetBSA :
       ({a, b, s} : Set α) = ({b, s, a} : Set α) := by
     ext x
-    simp [or_comm, or_left_comm, or_assoc]
+    simp [or_comm, or_left_comm]
   have hBaseBSA : M.IsBase ({b, s, a} : Set α) := by
     rw [← hSetBSA]
     exact hBaseABS
@@ -283,7 +283,7 @@ theorem false_of_unequal_singleton_partner_pairs
   have hSetTSA :
       ({t, s, a} : Set α) = ({t, a, s} : Set α) := by
     ext x
-    simp [or_comm, or_left_comm, or_assoc]
+    simp [or_comm, or_left_comm]
   have hExchangeABase : M.IsBase (exchangeSet D r a) := by
     rw [hExchangeA, ← hSetTSA]
     exact hBaseTSA
@@ -302,7 +302,7 @@ theorem false_of_unequal_singleton_partner_pairs
   have hSetTSC :
       ({t, s, c} : Set α) = ({t, c, s} : Set α) := by
     ext x
-    simp [or_comm, or_left_comm, or_assoc]
+    simp [or_comm, or_left_comm]
   have hExchangeCBase : M.IsBase (exchangeSet D r c) := by
     rw [hExchangeC, ← hSetTSC]
     exact hBaseTSC
@@ -343,7 +343,7 @@ theorem false_of_unequal_singleton_partner_pairs
   have hSetRBC :
       ({r, b, c} : Set α) = ({b, c, r} : Set α) := by
     ext x
-    simp [or_comm, or_left_comm, or_assoc]
+    simp [or_comm, or_assoc]
   have hBCRNot : ¬ M.IsBase ({b, c, r} : Set α) := by
     intro hbase
     apply hRBCNot

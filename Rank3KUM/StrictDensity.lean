@@ -99,7 +99,7 @@ theorem exists_isBase_hitsNearTight_of_unique
     subst F
     simp at hFrank
   obtain ⟨e, heF⟩ := hFnonempty
-  letI : M.Loopless := hLoopless
+  let : M.Loopless := hLoopless
   have heIndep : M.Indep ({e} : Set α) :=
     (Matroid.isNonloop_of_loopless
       (hFE heF)).indep
@@ -128,7 +128,7 @@ theorem exists_isBase_hitsNearTight_of_common_point
     ∃ D : Set α,
       M.IsBase D ∧ HitsNearTightRankTwo M k D := by
   obtain ⟨e, heE, heCommon⟩ := hCommon
-  letI : M.Loopless := hLoopless
+  let : M.Loopless := hLoopless
   have heIndep : M.Indep ({e} : Set α) :=
     (Matroid.isNonloop_of_loopless heE).indep
   obtain ⟨D, hD, heD⟩ :=
@@ -393,7 +393,7 @@ theorem uniformlyDense_delete_of_strict_of_rank_two_bound
     subst r
     have hLoopless : M.Loopless :=
       loopless_of_uniformlyDense M k hk hDense
-    letI : M.Loopless := hLoopless
+    let : M.Loopless := hLoopless
     have hAloops : A ⊆ M.loops := by
       apply (M.eRk_eq_zero_iff hAE).mp
       simpa using hr

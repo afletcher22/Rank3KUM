@@ -22,7 +22,7 @@ theorem exists_cyclicBasisOrder3_of_ground_encard_three
       rw [hE.cast_ncard_eq]
       exact hEcard
     exact_mod_cast hcast
-  letI : Fintype M.E := hE.fintype
+  let : Fintype M.E := hE.fintype
   have hNatCard : Nat.card M.E = 3 := by
     simpa only [Nat.card_coe_set_eq] using hEncard
   let order : Fin 3 ≃ M.E :=

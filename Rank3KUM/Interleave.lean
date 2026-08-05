@@ -183,7 +183,7 @@ theorem cyclicIndex_interleave_two_two
       omega
     rw [hnum, hwrap]
     have hone_lt : 1 < 3 * k := by omega
-    simp [Nat.add_mod, Nat.mod_eq_of_lt hone_lt]
+    simp [Nat.mod_eq_of_lt hone_lt]
 
 @[simp] theorem interleaveOneTwo_point
     {P X : Set α} {k : ℕ}
@@ -376,7 +376,7 @@ theorem cyclicBasisOrder3_interleaveOneTwo_of_flat_pairs
         (hwithin_ne i) (hwithin i)
     convert hbase using 1
     ext x
-    simp [or_comm, or_left_comm, or_assoc]
+    simp [or_comm, or_left_comm]
   · intro i
     have hbase :=
       isBase_insert_pair_of_isBasis_flat_rank3
@@ -386,7 +386,7 @@ theorem cyclicBasisOrder3_interleaveOneTwo_of_flat_pairs
         (hacross_ne i) (hacross i)
     convert hbase using 1
     ext x
-    simp [or_comm, or_left_comm, or_assoc]
+    simp [or_left_comm]
 
 #print axioms Rank3KUM.isBase_insert_pair_of_isBasis_flat_rank3
 #print axioms Rank3KUM.cyclicBasisOrder3_interleaveOneTwo_of_flat_pairs
@@ -395,7 +395,7 @@ theorem cyclicBasisOrder3_interleaveOneTwo_of_flat_pairs
 def restrictGroundEquiv (M : Matroid α) (X : Set α) :
     (Matroid.restrict M X).E ≃ X where
   toFun e := ⟨e, by simpa using e.property⟩
-  invFun e := ⟨e, by simpa using e.property⟩
+  invFun e := ⟨e, by simp⟩
   left_inv e := by
     apply Subtype.ext
     rfl
@@ -508,7 +508,7 @@ theorem exists_cyclicBasisOrder3_of_sortedEnumeration_flat
   have hLocal : CyclicBasisOrder3 M (by omega) localOrder := by
     exact
       cyclicBasisOrder3_interleaveOneTwo_of_sortedEnumeration
-        M hk hRank hRestrictRank hPX Set.diff_subset
+        M hk hRank hRestrictRank hPX Set.sdiff_subset
         hXflat points D
   let order : Fin (3 * k) ≃ M.E :=
     localOrder.trans (Equiv.setCongr hUnion)
@@ -537,8 +537,8 @@ theorem exists_cyclicBasisOrder3_of_sortedEnumeration_tight_flat
     ∃ order : Fin (3 * k) ≃ M.E,
       CyclicBasisOrder3 M (by omega) order := by
   have hComplementFinite : (M.E \ X).Finite :=
-    hE.subset Set.diff_subset
-  letI : Fintype (M.E \ X : Set α) :=
+    hE.subset Set.sdiff_subset
+  let : Fintype (M.E \ X : Set α) :=
     hComplementFinite.fintype
   have hNcard : (M.E \ X).ncard = k := by
     have hcast :

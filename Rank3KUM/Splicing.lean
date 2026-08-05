@@ -113,12 +113,12 @@ theorem contiguousBasisSplicing
     simp [hpa, hpb, hpc, hpq, hab, hac, haq, hbc, hbq, hcq]
 
   have hout (i : Fin m) : (small i : α) ∈ M.E \ D := by
-    simpa [Matroid.delete_ground] using (small i).property
-  have hpOut : p ∈ M.E \ D := by simpa [p] using hout ip
-  have haOut : a ∈ M.E \ D := by simpa [a] using hout ia
-  have hbOut : b ∈ M.E \ D := by simpa [b] using hout ib
-  have hcOut : c ∈ M.E \ D := by simpa [c] using hout ic
-  have hqOut : q ∈ M.E \ D := by simpa [q] using hout iq
+    simp [Matroid.delete_ground]
+  have hpOut : p ∈ M.E \ D := by simp [p]
+  have haOut : a ∈ M.E \ D := by simp [a]
+  have hbOut : b ∈ M.E \ D := by simp [b]
+  have hcOut : c ∈ M.E \ D := by simp [c]
+  have hqOut : q ∈ M.E \ D := by simp [q]
 
   have hip₁ : cyclicIndex m (by omega) ip 1 = ia := by
     apply Fin.ext

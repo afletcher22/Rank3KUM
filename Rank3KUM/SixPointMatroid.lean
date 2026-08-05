@@ -24,7 +24,7 @@ theorem pair_indep_of_strict_two
     (hbE : b ∈ M.E)
     (hab : a ≠ b) :
     M.Indep ({a, b} : Set α) := by
-  letI : M.Loopless := hLoopless
+  let : M.Loopless := hLoopless
   have haIndep : M.Indep ({a} : Set α) :=
     (Matroid.isNonloop_of_loopless haE).indep
   have hbNotMem : b ∉ ({a} : Set α) := by
@@ -105,7 +105,7 @@ theorem false_of_two_nonbase_triples_sharing_pair_strict_two
     (hABD :
       ¬ M.IsBase (insert d ({a, b} : Set α))) :
     False := by
-  letI : M.Loopless := hLoopless
+  let : M.Loopless := hLoopless
   have hPairIndep : M.Indep ({a, b} : Set α) :=
     pair_indep_of_strict_two
       M hLoopless hE hRank hStrict haE hbE hab
@@ -1644,7 +1644,7 @@ theorem exists_cyclicBasisOrder3_of_strict_two
       rw [hE.cast_ncard_eq]
       exact hEcard
     exact_mod_cast hcast
-  letI : Fintype M.E := hE.fintype
+  let : Fintype M.E := hE.fintype
   have hNatCard : Nat.card M.E = 6 := by
     simpa only [Nat.card_coe_set_eq] using hEncard
   let enum : Fin 6 ≃ M.E :=

@@ -22,7 +22,7 @@ theorem exists_fin3_equiv_with_endpoints
   classical
   have hDfinite : D.Finite :=
     Set.finite_of_encard_eq_coe hcard
-  letI : Fintype D := hDfinite.fintype
+  let : Fintype D := hDfinite.fintype
   have hcardF : Fintype.card D = 3 := by
     have hcardE : (Fintype.card D : ℕ∞) = (3 : ℕ∞) := by
       calc
@@ -48,15 +48,13 @@ theorem exists_fin3_equiv_with_endpoints
   let result : Fin 3 ≃ D :=
     first.trans (Equiv.swap (first 2) W)
   refine ⟨result, ?_, ?_⟩
-  · change ((result 0 : D) : α) = u
-    have hresult_zero : result 0 = U := by
+  · have hresult_zero : result 0 = U := by
       change (Equiv.swap (first 2) W) (first 0) = U
       rw [hfirst_zero]
       exact Equiv.swap_apply_of_ne_of_ne
         hfirst_two_ne_U.symm hWU.symm
     exact congrArg Subtype.val hresult_zero
-  · change ((result 2 : D) : α) = w
-    have hresult_two : result 2 = W := by
+  · have hresult_two : result 2 = W := by
       simp [result]
     exact congrArg Subtype.val hresult_two
 

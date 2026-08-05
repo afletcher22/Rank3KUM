@@ -43,7 +43,7 @@ theorem closure_singleton_encard_le
     {e : α}
     (he : e ∈ M.E) :
     (M.closure ({e} : Set α)).encard ≤ (k : ℕ∞) := by
-  letI : M.Loopless := hLoopless
+  let : M.Loopless := hLoopless
   have heNonloop : M.IsNonloop e :=
     Matroid.isNonloop_of_loopless he
   calc

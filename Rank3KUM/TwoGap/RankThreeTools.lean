@@ -80,7 +80,7 @@ theorem mem_closure_pair_of_not_isBase_triple
   have heq :
       insert z ({x, y} : Set α) = ({x, y, z} : Set α) := by
     ext u
-    simp [or_comm, or_left_comm, or_assoc]
+    simp [or_comm, or_left_comm]
   apply (hxyI.mem_closure_iff_of_notMem hzxy).2
   rwa [heq]
 
@@ -183,7 +183,7 @@ theorem not_mem_closure_pair_of_isBase_triple
   have heq :
       insert z ({x, y} : Set α) = ({x, y, z} : Set α) := by
     ext u
-    simp [or_comm, or_left_comm, or_assoc]
+    simp [or_comm, or_left_comm]
   rw [heq]
   exact hB.indep
 

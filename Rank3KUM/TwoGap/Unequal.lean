@@ -198,7 +198,7 @@ theorem not_mem_fundamentalSupport_third_of_unequal_singleton_partners
   have hSet :
       ({a, r, s} : Set α) = ({r, s, a} : Set α) := by
     ext u
-    simp [or_comm, or_left_comm, or_assoc]
+    simp [or_comm, or_left_comm]
   have hBaseRSA : M.IsBase ({r, s, a} : Set α) := by
     rw [← hSet]
     exact hBaseARS

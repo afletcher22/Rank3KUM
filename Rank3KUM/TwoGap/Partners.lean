@@ -66,10 +66,10 @@ theorem firstGapWorks_of_distinct_symmetricPartners
     omega
   have hub : u ≠ b := by
     intro h
-    exact hu'.2.1 (by simpa [h])
+    exact hu'.2.1 (by simp [h])
   have hwa : w ≠ a := by
     intro h
-    exact hw'.2.1 (by simpa [h])
+    exact hw'.2.1 (by simp [h])
   have hbu : b ≠ u := by
     intro h
     apply hbD
@@ -100,7 +100,7 @@ theorem firstGapWorks_of_distinct_symmetricPartners
         ({u, (d 1 : α), a} : Set α) =
           ({a, u, (d 1 : α)} : Set α) := by
       ext t
-      simp [or_comm, or_left_comm, or_assoc]
+      simp [or_comm, or_left_comm]
     rw [← hset]
     exact hbase
   have h3 : M.IsBase ({(d 1 : α), w, b} : Set α) := by
@@ -119,7 +119,7 @@ theorem firstGapWorks_of_distinct_symmetricPartners
         ({b, (d 1 : α), w} : Set α) =
           ({(d 1 : α), w, b} : Set α) := by
       ext t
-      simp [or_comm, or_left_comm, or_assoc]
+      simp [or_comm, or_assoc]
     rw [← hset]
     exact hbase
   have h4 : M.IsBase ({w, b, c} : Set α) := by
@@ -168,10 +168,10 @@ theorem secondGapWorks_of_distinct_symmetricPartners
     omega
   have huc : u ≠ c := by
     intro h
-    exact hu'.2.1 (by simpa [h])
+    exact hu'.2.1 (by simp [h])
   have hwb : w ≠ b := by
     intro h
-    exact hw'.2.1 (by simpa [h])
+    exact hw'.2.1 (by simp [h])
   have hcu : c ≠ u := by
     intro h
     apply hcD
@@ -202,7 +202,7 @@ theorem secondGapWorks_of_distinct_symmetricPartners
         ({u, (d 1 : α), b} : Set α) =
           ({b, u, (d 1 : α)} : Set α) := by
       ext t
-      simp [or_comm, or_left_comm, or_assoc]
+      simp [or_comm, or_left_comm]
     rw [← hset]
     exact hbase
   have h3 : M.IsBase ({(d 1 : α), w, c} : Set α) := by
@@ -221,7 +221,7 @@ theorem secondGapWorks_of_distinct_symmetricPartners
         ({c, (d 1 : α), w} : Set α) =
           ({(d 1 : α), w, c} : Set α) := by
       ext t
-      simp [or_comm, or_left_comm, or_assoc]
+      simp [or_comm, or_assoc]
     rw [← hset]
     exact hbase
   have h4 : M.IsBase ({w, c, q} : Set α) := by

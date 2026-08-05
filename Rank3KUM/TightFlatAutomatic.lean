@@ -29,10 +29,10 @@ theorem exists_cyclicBasisOrder3_of_uniformlyDense_rankTwo_flat
       CyclicBasisOrder3 M (by omega) order := by
   have hXfinite : X.Finite :=
     hE.subset hXflat.subset_ground
-  letI : Fintype X := hXfinite.fintype
-  letI : Fintype (M.restrict X).E :=
+  let : Fintype X := hXfinite.fintype
+  let : Fintype (M.restrict X).E :=
     Fintype.ofEquiv X (restrictGroundEquiv M X).symm
-  letI : DecidableEq (M.restrict X).E :=
+  let : DecidableEq (M.restrict X).E :=
     Classical.decEq _
   have hXncard : X.ncard = 2 * k := by
     have hcast : (X.ncard : ℕ∞) =
