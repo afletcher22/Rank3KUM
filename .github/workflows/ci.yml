@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "lean-integration"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache Lake packages
+        uses: actions/cache@v4
+        with:
+          path: .lake/packages
+          key: lake-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json', 'lakefile.toml') }}
+      - name: Install Elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Verify Lean toolchain
+        run: |
+          lean --version
+          lake --version
+      - name: Resolve pinned dependencies
+        run: lake update
+      - name: Download Mathlib cache
+        run: lake exe cache get
+      - name: Build Rank3KUM
+        run: lake build
