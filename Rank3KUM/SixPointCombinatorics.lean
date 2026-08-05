@@ -158,33 +158,59 @@ def LinearSixBad
 def sixPointPerm1 : Equiv.Perm (Fin 6) :=
   Equiv.refl (Fin 6)
 
-def sixPointPerm2 : Equiv.Perm (Fin 6) :=
+noncomputable def sixPointPerm2 : Equiv.Perm (Fin 6) :=
   Equiv.ofBijective
     (![0, 2, 4, 1, 5, 3] : Fin 6 → Fin 6) (by decide)
 
-def sixPointPerm3 : Equiv.Perm (Fin 6) :=
+noncomputable def sixPointPerm3 : Equiv.Perm (Fin 6) :=
   Equiv.ofBijective
     (![0, 1, 2, 5, 4, 3] : Fin 6 → Fin 6) (by decide)
 
-def sixPointPerm4 : Equiv.Perm (Fin 6) :=
+noncomputable def sixPointPerm4 : Equiv.Perm (Fin 6) :=
   Equiv.ofBijective
     (![0, 4, 1, 3, 2, 5] : Fin 6 → Fin 6) (by decide)
 
-def sixPointPerm5 : Equiv.Perm (Fin 6) :=
+noncomputable def sixPointPerm5 : Equiv.Perm (Fin 6) :=
   Equiv.ofBijective
     (![0, 1, 5, 3, 2, 4] : Fin 6 → Fin 6) (by decide)
 
-def sixPointPerm6 : Equiv.Perm (Fin 6) :=
+noncomputable def sixPointPerm6 : Equiv.Perm (Fin 6) :=
   Equiv.ofBijective
     (![0, 3, 1, 4, 2, 5] : Fin 6 → Fin 6) (by decide)
 
-def sixPointPerm7 : Equiv.Perm (Fin 6) :=
+noncomputable def sixPointPerm7 : Equiv.Perm (Fin 6) :=
   Equiv.ofBijective
     (![0, 2, 1, 3, 5, 4] : Fin 6 → Fin 6) (by decide)
 
-def sixPointPerm8 : Equiv.Perm (Fin 6) :=
+noncomputable def sixPointPerm8 : Equiv.Perm (Fin 6) :=
   Equiv.ofBijective
     (![0, 1, 5, 3, 4, 2] : Fin 6 → Fin 6) (by decide)
+
+
+/-- Cheap evaluation lemmas: avoid unfolding `Equiv.ofBijective` during `simp`. -/
+
+@[simp] theorem sixPointPerm1_apply (i : Fin 6) : sixPointPerm1 i = i := rfl
+
+@[simp] theorem sixPointPerm2_apply (i : Fin 6) :
+    sixPointPerm2 i = (![0, 2, 4, 1, 5, 3] : Fin 6 → Fin 6) i := rfl
+
+@[simp] theorem sixPointPerm3_apply (i : Fin 6) :
+    sixPointPerm3 i = (![0, 1, 2, 5, 4, 3] : Fin 6 → Fin 6) i := rfl
+
+@[simp] theorem sixPointPerm4_apply (i : Fin 6) :
+    sixPointPerm4 i = (![0, 4, 1, 3, 2, 5] : Fin 6 → Fin 6) i := rfl
+
+@[simp] theorem sixPointPerm5_apply (i : Fin 6) :
+    sixPointPerm5 i = (![0, 1, 5, 3, 2, 4] : Fin 6 → Fin 6) i := rfl
+
+@[simp] theorem sixPointPerm6_apply (i : Fin 6) :
+    sixPointPerm6 i = (![0, 3, 1, 4, 2, 5] : Fin 6 → Fin 6) i := rfl
+
+@[simp] theorem sixPointPerm7_apply (i : Fin 6) :
+    sixPointPerm7 i = (![0, 2, 1, 3, 5, 4] : Fin 6 → Fin 6) i := rfl
+
+@[simp] theorem sixPointPerm8_apply (i : Fin 6) :
+    sixPointPerm8 i = (![0, 1, 5, 3, 4, 2] : Fin 6 → Fin 6) i := rfl
 
 /-- The propositional core of the six-point certificate. -/
 private theorem sixPointSAT

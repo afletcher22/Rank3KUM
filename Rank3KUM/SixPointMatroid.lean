@@ -47,7 +47,7 @@ theorem pair_indep_of_strict_two
     hE.subset (M.closure_subset_ground _)
   have hClosureNonempty :
       (M.closure ({a} : Set α)).Nonempty :=
-    ⟨a, M.mem_closure_self a haE⟩
+    ⟨a, M.mem_closure_self _ haE⟩
   have hClosureProper :
       M.closure ({a} : Set α) ≠ M.E := by
     intro hEq
@@ -70,7 +70,7 @@ theorem pair_indep_of_strict_two
     simp only [Set.mem_insert_iff,
       Set.mem_singleton_iff] at hx
     rcases hx with rfl | rfl
-    · exact M.mem_closure_self a haE
+    · exact M.mem_closure_self _ haE
     · exact hbClosure
   have hPairCardLe :
       ({a, b} : Set α).ncard ≤
@@ -127,12 +127,10 @@ theorem false_of_two_nonbase_triples_sharing_pair_strict_two
       norm_num
     apply hABC
     apply hTripleIndep.isBase_of_eRk_ge (by simp)
-    calc
-      M.eRank = 3 := hRank
-      _ = (insert c ({a, b} : Set α)).encard :=
-        hTripleCard.symm
-      _ = M.eRk (insert c ({a, b} : Set α)) :=
-        hTripleIndep.eRk_eq_encard.symm
+    exact le_of_eq
+      (hRank.trans
+        (hTripleCard.symm.trans
+          hTripleIndep.eRk_eq_encard.symm))
   have hdClosure :
       d ∈ M.closure ({a, b} : Set α) := by
     by_contra hdNotClosure
@@ -147,14 +145,17 @@ theorem false_of_two_nonbase_triples_sharing_pair_strict_two
       norm_num
     apply hABD
     apply hTripleIndep.isBase_of_eRk_ge (by simp)
-    calc
-      M.eRank = 3 := hRank
-      _ = (insert d ({a, b} : Set α)).encard :=
-        hTripleCard.symm
-      _ = M.eRk (insert d ({a, b} : Set α)) :=
-        hTripleIndep.eRk_eq_encard.symm
+    exact le_of_eq
+      (hRank.trans
+        (hTripleCard.symm.trans
+          hTripleIndep.eRk_eq_encard.symm))
   let U : Set α :=
     insert c (insert d ({a, b} : Set α))
+  have hPairClosure :
+      ({a, b} : Set α) ⊆ M.closure ({a, b} : Set α) :=
+    M.subset_closure _
+      (by simp [Set.insert_subset_iff,
+        Set.singleton_subset_iff, haE, hbE])
   have hUSubsetClosure :
       U ⊆ M.closure ({a, b} : Set α) := by
     intro x hx
@@ -164,14 +165,14 @@ theorem false_of_two_nonbase_triples_sharing_pair_strict_two
     rcases hx with rfl | rfl | rfl | rfl
     · exact hcClosure
     · exact hdClosure
-    · exact M.mem_closure_self a haE
-    · exact M.mem_closure_self b hbE
+    · exact hPairClosure (by simp)
+    · exact hPairClosure (by simp)
   have hURankLe : M.eRk U ≤ 2 := by
     calc
       M.eRk U ≤ M.eRk (M.closure ({a, b} : Set α)) :=
         M.eRk_mono hUSubsetClosure
       _ = M.eRk ({a, b} : Set α) :=
-        M.eRk_closure_eq
+        M.eRk_closure_eq _
       _ = ({a, b} : Set α).encard :=
         hPairIndep.eRk_eq_encard
       _ = 2 := Set.encard_pair hab
@@ -262,12 +263,36 @@ theorem not_both_sixPointBad_of_shared_pair
       (order c).property (order d).property
       (hval hij) (hval hic) (hval hid)
       (hval hjc) (hval hjd) (hval hcd)
-  · simpa [SixPointBad, finSixSet,
-      Set.image_insert, Set.image_singleton,
-      or_comm, or_left_comm, or_assoc] using hBadC
-  · simpa [SixPointBad, finSixSet,
-      Set.image_insert, Set.image_singleton,
-      or_comm, or_left_comm, or_assoc] using hBadD
+  · have h :
+        ¬ M.IsBase
+          ({(order i : α), (order j : α), (order c : α)} :
+            Set α) := by
+      simpa [SixPointBad, finSixSet,
+        Set.image_insert_eq, Set.image_singleton] using hBadC
+    have hset :
+        ({(order c : α), (order i : α), (order j : α)} :
+            Set α)
+          = {(order i : α), (order j : α), (order c : α)} := by
+      ext w
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+      tauto
+    rw [hset]
+    exact h
+  · have h :
+        ¬ M.IsBase
+          ({(order i : α), (order j : α), (order d : α)} :
+            Set α) := by
+      simpa [SixPointBad, finSixSet,
+        Set.image_insert_eq, Set.image_singleton] using hBadD
+    have hset :
+        ({(order d : α), (order i : α), (order j : α)} :
+            Set α)
+          = {(order i : α), (order j : α), (order d : α)} := by
+      ext w
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+      tauto
+    rw [hset]
+    exact h
 
 /-- Strict density at two makes the six-position bad-triple certificate linear. -/
 theorem linearSixBad_of_strict_two
@@ -279,726 +304,849 @@ theorem linearSixBad_of_strict_two
     (order : Fin 6 ≃ M.E) :
     LinearSixBad (SixPointBad M order) := by
   unfold LinearSixBad
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (1 : Fin 6))
         (c := (2 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (1 : Fin 6))
         (c := (2 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (1 : Fin 6))
         (c := (2 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (2 : Fin 6))
         (c := (1 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 2, 1} : Finset (Fin 6)) = {0, 1, 2} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (2 : Fin 6))
         (c := (1 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 2, 1} : Finset (Fin 6)) = {0, 1, 2} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (2 : Fin 6))
         (c := (1 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 2, 1} : Finset (Fin 6)) = {0, 1, 2} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (2 : Fin 6))
         (c := (0 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 2, 0} : Finset (Fin 6)) = {0, 1, 2} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (2 : Fin 6))
         (c := (0 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 2, 0} : Finset (Fin 6)) = {0, 1, 2} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (2 : Fin 6))
         (c := (0 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 2, 0} : Finset (Fin 6)) = {0, 1, 2} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (1 : Fin 6))
         (c := (3 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (1 : Fin 6))
         (c := (3 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (3 : Fin 6))
         (c := (1 : Fin 6)) (d := (2 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 3, 1} : Finset (Fin 6)) = {0, 1, 3} from by decide] at h
+    rw [show ({0, 3, 2} : Finset (Fin 6)) = {0, 2, 3} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (3 : Fin 6))
         (c := (1 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 3, 1} : Finset (Fin 6)) = {0, 1, 3} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (3 : Fin 6))
         (c := (1 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 3, 1} : Finset (Fin 6)) = {0, 1, 3} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (3 : Fin 6))
         (c := (0 : Fin 6)) (d := (2 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 3, 0} : Finset (Fin 6)) = {0, 1, 3} from by decide] at h
+    rw [show ({1, 3, 2} : Finset (Fin 6)) = {1, 2, 3} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (3 : Fin 6))
         (c := (0 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 3, 0} : Finset (Fin 6)) = {0, 1, 3} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (3 : Fin 6))
         (c := (0 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 3, 0} : Finset (Fin 6)) = {0, 1, 3} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (1 : Fin 6))
         (c := (4 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (4 : Fin 6))
         (c := (1 : Fin 6)) (d := (2 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 4, 1} : Finset (Fin 6)) = {0, 1, 4} from by decide] at h
+    rw [show ({0, 4, 2} : Finset (Fin 6)) = {0, 2, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (4 : Fin 6))
         (c := (1 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 4, 1} : Finset (Fin 6)) = {0, 1, 4} from by decide] at h
+    rw [show ({0, 4, 3} : Finset (Fin 6)) = {0, 3, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (4 : Fin 6))
         (c := (1 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 4, 1} : Finset (Fin 6)) = {0, 1, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (4 : Fin 6))
         (c := (0 : Fin 6)) (d := (2 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 4, 0} : Finset (Fin 6)) = {0, 1, 4} from by decide] at h
+    rw [show ({1, 4, 2} : Finset (Fin 6)) = {1, 2, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (4 : Fin 6))
         (c := (0 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 4, 0} : Finset (Fin 6)) = {0, 1, 4} from by decide] at h
+    rw [show ({1, 4, 3} : Finset (Fin 6)) = {1, 3, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (4 : Fin 6))
         (c := (0 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 4, 0} : Finset (Fin 6)) = {0, 1, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (5 : Fin 6))
         (c := (1 : Fin 6)) (d := (2 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 5, 1} : Finset (Fin 6)) = {0, 1, 5} from by decide] at h
+    rw [show ({0, 5, 2} : Finset (Fin 6)) = {0, 2, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (5 : Fin 6))
         (c := (1 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 5, 1} : Finset (Fin 6)) = {0, 1, 5} from by decide] at h
+    rw [show ({0, 5, 3} : Finset (Fin 6)) = {0, 3, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (5 : Fin 6))
         (c := (1 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 5, 1} : Finset (Fin 6)) = {0, 1, 5} from by decide] at h
+    rw [show ({0, 5, 4} : Finset (Fin 6)) = {0, 4, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (5 : Fin 6))
         (c := (0 : Fin 6)) (d := (2 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 5, 0} : Finset (Fin 6)) = {0, 1, 5} from by decide] at h
+    rw [show ({1, 5, 2} : Finset (Fin 6)) = {1, 2, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (5 : Fin 6))
         (c := (0 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 5, 0} : Finset (Fin 6)) = {0, 1, 5} from by decide] at h
+    rw [show ({1, 5, 3} : Finset (Fin 6)) = {1, 3, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (5 : Fin 6))
         (c := (0 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 5, 0} : Finset (Fin 6)) = {0, 1, 5} from by decide] at h
+    rw [show ({1, 5, 4} : Finset (Fin 6)) = {1, 4, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (2 : Fin 6))
         (c := (3 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (2 : Fin 6))
         (c := (3 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (3 : Fin 6))
         (c := (2 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 3, 2} : Finset (Fin 6)) = {0, 2, 3} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (3 : Fin 6))
         (c := (2 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 3, 2} : Finset (Fin 6)) = {0, 2, 3} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (3 : Fin 6))
         (c := (0 : Fin 6)) (d := (1 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({2, 3, 0} : Finset (Fin 6)) = {0, 2, 3} from by decide] at h
+    rw [show ({2, 3, 1} : Finset (Fin 6)) = {1, 2, 3} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (3 : Fin 6))
         (c := (0 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({2, 3, 0} : Finset (Fin 6)) = {0, 2, 3} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (3 : Fin 6))
         (c := (0 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({2, 3, 0} : Finset (Fin 6)) = {0, 2, 3} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (2 : Fin 6))
         (c := (4 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (4 : Fin 6))
         (c := (2 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 4, 2} : Finset (Fin 6)) = {0, 2, 4} from by decide] at h
+    rw [show ({0, 4, 3} : Finset (Fin 6)) = {0, 3, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (4 : Fin 6))
         (c := (2 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 4, 2} : Finset (Fin 6)) = {0, 2, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (4 : Fin 6))
         (c := (0 : Fin 6)) (d := (1 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({2, 4, 0} : Finset (Fin 6)) = {0, 2, 4} from by decide] at h
+    rw [show ({2, 4, 1} : Finset (Fin 6)) = {1, 2, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (4 : Fin 6))
         (c := (0 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({2, 4, 0} : Finset (Fin 6)) = {0, 2, 4} from by decide] at h
+    rw [show ({2, 4, 3} : Finset (Fin 6)) = {2, 3, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (4 : Fin 6))
         (c := (0 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({2, 4, 0} : Finset (Fin 6)) = {0, 2, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (5 : Fin 6))
         (c := (2 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 5, 2} : Finset (Fin 6)) = {0, 2, 5} from by decide] at h
+    rw [show ({0, 5, 3} : Finset (Fin 6)) = {0, 3, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (5 : Fin 6))
         (c := (2 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 5, 2} : Finset (Fin 6)) = {0, 2, 5} from by decide] at h
+    rw [show ({0, 5, 4} : Finset (Fin 6)) = {0, 4, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (5 : Fin 6))
         (c := (0 : Fin 6)) (d := (1 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({2, 5, 0} : Finset (Fin 6)) = {0, 2, 5} from by decide] at h
+    rw [show ({2, 5, 1} : Finset (Fin 6)) = {1, 2, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (5 : Fin 6))
         (c := (0 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({2, 5, 0} : Finset (Fin 6)) = {0, 2, 5} from by decide] at h
+    rw [show ({2, 5, 3} : Finset (Fin 6)) = {2, 3, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (5 : Fin 6))
         (c := (0 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({2, 5, 0} : Finset (Fin 6)) = {0, 2, 5} from by decide] at h
+    rw [show ({2, 5, 4} : Finset (Fin 6)) = {2, 4, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (3 : Fin 6))
         (c := (4 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (4 : Fin 6))
         (c := (3 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 4, 3} : Finset (Fin 6)) = {0, 3, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (3 : Fin 6)) (j := (4 : Fin 6))
         (c := (0 : Fin 6)) (d := (1 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({3, 4, 0} : Finset (Fin 6)) = {0, 3, 4} from by decide] at h
+    rw [show ({3, 4, 1} : Finset (Fin 6)) = {1, 3, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (3 : Fin 6)) (j := (4 : Fin 6))
         (c := (0 : Fin 6)) (d := (2 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({3, 4, 0} : Finset (Fin 6)) = {0, 3, 4} from by decide] at h
+    rw [show ({3, 4, 2} : Finset (Fin 6)) = {2, 3, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (3 : Fin 6)) (j := (4 : Fin 6))
         (c := (0 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({3, 4, 0} : Finset (Fin 6)) = {0, 3, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (0 : Fin 6)) (j := (5 : Fin 6))
         (c := (3 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({0, 5, 3} : Finset (Fin 6)) = {0, 3, 5} from by decide] at h
+    rw [show ({0, 5, 4} : Finset (Fin 6)) = {0, 4, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (3 : Fin 6)) (j := (5 : Fin 6))
         (c := (0 : Fin 6)) (d := (1 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({3, 5, 0} : Finset (Fin 6)) = {0, 3, 5} from by decide] at h
+    rw [show ({3, 5, 1} : Finset (Fin 6)) = {1, 3, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (3 : Fin 6)) (j := (5 : Fin 6))
         (c := (0 : Fin 6)) (d := (2 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({3, 5, 0} : Finset (Fin 6)) = {0, 3, 5} from by decide] at h
+    rw [show ({3, 5, 2} : Finset (Fin 6)) = {2, 3, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (3 : Fin 6)) (j := (5 : Fin 6))
         (c := (0 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({3, 5, 0} : Finset (Fin 6)) = {0, 3, 5} from by decide] at h
+    rw [show ({3, 5, 4} : Finset (Fin 6)) = {3, 4, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (4 : Fin 6)) (j := (5 : Fin 6))
         (c := (0 : Fin 6)) (d := (1 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({4, 5, 0} : Finset (Fin 6)) = {0, 4, 5} from by decide] at h
+    rw [show ({4, 5, 1} : Finset (Fin 6)) = {1, 4, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (4 : Fin 6)) (j := (5 : Fin 6))
         (c := (0 : Fin 6)) (d := (2 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({4, 5, 0} : Finset (Fin 6)) = {0, 4, 5} from by decide] at h
+    rw [show ({4, 5, 2} : Finset (Fin 6)) = {2, 4, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (4 : Fin 6)) (j := (5 : Fin 6))
         (c := (0 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({4, 5, 0} : Finset (Fin 6)) = {0, 4, 5} from by decide] at h
+    rw [show ({4, 5, 3} : Finset (Fin 6)) = {3, 4, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (2 : Fin 6))
         (c := (3 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (2 : Fin 6))
         (c := (3 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (3 : Fin 6))
         (c := (2 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 3, 2} : Finset (Fin 6)) = {1, 2, 3} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (3 : Fin 6))
         (c := (2 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 3, 2} : Finset (Fin 6)) = {1, 2, 3} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (3 : Fin 6))
         (c := (1 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({2, 3, 1} : Finset (Fin 6)) = {1, 2, 3} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (3 : Fin 6))
         (c := (1 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({2, 3, 1} : Finset (Fin 6)) = {1, 2, 3} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (2 : Fin 6))
         (c := (4 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (4 : Fin 6))
         (c := (2 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 4, 2} : Finset (Fin 6)) = {1, 2, 4} from by decide] at h
+    rw [show ({1, 4, 3} : Finset (Fin 6)) = {1, 3, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (4 : Fin 6))
         (c := (2 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 4, 2} : Finset (Fin 6)) = {1, 2, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (4 : Fin 6))
         (c := (1 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({2, 4, 1} : Finset (Fin 6)) = {1, 2, 4} from by decide] at h
+    rw [show ({2, 4, 3} : Finset (Fin 6)) = {2, 3, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (4 : Fin 6))
         (c := (1 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({2, 4, 1} : Finset (Fin 6)) = {1, 2, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (5 : Fin 6))
         (c := (2 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 5, 2} : Finset (Fin 6)) = {1, 2, 5} from by decide] at h
+    rw [show ({1, 5, 3} : Finset (Fin 6)) = {1, 3, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (5 : Fin 6))
         (c := (2 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 5, 2} : Finset (Fin 6)) = {1, 2, 5} from by decide] at h
+    rw [show ({1, 5, 4} : Finset (Fin 6)) = {1, 4, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (5 : Fin 6))
         (c := (1 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({2, 5, 1} : Finset (Fin 6)) = {1, 2, 5} from by decide] at h
+    rw [show ({2, 5, 3} : Finset (Fin 6)) = {2, 3, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (5 : Fin 6))
         (c := (1 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({2, 5, 1} : Finset (Fin 6)) = {1, 2, 5} from by decide] at h
+    rw [show ({2, 5, 4} : Finset (Fin 6)) = {2, 4, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (3 : Fin 6))
         (c := (4 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (4 : Fin 6))
         (c := (3 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 4, 3} : Finset (Fin 6)) = {1, 3, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (3 : Fin 6)) (j := (4 : Fin 6))
         (c := (1 : Fin 6)) (d := (2 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({3, 4, 1} : Finset (Fin 6)) = {1, 3, 4} from by decide] at h
+    rw [show ({3, 4, 2} : Finset (Fin 6)) = {2, 3, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (3 : Fin 6)) (j := (4 : Fin 6))
         (c := (1 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({3, 4, 1} : Finset (Fin 6)) = {1, 3, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (1 : Fin 6)) (j := (5 : Fin 6))
         (c := (3 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({1, 5, 3} : Finset (Fin 6)) = {1, 3, 5} from by decide] at h
+    rw [show ({1, 5, 4} : Finset (Fin 6)) = {1, 4, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (3 : Fin 6)) (j := (5 : Fin 6))
         (c := (1 : Fin 6)) (d := (2 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({3, 5, 1} : Finset (Fin 6)) = {1, 3, 5} from by decide] at h
+    rw [show ({3, 5, 2} : Finset (Fin 6)) = {2, 3, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (3 : Fin 6)) (j := (5 : Fin 6))
         (c := (1 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({3, 5, 1} : Finset (Fin 6)) = {1, 3, 5} from by decide] at h
+    rw [show ({3, 5, 4} : Finset (Fin 6)) = {3, 4, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (4 : Fin 6)) (j := (5 : Fin 6))
         (c := (1 : Fin 6)) (d := (2 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({4, 5, 1} : Finset (Fin 6)) = {1, 4, 5} from by decide] at h
+    rw [show ({4, 5, 2} : Finset (Fin 6)) = {2, 4, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (4 : Fin 6)) (j := (5 : Fin 6))
         (c := (1 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({4, 5, 1} : Finset (Fin 6)) = {1, 4, 5} from by decide] at h
+    rw [show ({4, 5, 3} : Finset (Fin 6)) = {3, 4, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (3 : Fin 6))
         (c := (4 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (4 : Fin 6))
         (c := (3 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({2, 4, 3} : Finset (Fin 6)) = {2, 3, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (3 : Fin 6)) (j := (4 : Fin 6))
         (c := (2 : Fin 6)) (d := (5 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({3, 4, 2} : Finset (Fin 6)) = {2, 3, 4} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (2 : Fin 6)) (j := (5 : Fin 6))
         (c := (3 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  constructor
-  · simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({2, 5, 3} : Finset (Fin 6)) = {2, 3, 5} from by decide] at h
+    rw [show ({2, 5, 4} : Finset (Fin 6)) = {2, 4, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (3 : Fin 6)) (j := (5 : Fin 6))
         (c := (2 : Fin 6)) (d := (4 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
-  simpa [Finset.ext_iff] using
-      (not_both_sixPointBad_of_shared_pair
+        (by decide) (by decide) (by decide)
+    rw [show ({3, 5, 2} : Finset (Fin 6)) = {2, 3, 5} from by decide] at h
+    rw [show ({3, 5, 4} : Finset (Fin 6)) = {3, 4, 5} from by decide] at h
+    exact h
+  · have h :=
+      not_both_sixPointBad_of_shared_pair
         M hLoopless hE hRank hStrict order
         (i := (4 : Fin 6)) (j := (5 : Fin 6))
         (c := (2 : Fin 6)) (d := (3 : Fin 6))
         (by decide) (by decide) (by decide)
-        (by decide) (by decide) (by decide))
+        (by decide) (by decide) (by decide)
+    rw [show ({4, 5, 2} : Finset (Fin 6)) = {2, 4, 5} from by decide] at h
+    rw [show ({4, 5, 3} : Finset (Fin 6)) = {3, 4, 5} from by decide] at h
+    exact h
 
+set_option maxHeartbeats 1000000 in
 /-- A certified good alternative produces a cyclic basis order. -/
 theorem exists_cyclicBasisOrder3_of_sixPointGoodAlternatives
     (M : Matroid α)
@@ -1011,53 +1159,475 @@ theorem exists_cyclicBasisOrder3_of_sixPointGoodAlternatives
   classical
   rcases hGood with h | h | h | h | h | h | h | h
   · refine ⟨sixPointPerm1.trans enum, ?_⟩
+    obtain ⟨g0, g1, g2, g3, g4, g5⟩ := h
     intro i
-    fin_cases i <;>
-      simp [SixPointBad, finSixSet,
-        sixPointPerm1, cyclicIndex] at h ⊢ <;>
-      tauto
+    fin_cases i
+    · simpa [SixPointBad, finSixSet, sixPointPerm1_apply, cyclicIndex,
+        Set.image_insert_eq, Set.image_singleton] using g0
+    · simpa [SixPointBad, finSixSet, sixPointPerm1_apply, cyclicIndex,
+        Set.image_insert_eq, Set.image_singleton] using g1
+    · simpa [SixPointBad, finSixSet, sixPointPerm1_apply, cyclicIndex,
+        Set.image_insert_eq, Set.image_singleton] using g2
+    · simpa [SixPointBad, finSixSet, sixPointPerm1_apply, cyclicIndex,
+        Set.image_insert_eq, Set.image_singleton] using g3
+    · have hb : M.IsBase ({(enum 0 : α), (enum 4 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g4
+      have hgoal : M.IsBase ({(enum 4 : α), (enum 5 : α), (enum 0 : α)} : Set α) := by
+        rw [show ({(enum 4 : α), (enum 5 : α), (enum 0 : α)} : Set α)
+              = {(enum 0 : α), (enum 4 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm1_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 0 : α), (enum 1 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g5
+      have hgoal : M.IsBase ({(enum 5 : α), (enum 0 : α), (enum 1 : α)} : Set α) := by
+        rw [show ({(enum 5 : α), (enum 0 : α), (enum 1 : α)} : Set α)
+              = {(enum 0 : α), (enum 1 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm1_apply, cyclicIndex] using hgoal
   · refine ⟨sixPointPerm2.trans enum, ?_⟩
+    obtain ⟨g0, g1, g2, g3, g4, g5⟩ := h
     intro i
-    fin_cases i <;>
-      simp [SixPointBad, finSixSet,
-        sixPointPerm2, cyclicIndex] at h ⊢ <;>
-      tauto
+    fin_cases i
+    · simpa [SixPointBad, finSixSet, sixPointPerm2_apply, cyclicIndex,
+        Set.image_insert_eq, Set.image_singleton] using g0
+    · have hb : M.IsBase ({(enum 1 : α), (enum 2 : α), (enum 4 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g1
+      have hgoal : M.IsBase ({(enum 2 : α), (enum 4 : α), (enum 1 : α)} : Set α) := by
+        rw [show ({(enum 2 : α), (enum 4 : α), (enum 1 : α)} : Set α)
+              = {(enum 1 : α), (enum 2 : α), (enum 4 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm2_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 1 : α), (enum 4 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g2
+      have hgoal : M.IsBase ({(enum 4 : α), (enum 1 : α), (enum 5 : α)} : Set α) := by
+        rw [show ({(enum 4 : α), (enum 1 : α), (enum 5 : α)} : Set α)
+              = {(enum 1 : α), (enum 4 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm2_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 1 : α), (enum 3 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g3
+      have hgoal : M.IsBase ({(enum 1 : α), (enum 5 : α), (enum 3 : α)} : Set α) := by
+        rw [show ({(enum 1 : α), (enum 5 : α), (enum 3 : α)} : Set α)
+              = {(enum 1 : α), (enum 3 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm2_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 0 : α), (enum 3 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g4
+      have hgoal : M.IsBase ({(enum 5 : α), (enum 3 : α), (enum 0 : α)} : Set α) := by
+        rw [show ({(enum 5 : α), (enum 3 : α), (enum 0 : α)} : Set α)
+              = {(enum 0 : α), (enum 3 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm2_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 0 : α), (enum 2 : α), (enum 3 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g5
+      have hgoal : M.IsBase ({(enum 3 : α), (enum 0 : α), (enum 2 : α)} : Set α) := by
+        rw [show ({(enum 3 : α), (enum 0 : α), (enum 2 : α)} : Set α)
+              = {(enum 0 : α), (enum 2 : α), (enum 3 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm2_apply, cyclicIndex] using hgoal
   · refine ⟨sixPointPerm3.trans enum, ?_⟩
+    obtain ⟨g0, g1, g2, g3, g4, g5⟩ := h
     intro i
-    fin_cases i <;>
-      simp [SixPointBad, finSixSet,
-        sixPointPerm3, cyclicIndex] at h ⊢ <;>
-      tauto
+    fin_cases i
+    · simpa [SixPointBad, finSixSet, sixPointPerm3_apply, cyclicIndex,
+        Set.image_insert_eq, Set.image_singleton] using g0
+    · simpa [SixPointBad, finSixSet, sixPointPerm3_apply, cyclicIndex,
+        Set.image_insert_eq, Set.image_singleton] using g1
+    · have hb : M.IsBase ({(enum 2 : α), (enum 4 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g2
+      have hgoal : M.IsBase ({(enum 2 : α), (enum 5 : α), (enum 4 : α)} : Set α) := by
+        rw [show ({(enum 2 : α), (enum 5 : α), (enum 4 : α)} : Set α)
+              = {(enum 2 : α), (enum 4 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm3_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 3 : α), (enum 4 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g3
+      have hgoal : M.IsBase ({(enum 5 : α), (enum 4 : α), (enum 3 : α)} : Set α) := by
+        rw [show ({(enum 5 : α), (enum 4 : α), (enum 3 : α)} : Set α)
+              = {(enum 3 : α), (enum 4 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm3_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 0 : α), (enum 3 : α), (enum 4 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g4
+      have hgoal : M.IsBase ({(enum 4 : α), (enum 3 : α), (enum 0 : α)} : Set α) := by
+        rw [show ({(enum 4 : α), (enum 3 : α), (enum 0 : α)} : Set α)
+              = {(enum 0 : α), (enum 3 : α), (enum 4 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm3_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 0 : α), (enum 1 : α), (enum 3 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g5
+      have hgoal : M.IsBase ({(enum 3 : α), (enum 0 : α), (enum 1 : α)} : Set α) := by
+        rw [show ({(enum 3 : α), (enum 0 : α), (enum 1 : α)} : Set α)
+              = {(enum 0 : α), (enum 1 : α), (enum 3 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm3_apply, cyclicIndex] using hgoal
   · refine ⟨sixPointPerm4.trans enum, ?_⟩
+    obtain ⟨g0, g1, g2, g3, g4, g5⟩ := h
     intro i
-    fin_cases i <;>
-      simp [SixPointBad, finSixSet,
-        sixPointPerm4, cyclicIndex] at h ⊢ <;>
-      tauto
+    fin_cases i
+    · have hb : M.IsBase ({(enum 0 : α), (enum 1 : α), (enum 4 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g0
+      have hgoal : M.IsBase ({(enum 0 : α), (enum 4 : α), (enum 1 : α)} : Set α) := by
+        rw [show ({(enum 0 : α), (enum 4 : α), (enum 1 : α)} : Set α)
+              = {(enum 0 : α), (enum 1 : α), (enum 4 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm4_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 1 : α), (enum 3 : α), (enum 4 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g1
+      have hgoal : M.IsBase ({(enum 4 : α), (enum 1 : α), (enum 3 : α)} : Set α) := by
+        rw [show ({(enum 4 : α), (enum 1 : α), (enum 3 : α)} : Set α)
+              = {(enum 1 : α), (enum 3 : α), (enum 4 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm4_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 1 : α), (enum 2 : α), (enum 3 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g2
+      have hgoal : M.IsBase ({(enum 1 : α), (enum 3 : α), (enum 2 : α)} : Set α) := by
+        rw [show ({(enum 1 : α), (enum 3 : α), (enum 2 : α)} : Set α)
+              = {(enum 1 : α), (enum 2 : α), (enum 3 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm4_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 2 : α), (enum 3 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g3
+      have hgoal : M.IsBase ({(enum 3 : α), (enum 2 : α), (enum 5 : α)} : Set α) := by
+        rw [show ({(enum 3 : α), (enum 2 : α), (enum 5 : α)} : Set α)
+              = {(enum 2 : α), (enum 3 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm4_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 0 : α), (enum 2 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g4
+      have hgoal : M.IsBase ({(enum 2 : α), (enum 5 : α), (enum 0 : α)} : Set α) := by
+        rw [show ({(enum 2 : α), (enum 5 : α), (enum 0 : α)} : Set α)
+              = {(enum 0 : α), (enum 2 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm4_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 0 : α), (enum 4 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g5
+      have hgoal : M.IsBase ({(enum 5 : α), (enum 0 : α), (enum 4 : α)} : Set α) := by
+        rw [show ({(enum 5 : α), (enum 0 : α), (enum 4 : α)} : Set α)
+              = {(enum 0 : α), (enum 4 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm4_apply, cyclicIndex] using hgoal
   · refine ⟨sixPointPerm5.trans enum, ?_⟩
+    obtain ⟨g0, g1, g2, g3, g4, g5⟩ := h
     intro i
-    fin_cases i <;>
-      simp [SixPointBad, finSixSet,
-        sixPointPerm5, cyclicIndex] at h ⊢ <;>
-      tauto
+    fin_cases i
+    · simpa [SixPointBad, finSixSet, sixPointPerm5_apply, cyclicIndex,
+        Set.image_insert_eq, Set.image_singleton] using g0
+    · have hb : M.IsBase ({(enum 1 : α), (enum 3 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g1
+      have hgoal : M.IsBase ({(enum 1 : α), (enum 5 : α), (enum 3 : α)} : Set α) := by
+        rw [show ({(enum 1 : α), (enum 5 : α), (enum 3 : α)} : Set α)
+              = {(enum 1 : α), (enum 3 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm5_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 2 : α), (enum 3 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g2
+      have hgoal : M.IsBase ({(enum 5 : α), (enum 3 : α), (enum 2 : α)} : Set α) := by
+        rw [show ({(enum 5 : α), (enum 3 : α), (enum 2 : α)} : Set α)
+              = {(enum 2 : α), (enum 3 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm5_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 2 : α), (enum 3 : α), (enum 4 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g3
+      have hgoal : M.IsBase ({(enum 3 : α), (enum 2 : α), (enum 4 : α)} : Set α) := by
+        rw [show ({(enum 3 : α), (enum 2 : α), (enum 4 : α)} : Set α)
+              = {(enum 2 : α), (enum 3 : α), (enum 4 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm5_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 0 : α), (enum 2 : α), (enum 4 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g4
+      have hgoal : M.IsBase ({(enum 2 : α), (enum 4 : α), (enum 0 : α)} : Set α) := by
+        rw [show ({(enum 2 : α), (enum 4 : α), (enum 0 : α)} : Set α)
+              = {(enum 0 : α), (enum 2 : α), (enum 4 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm5_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 0 : α), (enum 1 : α), (enum 4 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g5
+      have hgoal : M.IsBase ({(enum 4 : α), (enum 0 : α), (enum 1 : α)} : Set α) := by
+        rw [show ({(enum 4 : α), (enum 0 : α), (enum 1 : α)} : Set α)
+              = {(enum 0 : α), (enum 1 : α), (enum 4 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm5_apply, cyclicIndex] using hgoal
   · refine ⟨sixPointPerm6.trans enum, ?_⟩
+    obtain ⟨g0, g1, g2, g3, g4, g5⟩ := h
     intro i
-    fin_cases i <;>
-      simp [SixPointBad, finSixSet,
-        sixPointPerm6, cyclicIndex] at h ⊢ <;>
-      tauto
+    fin_cases i
+    · have hb : M.IsBase ({(enum 0 : α), (enum 1 : α), (enum 3 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g0
+      have hgoal : M.IsBase ({(enum 0 : α), (enum 3 : α), (enum 1 : α)} : Set α) := by
+        rw [show ({(enum 0 : α), (enum 3 : α), (enum 1 : α)} : Set α)
+              = {(enum 0 : α), (enum 1 : α), (enum 3 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm6_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 1 : α), (enum 3 : α), (enum 4 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g1
+      have hgoal : M.IsBase ({(enum 3 : α), (enum 1 : α), (enum 4 : α)} : Set α) := by
+        rw [show ({(enum 3 : α), (enum 1 : α), (enum 4 : α)} : Set α)
+              = {(enum 1 : α), (enum 3 : α), (enum 4 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm6_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 1 : α), (enum 2 : α), (enum 4 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g2
+      have hgoal : M.IsBase ({(enum 1 : α), (enum 4 : α), (enum 2 : α)} : Set α) := by
+        rw [show ({(enum 1 : α), (enum 4 : α), (enum 2 : α)} : Set α)
+              = {(enum 1 : α), (enum 2 : α), (enum 4 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm6_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 2 : α), (enum 4 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g3
+      have hgoal : M.IsBase ({(enum 4 : α), (enum 2 : α), (enum 5 : α)} : Set α) := by
+        rw [show ({(enum 4 : α), (enum 2 : α), (enum 5 : α)} : Set α)
+              = {(enum 2 : α), (enum 4 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm6_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 0 : α), (enum 2 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g4
+      have hgoal : M.IsBase ({(enum 2 : α), (enum 5 : α), (enum 0 : α)} : Set α) := by
+        rw [show ({(enum 2 : α), (enum 5 : α), (enum 0 : α)} : Set α)
+              = {(enum 0 : α), (enum 2 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm6_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 0 : α), (enum 3 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g5
+      have hgoal : M.IsBase ({(enum 5 : α), (enum 0 : α), (enum 3 : α)} : Set α) := by
+        rw [show ({(enum 5 : α), (enum 0 : α), (enum 3 : α)} : Set α)
+              = {(enum 0 : α), (enum 3 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm6_apply, cyclicIndex] using hgoal
   · refine ⟨sixPointPerm7.trans enum, ?_⟩
+    obtain ⟨g0, g1, g2, g3, g4, g5⟩ := h
     intro i
-    fin_cases i <;>
-      simp [SixPointBad, finSixSet,
-        sixPointPerm7, cyclicIndex] at h ⊢ <;>
-      tauto
+    fin_cases i
+    · have hb : M.IsBase ({(enum 0 : α), (enum 1 : α), (enum 2 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g0
+      have hgoal : M.IsBase ({(enum 0 : α), (enum 2 : α), (enum 1 : α)} : Set α) := by
+        rw [show ({(enum 0 : α), (enum 2 : α), (enum 1 : α)} : Set α)
+              = {(enum 0 : α), (enum 1 : α), (enum 2 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm7_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 1 : α), (enum 2 : α), (enum 3 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g1
+      have hgoal : M.IsBase ({(enum 2 : α), (enum 1 : α), (enum 3 : α)} : Set α) := by
+        rw [show ({(enum 2 : α), (enum 1 : α), (enum 3 : α)} : Set α)
+              = {(enum 1 : α), (enum 2 : α), (enum 3 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm7_apply, cyclicIndex] using hgoal
+    · simpa [SixPointBad, finSixSet, sixPointPerm7_apply, cyclicIndex,
+        Set.image_insert_eq, Set.image_singleton] using g2
+    · have hb : M.IsBase ({(enum 3 : α), (enum 4 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g3
+      have hgoal : M.IsBase ({(enum 3 : α), (enum 5 : α), (enum 4 : α)} : Set α) := by
+        rw [show ({(enum 3 : α), (enum 5 : α), (enum 4 : α)} : Set α)
+              = {(enum 3 : α), (enum 4 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm7_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 0 : α), (enum 4 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g4
+      have hgoal : M.IsBase ({(enum 5 : α), (enum 4 : α), (enum 0 : α)} : Set α) := by
+        rw [show ({(enum 5 : α), (enum 4 : α), (enum 0 : α)} : Set α)
+              = {(enum 0 : α), (enum 4 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm7_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 0 : α), (enum 2 : α), (enum 4 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g5
+      have hgoal : M.IsBase ({(enum 4 : α), (enum 0 : α), (enum 2 : α)} : Set α) := by
+        rw [show ({(enum 4 : α), (enum 0 : α), (enum 2 : α)} : Set α)
+              = {(enum 0 : α), (enum 2 : α), (enum 4 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm7_apply, cyclicIndex] using hgoal
   · refine ⟨sixPointPerm8.trans enum, ?_⟩
+    obtain ⟨g0, g1, g2, g3, g4, g5⟩ := h
     intro i
-    fin_cases i <;>
-      simp [SixPointBad, finSixSet,
-        sixPointPerm8, cyclicIndex] at h ⊢ <;>
-      tauto
+    fin_cases i
+    · simpa [SixPointBad, finSixSet, sixPointPerm8_apply, cyclicIndex,
+        Set.image_insert_eq, Set.image_singleton] using g0
+    · have hb : M.IsBase ({(enum 1 : α), (enum 3 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g1
+      have hgoal : M.IsBase ({(enum 1 : α), (enum 5 : α), (enum 3 : α)} : Set α) := by
+        rw [show ({(enum 1 : α), (enum 5 : α), (enum 3 : α)} : Set α)
+              = {(enum 1 : α), (enum 3 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm8_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 3 : α), (enum 4 : α), (enum 5 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g2
+      have hgoal : M.IsBase ({(enum 5 : α), (enum 3 : α), (enum 4 : α)} : Set α) := by
+        rw [show ({(enum 5 : α), (enum 3 : α), (enum 4 : α)} : Set α)
+              = {(enum 3 : α), (enum 4 : α), (enum 5 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm8_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 2 : α), (enum 3 : α), (enum 4 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g3
+      have hgoal : M.IsBase ({(enum 3 : α), (enum 4 : α), (enum 2 : α)} : Set α) := by
+        rw [show ({(enum 3 : α), (enum 4 : α), (enum 2 : α)} : Set α)
+              = {(enum 2 : α), (enum 3 : α), (enum 4 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm8_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 0 : α), (enum 2 : α), (enum 4 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g4
+      have hgoal : M.IsBase ({(enum 4 : α), (enum 2 : α), (enum 0 : α)} : Set α) := by
+        rw [show ({(enum 4 : α), (enum 2 : α), (enum 0 : α)} : Set α)
+              = {(enum 0 : α), (enum 2 : α), (enum 4 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm8_apply, cyclicIndex] using hgoal
+    · have hb : M.IsBase ({(enum 0 : α), (enum 1 : α), (enum 2 : α)} : Set α) := by
+        simpa [SixPointBad, finSixSet,
+          Set.image_insert_eq, Set.image_singleton] using g5
+      have hgoal : M.IsBase ({(enum 2 : α), (enum 0 : α), (enum 1 : α)} : Set α) := by
+        rw [show ({(enum 2 : α), (enum 0 : α), (enum 1 : α)} : Set α)
+              = {(enum 0 : α), (enum 1 : α), (enum 2 : α)} from by
+          ext w
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+          tauto]
+        exact hb
+      simpa [sixPointPerm8_apply, cyclicIndex] using hgoal
 
 /-- The strict six-element rank-three case has a cyclic basis order. -/
 theorem exists_cyclicBasisOrder3_of_strict_two
