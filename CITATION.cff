@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata from this file."
+title: "Rank3KUM: A Lean 4 formalization of the divisible case of the rank-three Kajitani-Ueno-Miyano cyclic basis ordering theorem"
+abstract: >-
+  A complete, machine-checked Lean 4 formalization of the divisible case of the
+  rank-three Kajitani-Ueno-Miyano conjecture: every finite uniformly dense matroid
+  of rank three whose ground set has cardinality divisible by three admits a cyclic
+  basis ordering, that is, a cyclic ordering of its ground set in which every three
+  cyclically consecutive elements form a basis. No restriction to representable,
+  paving, simple, graphic or small matroids is imposed; matroids with nontrivial
+  parallel classes are covered. The development contains no `sorry`, `admit`,
+  `axiom`, `unsafe` declaration, or use of `native_decide`, and the main theorem
+  depends only on the standard Mathlib axioms `propext`, `Classical.choice` and
+  `Quot.sound`.
+type: software
+authors:
+  - given-names: Austen
+    family-names: Fletcher
+    affiliation: Carbon Silicon Labs
+version: 1.0.0
+date-released: "2026-08-05"
+license: MIT
+repository-code: "https://github.com/afletcher22/Rank3KUM"
+keywords:
+  - matroid theory
+  - cyclic basis ordering
+  - Kajitani-Ueno-Miyano conjecture
+  - formalized mathematics
+  - Lean 4
+  - Mathlib
