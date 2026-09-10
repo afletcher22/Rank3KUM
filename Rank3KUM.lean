@@ -41,3 +41,4 @@ import Rank3KUM.Version2.ResidualSupportDisjoint
 import Rank3KUM.Version2.SixPointStructural
 import Rank3KUM.Version2.SixPointClassification
 import Rank3KUM.Version2.SixPointMaximal
+import Rank3KUM.Version2.SixPointPasch
