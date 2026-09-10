@@ -38,3 +38,4 @@ import Rank3KUM.Version2.NearTightClassification
 import Rank3KUM.Version2.CorrespondenceWrappers
 import Rank3KUM.Version2.NearTightHitting
 import Rank3KUM.Version2.ResidualSupportDisjoint
+import Rank3KUM.Version2.SixPointStructural
