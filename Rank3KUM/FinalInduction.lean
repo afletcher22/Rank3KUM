@@ -1,7 +1,7 @@
 import Rank3KUM.FinalReduction
 import Rank3KUM.NearTightGeometry
 import Rank3KUM.SmallCases
-import Rank3KUM.SixPointMatroid
+import Rank3KUM.Version2.SixPointMatroidBridge
 
 namespace Rank3KUM
 
@@ -99,7 +99,7 @@ theorem rankThreeKUM
   apply
     rankThreeKUM_of_small_two_and_strict_deletion
       (fun N hNE hNRank hNCard hNDense =>
-        exists_cyclicBasisOrder3_of_ground_encard_six
+        Version2.exists_cyclicBasisOrder3_of_ground_encard_six_structural
           N hNE hNRank hNCard hNDense)
       k M hk hE hRank hEcard hDense
 
