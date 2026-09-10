@@ -60,6 +60,7 @@ theorem eq_pair_of_disjoint_members
       have hxAB : x ∈ A ∪ B := by
         rw [hUnion]
         exact Finset.mem_univ x
+      rw [Finset.mem_union] at hxAB
       simp only [Finset.mem_union, Finset.mem_inter]
       constructor
       · intro hxT
@@ -68,10 +69,15 @@ theorem eq_pair_of_disjoint_members
         · exact Or.inr ⟨hxT, hxB⟩
       · rintro (⟨hxT, _⟩ | ⟨hxT, _⟩) <;> exact hxT
     have hTcard : T.card = 3 := hF.1 T hTF
+    have hcardeq :
+        T.card = ((T ∩ A) ∪ (T ∩ B)).card :=
+      congrArg Finset.card hsplit
+    have hcardUnion :
+        ((T ∩ A) ∪ (T ∩ B)).card ≤
+          (T ∩ A).card + (T ∩ B).card :=
+      Finset.card_union_le (T ∩ A) (T ∩ B)
     have hcardle : T.card ≤ (T ∩ A).card + (T ∩ B).card := by
-      calc
-        T.card = ((T ∩ A) ∪ (T ∩ B)).card := by rw [hsplit]
-        _ ≤ (T ∩ A).card + (T ∩ B).card := Finset.card_union_le
+      omega
     omega
   · intro T hT
     rw [Finset.mem_insert, Finset.mem_singleton] at hT
