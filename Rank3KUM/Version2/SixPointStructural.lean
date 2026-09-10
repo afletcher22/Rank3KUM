@@ -118,4 +118,71 @@ theorem card_linearTripleFamily6_le_four
   rw [sum_pointDegree6 F hF.1] at hsumle
   omega
 
+/-- The finite universe of all three-subsets of `Fin 6`. -/
+def allTriples6 : Finset (Finset (Fin 6)) :=
+  (Finset.univ : Finset (Fin 6)).powersetCard 3
+
+/-- Inclusion-maximality among linear triple families, expressed by one-element extensions. -/
+def MaximalLinearTripleFamily6 (F : Finset (Finset (Fin 6))) : Prop :=
+  LinearTripleFamily6 F ∧
+  ∀ T : Finset (Fin 6), T.card = 3 →
+    LinearTripleFamily6 (insert T F) → T ∈ F
+
+/-- A compatible triple can be adjoined to a linear family. -/
+theorem linearTripleFamily6_insert
+    {F : Finset (Finset (Fin 6))}
+    (hF : LinearTripleFamily6 F)
+    {T : Finset (Fin 6)}
+    (hTcard : T.card = 3)
+    (hcompat : ∀ A ∈ F, (T ∩ A).card ≤ 1) :
+    LinearTripleFamily6 (insert T F) := by
+  constructor
+  · intro A hA
+    rw [Finset.mem_insert] at hA
+    rcases hA with rfl | hAF
+    · exact hTcard
+    · exact hF.1 A hAF
+  · intro A hA B hB hAB
+    rw [Finset.mem_insert] at hA hB
+    rcases hA with rfl | hAF
+    · rcases hB with rfl | hBF
+      · exact (hAB rfl).elim
+      · exact hcompat B hBF
+    · rcases hB with rfl | hBF
+      · simpa [Finset.inter_comm] using hcompat A hAF
+      · exact hF.2 A hAF B hBF hAB
+
+/-- Every linear triple family is contained in an inclusion-maximal one. -/
+theorem exists_maximalLinearTripleFamily6_superset
+    (F : Finset (Finset (Fin 6)))
+    (hF : LinearTripleFamily6 F) :
+    ∃ G : Finset (Finset (Fin 6)),
+      F ⊆ G ∧ MaximalLinearTripleFamily6 G := by
+  classical
+  let U := allTriples6
+  let C := U.powerset.filter fun G => F ⊆ G ∧ LinearTripleFamily6 G
+  have hFU : F ⊆ U := by
+    intro T hTF
+    simp only [U, allTriples6, Finset.mem_powersetCard]
+    exact ⟨Finset.subset_univ T, hF.1 T hTF⟩
+  have hFC : F ∈ C := by
+    simp only [C, Finset.mem_filter, Finset.mem_powerset]
+    exact ⟨hFU, Finset.Subset.rfl, hF⟩
+  obtain ⟨G, hGmax⟩ := C.exists_maximal ⟨F, hFC⟩
+  have hGC := hGmax.1
+  simp only [C, Finset.mem_filter, Finset.mem_powerset] at hGC
+  rcases hGC with ⟨hGU, hFG, hGLin⟩
+  refine ⟨G, hFG, hGLin, ?_⟩
+  intro T hTcard hInsertLin
+  by_contra hTnot
+  have hTU : T ∈ U := by
+    simp only [U, allTriples6, Finset.mem_powersetCard]
+    exact ⟨Finset.subset_univ T, hTcard⟩
+  have hInsertU : insert T G ⊆ U :=
+    Finset.insert_subset hTU hGU
+  have hInsertC : insert T G ∈ C := by
+    simp only [C, Finset.mem_filter, Finset.mem_powerset]
+    exact ⟨hInsertU, hFG.trans (Finset.subset_insert T G), hInsertLin⟩
+  exact (hGmax.not_gt hInsertC (Finset.ssubset_insert hTnot)).elim
+
 end Rank3KUM.Version2
