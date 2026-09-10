@@ -10,6 +10,24 @@ def PairPattern6 (F : Finset (Finset (Fin 6))) : Prop :=
     ({a, b, c, d, e, f} : Finset (Fin 6)).card = 6 ∧
     F = {({a, b, c} : Finset (Fin 6)), ({d, e, f} : Finset (Fin 6))}
 
+/-- Every two distinct members meet. -/
+def PairwiseIntersecting6 (F : Finset (Finset (Fin 6))) : Prop :=
+  ∀ A ∈ F, ∀ B ∈ F, A ≠ B → ¬ Disjoint A B
+
+/-- Distinct members of a linear pairwise-intersecting triple family meet in exactly one point. -/
+theorem card_inter_eq_one_of_pairwiseIntersecting6
+    {F : Finset (Finset (Fin 6))}
+    (hF : LinearTripleFamily6 F)
+    (hInt : PairwiseIntersecting6 F)
+    {A B : Finset (Fin 6)}
+    (hAF : A ∈ F) (hBF : B ∈ F) (hAB : A ≠ B) :
+    (A ∩ B).card = 1 := by
+  have hle := hF.2 A hAF B hBF hAB
+  have hne : (A ∩ B).Nonempty :=
+    Finset.not_disjoint_iff_nonempty_inter.mp (hInt A hAF B hBF hAB)
+  have hpos : 0 < (A ∩ B).card := Finset.card_pos.mpr hne
+  omega
+
 /-- Two disjoint members of a linear triple family force the family to consist exactly of them. -/
 theorem eq_pair_of_disjoint_members
     {F : Finset (Finset (Fin 6))}
