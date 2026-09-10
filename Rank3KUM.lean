@@ -43,3 +43,4 @@ import Rank3KUM.Version2.SixPointClassification
 import Rank3KUM.Version2.SixPointMaximal
 import Rank3KUM.Version2.SixPointPasch
 import Rank3KUM.Version2.SixPointLemma9
+import Rank3KUM.Version2.SixPointMatroidBridge
