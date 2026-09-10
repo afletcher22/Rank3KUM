@@ -68,10 +68,8 @@ theorem nearTight_eq_one_of_nonconcurrent_three
 
   have hUnionSub : A ∪ B ∪ C ⊆ M.E :=
     Set.union_subset (Set.union_subset hAE hBE) hCE
-  have hUnionEq : A ∪ B ∪ C = M.E := by
-    apply Set.eq_of_subset_of_ncard_le hUnionSub
-    · rw [hUnionCard, hEncard]
-    · exact hE
+  have hUnionEq : A ∪ B ∪ C = M.E :=
+    Set.eq_of_subset_of_ncard_le hUnionSub (by rw [hUnionCard, hEncard]) hE
 
   have hABACDisjoint : Disjoint (A ∩ B) (A ∩ C) := by
     apply Set.disjoint_left.2
