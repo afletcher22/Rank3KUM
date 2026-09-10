@@ -13,7 +13,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Check paper alignment tooling
-        run: python3 -m py_compile tools/update_v2_paper_alignment.py
+        run: |
+          python3 -m py_compile tools/update_v2_paper_alignment.py
+          python3 - <<'PY'
+          import importlib.util
+          from pathlib import Path
+
+          path = Path("tools/update_v2_paper_alignment.py")
+          spec = importlib.util.spec_from_file_location("v2_paper_alignment", path)
+          module = importlib.util.module_from_spec(spec)
+          assert spec.loader is not None
+          spec.loader.exec_module(module)
+
+          row = "<tr><td>Lem. 5.1</td><td>x</td><td>y</td></tr>"
+          try:
+              module.replace_row(row + row, "Lem. 5.1", "new", "status")
+          except RuntimeError as exc:
+              assert "found 2" in str(exc)
+          else:
+              raise AssertionError("duplicate Appendix rows were not rejected")
+          PY
       - name: Cache Lake packages
         uses: actions/cache@v4
         with:
