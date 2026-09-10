@@ -22,7 +22,14 @@ def badTripleFamily6
     T ∈ badTripleFamily6 M enum ↔
       T.card = 3 ∧ SixPointBad M enum T := by
   classical
-  simp [badTripleFamily6]
+  constructor
+  · intro h
+    have h' := Finset.mem_filter.mp h
+    exact ⟨(Finset.mem_powersetCard.mp h'.1).2, h'.2⟩
+  · rintro ⟨hcard, hbad⟩
+    apply Finset.mem_filter.mpr
+    refine ⟨?_, hbad⟩
+    exact Finset.mem_powersetCard.mpr ⟨Finset.subset_univ T, hcard⟩
 
 /--
 Two distinct triples meeting in at least two points can be written with a
