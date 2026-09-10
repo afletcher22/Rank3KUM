@@ -17,8 +17,8 @@ authors:
   - given-names: Austen
     family-names: Fletcher
     affiliation: Carbon Silicon Labs
-version: 1.0.0
-date-released: "2026-08-05"
+version: 2.0.0
+date-released: "2026-09-10"
 license: MIT
 repository-code: "https://github.com/afletcher22/Rank3KUM"
 keywords:
