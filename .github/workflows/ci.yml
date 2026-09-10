@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: ["main", "lean-integration"]
+    branches: ["main", "lean-integration", "version-2"]
   pull_request:
     branches: ["main"]
   workflow_dispatch:
