@@ -88,6 +88,8 @@ def main() -> None:
             + re.escape(NEW_FULL)
             + r'">Rank3KUM, commit f956680</a>.*?10\.5281/zenodo\.21813155</a>\.</p>'
         )
+        # Normalize accidental double escaping in this fallback pattern before use.
+        pattern = pattern.replace(r'\\.', r'\.')
         repl = (
             f'<p>The version-2 correspondence below is checked against '
             f'<a href="{TREE}">Rank3KUM, commit {NEW_SHORT}</a>. CI run '
@@ -218,6 +220,7 @@ def main() -> None:
           r'different representation or proof; the status column records substantive differences\. In particular, '
           r'the revised arguments for Proposition 4\.2 and Lemmas 8\.8 and 9\.2 remain to be aligned with Lean\.</p>'
     )
+    pattern = pattern.replace(r'\\.', r'\.')
     repl = (
         f'<p>The table refers to <a href="{TREE}">checked commit {NEW_SHORT}</a>. Links identify immutable '
         'source locations. A compiled result may use a different representation or proof; the status column '
@@ -231,7 +234,7 @@ def main() -> None:
 
     text = replace_row(
         text,
-        r"Prop\. 4\.2",
+        r"Prop\. 4\.2".replace(r"\\.", r"\."),
         '<tr><td>Prop. 4.2</td><td>'
         + link('Rank3KUM/Version2/HalfWeave.lean', 'Version2.HalfWeave.cyclicRankTwoBasisOrderingOfUniformlyDense')
         + '<br/>' + link('Rank3KUM/HalfWeave/ParallelClasses.lean', 'HalfWeave.exists_cyclic_adjacent_base_order_of_uniformlyDense')
@@ -240,7 +243,7 @@ def main() -> None:
 
     text = replace_row(
         text,
-        r"Lem\. 5\.1",
+        r"Lem\. 5\.1".replace(r"\\.", r"\."),
         '<tr><td>Lem. 5.1</td><td>'
         + link('Rank3KUM/Version2/CorrespondenceWrappers.lean', 'Version2.isBase_insert_pair_of_indep_flat_rank3')
         + '<br/>' + link('Rank3KUM/Interleave.lean', 'isBase_insert_pair_of_isBasis_flat_rank3')
@@ -249,7 +252,7 @@ def main() -> None:
 
     text = replace_row(
         text,
-        r"Lem\. 6\.3",
+        r"Lem\. 6\.3".replace(r"\\.", r"\."),
         '<tr><td>Lem. 6.3</td><td>'
         + link('Rank3KUM/Version2/CorrespondenceWrappers.lean', 'Version2.isBase_insert_pair_of_contract_indep_rank3')
         + '<br/>' + link('Rank3KUM/ContractInterleave.lean', 'isBase_insert_pair_of_contract_isBase_rank3')
@@ -258,7 +261,7 @@ def main() -> None:
 
     text = replace_row(
         text,
-        r"Lem\. 7\.20",
+        r"Lem\. 7\.20".replace(r"\\.", r"\."),
         '<tr><td>Lem. 7.20</td><td>'
         + link('Rank3KUM/Version2/ResidualSupportDisjoint.lean', 'Version2 residual-support disjointness lemma')
         + '<br/>' + link('Rank3KUM/TwoGap/EqualDisjointAC.lean', 'legacy specialized disjointness declarations')
@@ -267,7 +270,7 @@ def main() -> None:
 
     text = replace_row(
         text,
-        r"Lem\. 8\.3",
+        r"Lem\. 8\.3".replace(r"\\.", r"\."),
         '<tr><td>Lem. 8.3</td><td>'
         + link('Rank3KUM/Version2/NearTightGeometry.lean', 'Version2.eRk_union_eq_three_of_distinct_rankTwo_flats')
         + '</td><td>Version-2 declaration matches the unrestricted distinct-rank-two-flat statement; the old equal-cardinality specialization remains compiled.</td></tr>'
@@ -275,7 +278,7 @@ def main() -> None:
 
     text = replace_row(
         text,
-        r"Lem\. 8\.4",
+        r"Lem\. 8\.4".replace(r"\\.", r"\."),
         '<tr><td>Lem. 8.4</td><td>'
         + link('Rank3KUM/Version2/NearTightGeometry.lean', 'Version2.eRk_inter_le_one_of_distinct_rankTwo_flats')
         + '</td><td>Version-2 declaration matches the unrestricted paper statement.</td></tr>'
@@ -283,7 +286,7 @@ def main() -> None:
 
     text = replace_row(
         text,
-        r"Lem\. 8\.5",
+        r"Lem\. 8\.5".replace(r"\\.", r"\."),
         '<tr><td>Lem. 8.5</td><td>'
         + link('Rank3KUM/Version2/NearTightGeometry.lean', 'Version2.inter_subset_closure_singleton_of_distinct_rankTwo_flats')
         + '<br/>' + link('Rank3KUM/NearTightGeometry.lean', 'ncard_inter_le_k_sub_one_of_distinct_nearTight')
@@ -292,7 +295,7 @@ def main() -> None:
 
     text = replace_row(
         text,
-        r"Lem\. 8\.8",
+        r"Lem\. 8\.8".replace(r"\\.", r"\."),
         '<tr><td>Lem. 8.8</td><td>'
         + link('Rank3KUM/Version2/NearTightClassification.lean', 'Version2.nearTight_eq_one_of_nonconcurrent_three')
         + '<br/>' + link('Rank3KUM/NearTightGeometry.lean', 'false_of_nearTight_avoids_three_pairwise_representatives')
@@ -301,7 +304,7 @@ def main() -> None:
 
     text = replace_row(
         text,
-        r"Prop\. 8\.11",
+        r"Prop\. 8\.11".replace(r"\\.", r"\."),
         '<tr><td>Prop. 8.11</td><td>'
         + link('Rank3KUM/Version2/NearTightHitting.lean', 'Version2.exists_isBase_hitsNearTight_of_strict_rankThree')
         + '<br/>' + link('Rank3KUM/NearTightGeometry.lean', 'exists_isBase_hitsNearTight_of_strict_rankThree')
@@ -310,7 +313,7 @@ def main() -> None:
 
     text = replace_row(
         text,
-        r"Def\. 9\.1",
+        r"Def\. 9\.1".replace(r"\\.", r"\."),
         '<tr><td>Def. 9.1</td><td>'
         + link('Rank3KUM/Version2/SixPointStructural.lean', 'Version2.LinearTripleFamily6')
         + '</td><td>Now packaged directly as the paper\'s named definition of a linear family of triples.</td></tr>'
@@ -318,7 +321,7 @@ def main() -> None:
 
     text = replace_row(
         text,
-        r"Lem\. 9\.2",
+        r"Lem\. 9\.2".replace(r"\\.", r"\."),
         '<tr><td>Lem. 9.2</td><td>'
         + link('Rank3KUM/Version2/SixPointLemma9.lean', 'Version2.exists_avoidingCycle6_of_linear')
         + '<br/>' + link('Rank3KUM/Version2/SixPointMaximal.lean', 'maximal linear-family classification')
