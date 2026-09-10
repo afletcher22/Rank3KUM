@@ -1,10 +1,10 @@
 # Rank3KUM v2: checked paper-to-Lean handoff
 
-This handoff supersedes the pre-alignment handoff prepared on 10 September 2026. The version-2 Lean alignment described below has now been implemented and checked on branch `version-2`.
+This handoff supersedes the pre-alignment handoff prepared on 10 September 2026. The version-2 Lean alignment described below has been implemented and checked on branch `version-2`, and the corresponding paper-status edits have been prepared as a reproducible patch.
 
 ## Checked reference
 
-The immutable code reference for the completed alignment pass is:
+The immutable mathematical code reference for the completed alignment pass is:
 
 `0c98e5cd9341a65f309e0d5d55907b8656c70e62`
 
@@ -22,7 +22,7 @@ The principal theorem and the two new structural six-point theorems print exactl
 
 In particular, the checked route contains no `sorryAx`. The existing project policy remains unchanged: no `sorry`, `admit`, custom `axiom`, `unsafe`, or `native_decide` is required by the proof.
 
-A later documentation-only commit may move the branch head. Paper source links should use the immutable checked code commit above unless the full paper is regenerated against a later code-equivalent checked commit.
+Later documentation/tooling commits move the branch head. Paper source links should use the immutable checked mathematical commit above unless the full paper is regenerated against a later code-equivalent checked commit.
 
 ## Status of the version-2 mathematical alignment
 
@@ -71,7 +71,7 @@ The conclusion agrees with the existing theorem, but the version-2 route now mir
 
 ### Definition 9.1 and Lemma 9.2 — structural proof formalized
 
-The version-2 Section 9 proof is now represented by the following modules:
+The version-2 Section 9 proof is now represented by:
 
 - `Rank3KUM/Version2/SixPointStructural.lean`
 - `Rank3KUM/Version2/SixPointClassification.lean`
@@ -112,11 +112,7 @@ All six windows of both displayed cycles are proved explicitly. The original eig
 
 `Rank3KUM/Version2/SixPointMatroidBridge.lean` connects the abstract linear-family lemma to the strict six-element matroid case.
 
-The bridge defines the actual family of bad three-subsets:
-
-`badTripleFamily6`.
-
-It proves linearity using only the geometric fact that two distinct bad triples cannot share a pair. The helper `exists_shared_pair_residuals_of_three_sets` extracts the common pair and residual vertices by cardinality, rather than by a six-point case table.
+The bridge defines the actual family of bad three-subsets as `badTripleFamily6`. It proves linearity using only the geometric fact that two distinct bad triples cannot share a pair. The helper `exists_shared_pair_residuals_of_three_sets` extracts the common pair and residual vertices by cardinality, rather than by a six-point case table.
 
 The avoiding cycle from Lemma 9.2 is converted to a single generic permutation of `Fin 6`, and its six windows are converted back to matroid bases. The principal declarations are:
 
@@ -125,19 +121,40 @@ The avoiding cycle from Lemma 9.2 is converted to a single generic permutation o
 
 `Rank3KUM.rankThreeKUM` in `FinalInduction.lean` now invokes the second theorem in its `k = 2` callback. Thus the exported main theorem uses the structural Section 9 route, not `sixPointGoodAlternatives_of_linear`.
 
-The old `SixPointMatroid.lean` remains imported because it contains the shared definitions `finSixSet`, `SixPointBad`, and the genuine geometric lemma `not_both_sixPointBad_of_shared_pair`. The large `LinearSixBad` certificate and eight-order selection theorem are retained for compatibility but are not dependencies of the active `k = 2` callback.
+The old `SixPointMatroid.lean` remains imported because it contains shared definitions and genuine geometric infrastructure, including `finSixSet`, `SixPointBad`, and `not_both_sixPointBad_of_shared_pair`. The large `LinearSixBad` certificate and eight-order selection theorem are retained for compatibility but are not dependencies of the active `k = 2` callback.
+
+## Paper-alignment tooling now prepared
+
+The repository now contains:
+
+- `tools/update_v2_paper_alignment.py`, a narrow patcher for `Rank3KUM_paper_v2_draft.html`;
+- `docs/V2_PAPER_LEAN_ALIGNMENT.md`, an audit manifest for the checked commit and all affected Appendix A rows; and
+- a CI step running `python3 -m py_compile tools/update_v2_paper_alignment.py` before the Lean build.
+
+The patcher updates only the formalization-status/meta layer and affected Appendix A correspondences. It does not rewrite the mathematical proof body or bibliography. It covers:
+
+1. the front formalization-status paragraphs;
+2. the post-Lemma-8.8 status note;
+3. the closing paragraph of §9;
+4. §11's build, decision-procedure, and correspondence paragraphs;
+5. acknowledgements;
+6. Appendix A's checked-commit introduction and immutable source hashes; and
+7. twelve changed Appendix rows: Proposition 4.2; Lemmas 5.1, 6.3, 7.20, 8.3, 8.4, 8.5, 8.8; Proposition 8.11; Definition 9.1; Lemma 9.2; and the `§9, k = 2` row.
+
+The patcher validates that every targeted old paragraph/row occurs exactly once, and refuses to produce an output if the principal stale "awaiting formalization" phrases or the old immutable `f956680` source hash remain.
 
 ## What remains before the paper and repository are release-ready
 
-The mathematical/Lean alignment requested for version 2 is complete at the checked commit above. The remaining work is editorial and release-oriented:
+The mathematical/Lean alignment is complete. The remaining work is artifact/release-oriented:
 
-1. Update the paper's front-page formalization-status paragraphs, the end of §9, §11, and Appendix A so they no longer describe Proposition 4.2, Lemma 8.8, Proposition 8.11, or Lemma 9.2 as pending alignment.
-2. Change Appendix A's comparison commit from `f956680` to the checked version-2 commit and regenerate immutable source links/line anchors against that commit.
-3. Update the Appendix A rows for the new `Version2` declarations, especially Proposition 4.2, Lemmas 8.3–8.8, Proposition 8.11, Definition 9.1, Lemma 9.2, and the `k = 2` base case.
-4. Update §11's build description from the old 3,046-job / finite-certificate account to the checked 3,058-job structural route.
-5. Preserve the scope statement that Corollary 1.3 still invokes the external coprime-case theorem of van den Heuvel and Thomassé; only the divisible theorem is machine-checked here.
-6. Render the revised HTML to PDF and visually inspect page breaks, tables, links, mathematical symbols, and Appendix A before release.
-7. Do not publish a new Zenodo version or move a release tag without an explicit release decision. At upload time, recheck live Zenodo metadata, including the initials Á. Jánosik and B. Mátravölgyi.
+1. Apply `tools/update_v2_paper_alignment.py` to the actual self-contained `Rank3KUM_paper_v2_draft.html` source and retain the resulting aligned HTML as the new paper source.
+2. Render that aligned HTML to PDF and visually inspect page breaks, tables, links, mathematical symbols, and Appendix A.
+3. Verify that every immutable Appendix link resolves against `0c98e5c`; adjust line fragments only if the rendered paper still carries obsolete v1 line anchors after the global commit rewrite.
+4. Perform a final textual search for stale statements such as `3,046 jobs`, `not yet been formalized`, `remain to be aligned`, and descriptions of the finite certificate as the active §9 proof.
+5. Keep the scope statement that Corollary 1.3 invokes the external coprime-case theorem of van den Heuvel and Thomassé; only the divisible theorem is machine-checked here.
+6. Do not publish a new Zenodo version or move a release tag without an explicit release decision. At upload time, recheck live Zenodo metadata, including the initials Á. Jánosik and B. Mátravölgyi.
+
+The current ChatGPT File Library copy of the HTML is readable for audit but is not a writable repository file, so the prepared patch has not been falsely described as already applied to that artifact.
 
 ## Attribution and scope notes retained from the review
 
