@@ -51,13 +51,10 @@ theorem maximalLinearTripleFamily6_card_ne_one
   have hmem := hMax.2 T hTcard hlin
   rw [hFone] at hmem
   simp only [Finset.mem_singleton] at hmem
-  have hAempty : A = ∅ := by
-    apply Finset.eq_empty_iff_forall_not_mem.mpr
-    intro x hxA
-    have hxT : x ∈ T := by rw [hmem]; exact hxA
-    exact (Finset.mem_sdiff.mp hxT).2 hxA
-  rw [hAempty] at hAcard
-  simp at hAcard
+  have hAnon : A.Nonempty := Finset.card_pos.mp (by omega)
+  obtain ⟨x, hxA⟩ := hAnon
+  have hxT : x ∈ T := by rw [hmem]; exact hxA
+  exact (Finset.mem_sdiff.mp hxT).2 hxA
 
 /-- In the pairwise-intersecting branch, a maximal family cannot have exactly two members. -/
 theorem maximalLinearTripleFamily6_card_ne_two_of_pairwiseIntersecting
@@ -167,27 +164,39 @@ theorem maximalLinearTripleFamily6_card_ne_three_of_pairwiseIntersecting
   have hIBC : (B ∩ C).card = 1 :=
     card_inter_eq_one_of_pairwiseIntersecting6 hMax.1 hInt hBF hCF hBC
 
+  have hNoTriple (x : Fin 6) (hxA : x ∈ A) (hxB : x ∈ B) (hxC : x ∈ C) : False := by
+    have hsub : ({A, B, C} : Finset (Finset (Fin 6))) ⊆
+        F.filter (fun T => x ∈ T) := by
+      intro X hX
+      simp only [Finset.mem_insert, Finset.mem_singleton] at hX
+      rcases hX with rfl | rfl | rfl
+      · exact Finset.mem_filter.mpr ⟨hAF, hxA⟩
+      · exact Finset.mem_filter.mpr ⟨hBF, hxB⟩
+      · exact Finset.mem_filter.mpr ⟨hCF, hxC⟩
+    have hthree : ({A, B, C} : Finset (Finset (Fin 6))).card = 3 :=
+      Finset.card_eq_three.mpr ⟨A, B, C, hAB, hAC, hBC, rfl⟩
+    have hdeg_ge : 3 ≤ pointDegree6 F x := by
+      unfold pointDegree6
+      rw [← hthree]
+      exact Finset.card_le_card hsub
+    have hdeg_le := pointDegree6_le_two F hMax.1 x
+    omega
+
   have hABAC : Disjoint (A ∩ B) (A ∩ C) := by
     apply Finset.disjoint_left.2
     intro x hxAB hxAC
-    have hdeg := pointDegree6_le_two F hMax.1 x
-    have hdeg3 : pointDegree6 F x = 3 := by
-      simp [pointDegree6, hFthree, hxAB.1, hxAB.2, hxAC.2, hAB, hAC, hBC]
-    omega
+    rw [Finset.mem_inter] at hxAB hxAC
+    exact hNoTriple x hxAB.1 hxAB.2 hxAC.2
   have hABBC : Disjoint (A ∩ B) (B ∩ C) := by
     apply Finset.disjoint_left.2
     intro x hxAB hxBC
-    have hdeg := pointDegree6_le_two F hMax.1 x
-    have hdeg3 : pointDegree6 F x = 3 := by
-      simp [pointDegree6, hFthree, hxAB.1, hxAB.2, hxBC.2, hAB, hAC, hBC]
-    omega
+    rw [Finset.mem_inter] at hxAB hxBC
+    exact hNoTriple x hxAB.1 hxAB.2 hxBC.2
   have hACBC : Disjoint (A ∩ C) (B ∩ C) := by
     apply Finset.disjoint_left.2
     intro x hxAC hxBC
-    have hdeg := pointDegree6_le_two F hMax.1 x
-    have hdeg3 : pointDegree6 F x = 3 := by
-      simp [pointDegree6, hFthree, hxAC.1, hxAC.2, hxBC.1, hAB, hAC, hBC]
-    omega
+    rw [Finset.mem_inter] at hxAC hxBC
+    exact hNoTriple x hxAC.1 hxBC.1 hxAC.2
   have hPairBC : Disjoint ((A ∩ B) ∪ (A ∩ C)) (B ∩ C) := by
     apply Finset.disjoint_left.2
     intro x hx hxBC
@@ -227,13 +236,13 @@ theorem maximalLinearTripleFamily6_card_ne_three_of_pairwiseIntersecting
     rw [hCP, Finset.card_union_of_disjoint hACBC, hIAC, hIBC]
   have hTAeq : T ∩ A = A \ P := by
     ext x
-    simp [T, and_comm, and_left_comm]
+    simp [T, and_comm]
   have hTBeq : T ∩ B = B \ P := by
     ext x
-    simp [T, and_comm, and_left_comm]
+    simp [T, and_comm]
   have hTCeq : T ∩ C = C \ P := by
     ext x
-    simp [T, and_comm, and_left_comm]
+    simp [T, and_comm]
   have hTAcard : (T ∩ A).card = 1 := by
     rw [hTAeq]
     have h := Finset.card_sdiff_add_card_inter A P
