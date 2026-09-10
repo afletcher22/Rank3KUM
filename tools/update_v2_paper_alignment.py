@@ -33,11 +33,14 @@ def replace_exact(text: str, old: str, new: str, label: str) -> str:
 
 def replace_row(text: str, label: str, correspondence: str, status: str) -> str:
     pattern = rf"<tr><td>{re.escape(label)}</td>.*?</tr>"
+    matches = list(re.finditer(pattern, text, flags=re.DOTALL))
+    if len(matches) != 1:
+        raise RuntimeError(
+            f"Appendix row {label!r}: expected exactly one match, found {len(matches)}"
+        )
     row = f"<tr><td>{label}</td><td>{correspondence}</td><td>{status}</td></tr>"
-    out, count = re.subn(pattern, row, text, count=1, flags=re.DOTALL)
-    if count != 1:
-        raise RuntimeError(f"Appendix row {label!r}: expected exactly one match, found {count}")
-    return out
+    match = matches[0]
+    return text[:match.start()] + row + text[match.end():]
 
 
 def link(path: str, name: str) -> str:
@@ -58,12 +61,15 @@ def align(text: str) -> str:
         'finite-certificate exposition in §9 by a structural proof. Those revised arguments have not '
         'yet been incorporated into Lean. Appendix A distinguishes existing formal results from the '
         'remaining alignment work.</p>',
-        '<p>The divisible theorem (Theorem 1.2) and the revised proof route used in this version are now '
-        'checked in Lean 4. Corollary 1.3 still also uses the external coprime-case theorem of van den '
-        'Heuvel and Thomassé, which is not formalized here. In particular, the largest-class-first '
-        'rank-two construction, the strengthened Lemma 8.8 and revised Proposition 8.11 route, and the '
-        'structural six-point proof of Lemma 9.2 have all been incorporated into the version-2 '
-        'development. Appendix A records the checked correspondences.</p>',
+        '<p>The divisible theorem (Theorem 1.2) is checked in Lean 4. The version-2 development also '
+        'contains checked counterparts of the revised largest-class-first rank-two construction, the '
+        'strengthened Lemma 8.8 and revised Proposition 8.11 argument, the shared Lemma 7.20 '
+        'residual-support argument, and the structural six-point proof of Lemma 9.2. Of these revised '
+        'counterparts, the structural six-point theorem is now used by the exported main theorem in its '
+        '<code>k = 2</code> branch; the main theorem otherwise continues to use the original compiled '
+        'rank-two, near-tight, and two-gap routes. Corollary 1.3 additionally uses the external '
+        'coprime-case theorem of van den Heuvel and Thomassé, which is not formalized here. Appendix A '
+        'distinguishes checked alternative correspondences from actual dependencies of the exported theorem.</p>',
         "front formalization status",
     )
 
@@ -77,9 +83,10 @@ def align(text: str) -> str:
         '<a href="https://doi.org/10.5281/zenodo.21813155">10.5281/zenodo.21813155</a>.</p>',
         f'<p>The version-2 correspondence below is checked against <a href="{TREE}">Rank3KUM, commit '
         f'{NEW_SHORT}</a>. CI run <code>{CI_RUN}</code> completed successfully with <code>3058</code> '
-        'build jobs. The principal theorem and the new structural six-point theorems have exactly the '
-        'axiom dependencies <code>propext</code>, <code>Classical.choice</code> and '
-        '<code>Quot.sound</code>. The archived version-1 formalization remains '
+        'build jobs. The principal theorem and the new structural six-point endpoint theorems have '
+        'exactly the axiom dependencies <code>propext</code>, <code>Classical.choice</code> and '
+        '<code>Quot.sound</code>. Appendix A records both compiled version-2 counterparts and whether '
+        'they are used by the exported theorem. The archived version-1 formalization remains '
         '<a href="https://doi.org/10.5281/zenodo.21813155">10.5281/zenodo.21813155</a>; it should not '
         'be confused with this checked version-2 branch state.</p>',
         "comparison paragraph",
@@ -93,7 +100,7 @@ def align(text: str) -> str:
         '<p>In particular, a set containing representatives of A∩B, A∩C and B∩C meets every near-tight '
         'flat. The stronger no-fourth-flat statement above is formalized in the version-2 development as '
         '<code>Rank3KUM.Version2.nearTight_eq_one_of_nonconcurrent_three</code>; the earlier avoidance '
-        'theorem is retained as a compatible weaker result.</p>',
+        'theorem remains the route used by the exported main theorem.</p>',
         "Lemma 8.8 status note",
     )
 
@@ -149,12 +156,13 @@ def align(text: str) -> str:
         'the code retains the finite certificate for §9 rather than the maximal-family proof. These differences do '
         'not change the statement of the already formalized main theorem, but the revised proof route has not yet '
         'been checked in Lean. Appendix A records the outstanding correspondences.</p>',
-        '<p>The principal expository distinctions in this revision are now represented explicitly in the '
-        '<code>Rank3KUM.Version2</code> modules. The largest-class-first half-weave has its own checked output '
-        'theorem; the stronger Lemma 8.8 and the revised hitting-basis route are checked; and §9 has a checked '
-        'maximal-family classification and matroid bridge. The original declarations are retained where useful '
-        'for compatibility, so Appendix A distinguishes the version-2 counterparts from legacy routes rather '
-        'than treating them as outstanding work.</p>',
+        '<p>The principal revised arguments now have explicit checked counterparts in the '
+        '<code>Rank3KUM.Version2</code> modules: Definition 4.1 and the largest-class-first Proposition 4.2 '
+        'interface, the stronger Lemma 8.8 and revised Proposition 8.11 route, the shared Lemma 7.20 '
+        'residual-support argument, and the structural Section 9 proof. These additions are largely additive: '
+        'the original declarations remain compiled for compatibility. Only the structural Section 9 result has '
+        'been substituted into <code>rankThreeKUM</code>; the exported theorem otherwise retains the original '
+        'rank-two, near-tight, and two-gap dependencies. Appendix A records this distinction explicitly.</p>',
         "Section 11 correspondence paragraph",
     )
 
@@ -168,10 +176,11 @@ def align(text: str) -> str:
         'and Appendix A.</p>',
         '<p>Under the direction of Austen Fletcher, the original mathematical argument was developed primarily '
         'by GPT-5.6 Sol. The original Lean formalization and paper were prepared collaboratively by GPT-5.6 Sol '
-        'and Claude Opus 5. This revision incorporates AI-assisted critical review and expository simplification, '
-        'and its revised Lean correspondences were subsequently implemented and checked. The divisible theorem, '
-        'including the version-2 rank-two, near-tight and structural six-point routes described in Appendix A, '
-        'was checked by the Lean kernel at the commit stated there.</p>',
+        'and Claude Opus 5. This revision incorporates AI-assisted critical review and expository simplification. '
+        'The exported divisible theorem and its actual dependencies were checked by the Lean kernel at the commit '
+        'stated in Appendix A. The version-2 development also contains separately checked counterparts of the '
+        'revised rank-two, near-tight, and residual-support arguments; among the new routes, the structural '
+        'six-point theorem is the one incorporated into the exported theorem.</p>',
         "acknowledgements",
     )
 
@@ -183,17 +192,21 @@ def align(text: str) -> str:
         '9.2 remain to be aligned with Lean.</p>',
         f'<p>The table refers to <a href="{TREE}">checked commit {NEW_SHORT}</a>. Links identify immutable '
         'source locations. A compiled result may use a different representation or proof; the status column '
-        'records substantive differences and notes when a version-2 declaration supersedes a legacy proof route. '
-        'The revised arguments for Proposition 4.2, Lemma 8.8, Proposition 8.11 and Lemma 9.2 are checked at this '
-        'commit.</p>',
+        'records substantive differences, including whether a version-2 counterpart is merely compiled or is '
+        'an actual dependency of <code>rankThreeKUM</code>. The revised arguments listed below are checked at '
+        'this commit.</p>',
         "Appendix introduction",
     )
 
     rows = {
+        "Def. 4.1": (
+            link('Rank3KUM/Version2/HalfWeave.lean', 'Version2.HalfWeave.CyclicRankTwoBasisOrdering'),
+            "The version-2 structure is the paper-level output interface: an equivalence indexed by Fin k × Bool together with a basis condition for every woven successor pair.",
+        ),
         "Prop. 4.2": (
             link('Rank3KUM/Version2/HalfWeave.lean', 'Version2.HalfWeave.cyclicRankTwoBasisOrderingOfUniformlyDense')
             + '<br/>' + link('Rank3KUM/HalfWeave/ParallelClasses.lean', 'HalfWeave.exists_cyclic_adjacent_base_order_of_uniformlyDense'),
-            "The version-2 declaration checks the paper's largest-class-first construction; the older fully sorted construction remains compiled.",
+            "The version-2 declaration checks the paper's largest-class-first construction; the older fully sorted construction remains compiled and is still used by the existing main-theorem rank-two route.",
         ),
         "Lem. 5.1": (
             link('Rank3KUM/Version2/CorrespondenceWrappers.lean', 'Version2.isBase_insert_pair_of_indep_flat_rank3')
@@ -206,9 +219,10 @@ def align(text: str) -> str:
             "Version-2 wrapper records the revised independent-pair formulation; the contraction and singleton-basis infrastructure remains in the original module.",
         ),
         "Lem. 7.20": (
-            link('Rank3KUM/Version2/ResidualSupportDisjoint.lean', 'Version2 residual-support disjointness lemma')
-            + '<br/>' + link('Rank3KUM/TwoGap/EqualDisjointAC.lean', 'legacy specialized disjointness declarations'),
-            "The version-2 module extracts the paper's shared residual-support argument; the three original specialized consequences remain compiled.",
+            link('Rank3KUM/Version2/ResidualSupportDisjoint.lean', 'Version2.residualSupport_disjoint_of_shared_bridge')
+            + '<br/>' + link('Rank3KUM/TwoGap/EqualDisjointAC.lean', 'TwoGap.equal_singleton_residualSupport_a_disjoint_c')
+            + '<br/>' + link('Rank3KUM/TwoGap/EqualDisjointRest.lean', 'legacy a–b and b–c specializations'),
+            "The version-2 declaration extracts the paper's common residual-support argument. The original three specialized results remain the dependencies used by the existing two-gap route.",
         ),
         "Lem. 8.3": (
             link('Rank3KUM/Version2/NearTightGeometry.lean', 'Version2.eRk_union_eq_three_of_distinct_rankTwo_flats'),
@@ -220,18 +234,18 @@ def align(text: str) -> str:
         ),
         "Lem. 8.5": (
             link('Rank3KUM/Version2/NearTightGeometry.lean', 'Version2.inter_subset_closure_singleton_of_distinct_rankTwo_flats')
-            + '<br/>' + link('Rank3KUM/NearTightGeometry.lean', 'ncard_inter_le_k_sub_one_of_distinct_nearTight'),
-            "The unrestricted closure statement is checked in the version-2 module; the existing near-tight cardinality bound supplies the strict-density specialization.",
+            + '<br/>' + link('Rank3KUM/StrictDensity.lean', 'StrictlyUniformlyDense.encard_lt_k_of_eRk_eq_one'),
+            "The unrestricted closure inclusion is checked directly. Under the section's strict-density hypotheses, the paper's general |A ∩ B| ≤ k − 1 bound is derived by applying the rank-one/parallel-class bound of Lemma 3.2 to the containing singleton closure; the older near-tight-specific intersection bound is not the general correspondence.",
         ),
         "Lem. 8.8": (
             link('Rank3KUM/Version2/NearTightClassification.lean', 'Version2.nearTight_eq_one_of_nonconcurrent_three')
             + '<br/>' + link('Rank3KUM/NearTightGeometry.lean', 'false_of_nearTight_avoids_three_pairwise_representatives'),
-            "The stronger no-fourth-flat classification is now compiled and follows the revised incidence-count proof. The older avoidance consequence remains compiled separately.",
+            "The stronger no-fourth-flat classification is compiled and follows the revised incidence-count proof. The older avoidance consequence remains compiled and is the result used by the existing main-theorem near-tight route.",
         ),
         "Prop. 8.11": (
             link('Rank3KUM/Version2/NearTightHitting.lean', 'Version2.exists_isBase_hitsNearTight_of_strict_rankThree')
             + '<br/>' + link('Rank3KUM/NearTightGeometry.lean', 'exists_isBase_hitsNearTight_of_strict_rankThree'),
-            "The version-2 declaration checks the paper's route through the stronger Lemma 8.8; the original theorem with the same conclusion remains compiled.",
+            "The version-2 declaration checks the paper's route through the stronger Lemma 8.8. The original theorem with the same conclusion remains the dependency used by rankThreeKUM.",
         ),
         "Def. 9.1": (
             link('Rank3KUM/Version2/SixPointStructural.lean', 'Version2.LinearTripleFamily6'),
@@ -239,8 +253,8 @@ def align(text: str) -> str:
         ),
         "Lem. 9.2": (
             link('Rank3KUM/Version2/SixPointLemma9.lean', 'Version2.exists_avoidingCycle6_of_linear')
-            + '<br/>' + link('Rank3KUM/Version2/SixPointMaximal.lean', 'maximal linear-family classification')
-            + '<br/>' + link('Rank3KUM/Version2/SixPointPasch.lean', 'Pasch relabelling'),
+            + '<br/>' + link('Rank3KUM/Version2/SixPointMaximal.lean', 'Version2.maximalLinearTripleFamily6_card_eq_four_of_pairwiseIntersecting')
+            + '<br/>' + link('Rank3KUM/Version2/SixPointPasch.lean', 'Version2.paschPattern6_of_maximal_pairwiseIntersecting'),
             "The structural maximal-family proof is compiled, including the two canonical families and the paper's exact avoiding cycles. The old eight-order certificate remains compiled as a legacy route.",
         ),
         "§9, k = 2": (
@@ -265,7 +279,10 @@ def align(text: str) -> str:
     if OLD_FULL in text:
         raise RuntimeError("old f956680 immutable source link remains after alignment")
 
-    print(f"validated {old_link_count} immutable source-link updates and {len(rows)} Appendix row replacements")
+    print(
+        f"validated {old_link_count} immutable source-link updates and "
+        f"{len(rows)} unique Appendix row replacements"
+    )
     return text
 
 
