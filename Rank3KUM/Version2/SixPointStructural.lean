@@ -34,7 +34,6 @@ theorem pointDegree6_le_two
     have hvT := hv_mem T hT
     dsimp [rest]
     rw [Finset.card_erase_of_mem hvT, hTcard]
-    omega
 
   have hpair : (G : Set (Finset (Fin 6))).PairwiseDisjoint rest := by
     intro A hAG B hBG hAB
@@ -97,7 +96,7 @@ theorem sum_pointDegree6
     _ = ∑ T ∈ F, T.card := by
           apply Finset.sum_congr rfl
           intro T hT
-          simpa using (Finset.sum_boole (R := ℕ) (fun v : Fin 6 => v ∈ T) Finset.univ)
+          exact (Finset.sum_boole (R := ℕ) (fun v : Fin 6 => v ∈ T) Finset.univ).trans (by simp)
     _ = ∑ _T ∈ F, 3 := by
           apply Finset.sum_congr rfl
           intro T hT
