@@ -69,13 +69,13 @@ lake exe cache get
 lake build
 ```
 
-The first command downloads prebuilt Mathlib `.olean` files. A clean build reports:
+The first command downloads prebuilt Mathlib `.olean` files. The current `version-2` root build reports:
 
 ```text
-Build completed successfully (3046 jobs).
+Build completed successfully (3058 jobs).
 ```
 
-The build completes with no errors and no warnings. Building Mathlib from source instead of using the cache may take several hours.
+The Lean build completes with no errors and no Lean warnings. Building Mathlib from source instead of using the cache may take several hours.
 
 ## Verification
 
@@ -102,7 +102,9 @@ The repository contains:
 - no `unsafe` declarations;
 - no use of `native_decide`.
 
-Two finite certificates occur in the six-element base case. The twenty-variable propositional core is discharged by an explicit decision tree: a structured case analysis rather than reflection. Small `Finset (Fin 6)` equalities use `decide`, which evaluates inside the Lean kernel. No external certificate, SAT solver or untrusted oracle is used by the checked proof.
+The active `k = 2` proof now follows the structural six-point argument used in the version-2 paper. For a six-point enumeration, `badTripleFamily6` is the family of dependent three-subsets. Strict density implies that two distinct bad triples cannot share a pair, so this family is linear. `exists_avoidingCycle6_of_linear` extends a linear family to a maximal one, classifies the maximal family up to relabelling as either two disjoint triples or the Pasch configuration, and uses the paper's two explicit avoiding cycles. `SixPointMatroidBridge.lean` translates the resulting avoiding cycle back into a cyclic basis ordering, and `rankThreeKUM` invokes that structural theorem in its `k = 2` branch.
+
+The original eight-order finite-certificate development remains in `SixPointCombinatorics.lean` and `SixPointMatroid.lean` as a checked legacy route and source of shared six-point matroid lemmas. It is no longer the route used by the exported `rankThreeKUM` theorem. No external certificate, SAT solver or untrusted oracle is used by either checked route.
 
 ## Proof structure
 
@@ -136,13 +138,19 @@ In the strictly dense case, a carefully selected basis is deleted. The resulting
 | `TightSetReduction.lean` | Assembly of the two tight-set cases |
 | `TwoGap/` | The universal two-gap insertion theorem |
 | `Splicing.lean`, `SpliceWrap.lean` | Contiguous insertion of a deleted basis into a cyclic ordering |
-| `NearTightGeometry.lean` | Geometry of near-tight rank-two flats and construction of a basis meeting all of them |
+| `NearTightGeometry.lean` | Original geometry of near-tight rank-two flats and construction of a basis meeting all of them |
+| `Version2/NearTight*.lean` | Version-2 near-tight geometry, stronger Lemma 8.8 classification, and hitting-basis proof |
+| `Version2/HalfWeave.lean` | Version-2 largest-class-first rank-two construction |
+| `Version2/ResidualSupportDisjoint.lean` | Shared version-2 residual-support disjointness argument |
+| `Version2/CorrespondenceWrappers.lean` | Small wrappers matching revised paper hypotheses and conclusions |
 | `InductionStep.lean` | Deletion, induction and reinsertion |
 | `FinalReduction.lean` | Reduction of the strict case to the induction step |
-| `SixPointCombinatorics.lean` | Finite combinatorial certificate for the six-element case |
-| `SixPointMatroid.lean` | Translation of the finite certificate into the `k = 2` matroid theorem |
+| `SixPointCombinatorics.lean` | Legacy finite combinatorial certificate for the six-element case |
+| `SixPointMatroid.lean` | Legacy certificate route plus shared six-point matroid geometry |
+| `Version2/SixPointStructural.lean`–`SixPointLemma9.lean` | Structural Lemma 9.2: linear families, maximal extension, pair/Pasch classification and avoiding cycles |
+| `Version2/SixPointMatroidBridge.lean` | Translation of structural Lemma 9.2 into the active `k = 2` matroid theorem |
 | `SmallCases.lean` | The `k = 1` base case |
-| `FinalInduction.lean` | Strong induction and the theorem `rankThreeKUM` |
+| `FinalInduction.lean` | Strong induction and the theorem `rankThreeKUM`; its `k = 2` branch uses the structural version-2 theorem |
 
 ## The two-gap theorem
 
