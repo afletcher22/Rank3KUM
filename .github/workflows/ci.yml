@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check paper alignment tooling
+        run: python3 -m py_compile tools/update_v2_paper_alignment.py
       - name: Cache Lake packages
         uses: actions/cache@v4
         with:
