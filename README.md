@@ -3,10 +3,11 @@
 A Lean 4 formalization of the **divisible case of the rank-three Kajitani–Ueno–Miyano cyclic ordering theorem**, developed under the direction of Austen Fletcher with GPT-5.6 Sol and Claude Opus 5. Version-2 additionally used GPT-6 (Astra) and Fable 5.1 for critical review, formalization auditing, and expository refinement.
 
 [![Paper DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22698709.svg)](https://doi.org/10.5281/zenodo.22698709)
-[![Version-1 Formalization DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21813155.svg)](https://doi.org/10.5281/zenodo.21813155)
+[![Formalization DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22698862.svg)](https://doi.org/10.5281/zenodo.22698862)
 
 - **Paper version-2:** [*Cyclic basis orderings of uniformly dense rank-three matroids*](https://doi.org/10.5281/zenodo.22698709)
 - **Paper version-1:** [10.5281/zenodo.21813716](https://doi.org/10.5281/zenodo.21813716)
+- **Archived formalization version-2:** [Rank3KUM v2.0.0](https://doi.org/10.5281/zenodo.22698862)
 - **Archived formalization version-1:** [Rank3KUM v1.0.0](https://doi.org/10.5281/zenodo.21813155)
 
 ## What is proved
@@ -228,25 +229,25 @@ To cite the current paper:
 }
 ```
 
-The currently archived Lean formalization is version-1:
+To cite the current archived Lean formalization:
 
 ```bibtex
 @software{Fletcher2026Rank3KUMLean,
   author  = {Austen Fletcher},
   title   = {Rank3KUM: Lean 4 formalization of the divisible rank-three
              Kajitani--Ueno--Miyano theorem},
-  version = {1.0.0},
+  version = {2.0.0},
   year    = {2026},
-  doi     = {10.5281/zenodo.21813155},
-  url     = {https://doi.org/10.5281/zenodo.21813155}
+  doi     = {10.5281/zenodo.22698862},
+  url     = {https://doi.org/10.5281/zenodo.22698862}
 }
 ```
 
-The version-1 repository archive is available at:
+The version-2 repository archive is available at:
 
-[https://doi.org/10.5281/zenodo.21813155](https://doi.org/10.5281/zenodo.21813155)
+[https://doi.org/10.5281/zenodo.22698862](https://doi.org/10.5281/zenodo.22698862)
 
-The version-2 formalization DOI will be added after the `v2.0.0` release is archived.
+Version-1 remains archived at [10.5281/zenodo.21813155](https://doi.org/10.5281/zenodo.21813155).
 
 ## License
 
