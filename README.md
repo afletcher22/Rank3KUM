@@ -1,12 +1,13 @@
 # Rank3KUM
 
-A Lean 4 formalization of the **divisible case of the rank-three Kajitani–Ueno–Miyano cyclic ordering theorem**, developed under the direction of Austen Fletcher with GPT-5.6 Sol and Claude Opus 5.
+A Lean 4 formalization of the **divisible case of the rank-three Kajitani–Ueno–Miyano cyclic ordering theorem**, developed under the direction of Austen Fletcher with GPT-5.6 Sol and Claude Opus 5. Version-2 additionally used GPT-6 (Astra) and Fable 5.1 for critical review, formalization auditing, and expository refinement.
 
-[![Paper DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21813716.svg)](https://doi.org/10.5281/zenodo.21813716)
-[![Formalization DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21813155.svg)](https://doi.org/10.5281/zenodo.21813155)
+[![Paper DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22698709.svg)](https://doi.org/10.5281/zenodo.22698709)
+[![Version-1 Formalization DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21813155.svg)](https://doi.org/10.5281/zenodo.21813155)
 
-- **Paper:** [*Cyclic basis orderings of uniformly dense rank-three matroids*](https://doi.org/10.5281/zenodo.21813716)
-- **Archived formalization:** [Rank3KUM v1.0.0](https://doi.org/10.5281/zenodo.21813155)
+- **Paper version-2:** [*Cyclic basis orderings of uniformly dense rank-three matroids*](https://doi.org/10.5281/zenodo.22698709)
+- **Paper version-1:** [10.5281/zenodo.21813716](https://doi.org/10.5281/zenodo.21813716)
+- **Archived formalization version-1:** [Rank3KUM v1.0.0](https://doi.org/10.5281/zenodo.21813155)
 
 ## What is proved
 
@@ -196,22 +197,24 @@ Rank3KUM.TwoGap.universalTwoGapInsertion
 
 Under the direction of Austen Fletcher, the mathematical argument was developed primarily by GPT-5.6 Sol.
 
-The Lean 4 formalization and preparation of the accompanying paper were produced collaboratively by GPT-5.6 Sol and Claude Opus 5, also under Fletcher's direction.
+The original Lean 4 formalization and preparation of the accompanying paper were produced collaboratively by GPT-5.6 Sol and Claude Opus 5, also under Fletcher's direction. GPT-6 (Astra) and Fable 5.1 were additionally leveraged during version-2 for critical review, formalization auditing, and expository refinement.
 
 All formal claims in this repository are checked by Lean's kernel under the axiom dependencies listed above.
 
 ## Paper
 
-The accompanying paper is:
+The current accompanying paper is:
 
-> Austen Fletcher, *Cyclic basis orderings of uniformly dense rank-three matroids*, Carbon Silicon Labs, 2026.  
-> DOI: [10.5281/zenodo.21813716](https://doi.org/10.5281/zenodo.21813716)
+> Austen Fletcher, *Cyclic basis orderings of uniformly dense rank-three matroids*, version-2, Carbon Silicon Labs, 2026.  
+> DOI: [10.5281/zenodo.22698709](https://doi.org/10.5281/zenodo.22698709)
+
+Version-1 of the paper remains archived at [10.5281/zenodo.21813716](https://doi.org/10.5281/zenodo.21813716).
 
 The paper gives a conventional mathematical presentation of the proof, explains the relation to prior work, and provides a cross-reference between numbered statements and their corresponding Lean declarations and source files.
 
 ## Citation
 
-To cite the paper:
+To cite the current paper:
 
 ```bibtex
 @article{Fletcher2026Rank3KUM,
@@ -219,12 +222,13 @@ To cite the paper:
   title       = {Cyclic basis orderings of uniformly dense rank-three matroids},
   institution = {Carbon Silicon Labs},
   year        = {2026},
-  doi         = {10.5281/zenodo.21813716},
-  url         = {https://doi.org/10.5281/zenodo.21813716}
+  version     = {2},
+  doi         = {10.5281/zenodo.22698709},
+  url         = {https://doi.org/10.5281/zenodo.22698709}
 }
 ```
 
-To cite the archived Lean formalization:
+The currently archived Lean formalization is version-1:
 
 ```bibtex
 @software{Fletcher2026Rank3KUMLean,
@@ -238,9 +242,11 @@ To cite the archived Lean formalization:
 }
 ```
 
-The repository archive is available at:
+The version-1 repository archive is available at:
 
 [https://doi.org/10.5281/zenodo.21813155](https://doi.org/10.5281/zenodo.21813155)
+
+The version-2 formalization DOI will be added after the `v2.0.0` release is archived.
 
 ## License
 
