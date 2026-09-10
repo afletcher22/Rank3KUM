@@ -36,13 +36,23 @@ theorem six_pairwise_ne_of_card_six
   have hd := (Multiset.nodup_cons.mp hn3).1
   have hn4 := (Multiset.nodup_cons.mp hn3).2
   have he := (Multiset.nodup_cons.mp hn4).1
-  simp only [Multiset.mem_cons, Multiset.mem_singleton, not_or] at ha hb hc hd he
-  rcases ha with ⟨hab, hac, had, hae, haf⟩
-  rcases hb with ⟨hbc, hbd, hbe, hbf⟩
-  rcases hc with ⟨hcd, hce, hcf⟩
-  rcases hd with ⟨hde, hdf⟩
+  have hab : a ≠ b := by intro h; subst b; exact ha (by simp)
+  have hac : a ≠ c := by intro h; subst c; exact ha (by simp)
+  have had : a ≠ d := by intro h; subst d; exact ha (by simp)
+  have hae : a ≠ e := by intro h; subst e; exact ha (by simp)
+  have haf : a ≠ f := by intro h; subst f; exact ha (by simp)
+  have hbc : b ≠ c := by intro h; subst c; exact hb (by simp)
+  have hbd : b ≠ d := by intro h; subst d; exact hb (by simp)
+  have hbe : b ≠ e := by intro h; subst e; exact hb (by simp)
+  have hbf : b ≠ f := by intro h; subst f; exact hb (by simp)
+  have hcd : c ≠ d := by intro h; subst d; exact hc (by simp)
+  have hce : c ≠ e := by intro h; subst e; exact hc (by simp)
+  have hcf : c ≠ f := by intro h; subst f; exact hc (by simp)
+  have hde : d ≠ e := by intro h; subst e; exact hd (by simp)
+  have hdf : d ≠ f := by intro h; subst f; exact hd (by simp)
+  have hef : e ≠ f := by intro h; subst f; exact he (by simp)
   exact ⟨hab, hac, had, hae, haf, hbc, hbd, hbe, hbf,
-    hcd, hce, hcf, hde, hdf, he⟩
+    hcd, hce, hcf, hde, hdf, hef⟩
 
 /-- Avoidance is inherited by subfamilies. -/
 theorem avoidingCycle6_mono
@@ -61,6 +71,7 @@ theorem avoidingCycle6_mono
     fun hF => h5 (hFG hF)⟩
 
 /-- The first canonical family is avoided by the paper's cycle `(0,1,3,2,4,5)`. -/
+set_option maxHeartbeats 500000 in
 theorem pairPattern6_has_paper_avoidingCycle
     {F : Finset (Finset (Fin 6))}
     (hPair : PairPattern6 F) :
@@ -95,15 +106,6 @@ theorem pairPattern6_has_paper_avoidingCycle
     · intro hWB
       have hxB : x ∈ B := by rw [← hWB]; exact hxW
       exact Finset.disjoint_left.mp hdisj hxA hxB
-  have hCycleCard :
-      ({a, b, d, c, e, f} : Finset (Fin 6)).card = 6 := by
-    have hset :
-        ({a, b, d, c, e, f} : Finset (Fin 6)) =
-          ({a, b, c, d, e, f} : Finset (Fin 6)) := by
-      ext x
-      simp only [Finset.mem_insert, Finset.mem_singleton]
-      tauto
-    rw [hset, hSix]
   refine ⟨a, b, c, d, e, f, hSix, ?_⟩
   unfold AvoidingCycle6
   rw [hF]
@@ -123,6 +125,8 @@ theorem pairPattern6_has_paper_avoidingCycle
   · exact hMixed _ (by simp) (by simp [A]) (by simp) (by simp [B])
 
 /-- The Pasch family is avoided by the paper's cycle `(0,1,4,2,3,5)`. -/
+set_option maxHeartbeats 800000 in
+set_option maxRecDepth 2000 in
 theorem paschPattern6_has_paper_avoidingCycle
     {F : Finset (Finset (Fin 6))}
     (hPasch : PaschPattern6 F) :
@@ -146,26 +150,39 @@ theorem paschPattern6_has_paper_avoidingCycle
     apply hxT
     rw [← hWT]
     exact hxW
-  have heA : e ∉ A := by simp [A, hae.symm, hbe.symm, hce.symm]
-  have hbB : b ∉ B := by simp [B, hab.symm, hbd, hbe]
-  have haC : a ∉ C := by simp [C, hab, had, haf]
-  have haD : a ∉ D := by simp [D, hac, hae, haf]
-  have heC : e ∉ C := by simp [C, hbe.symm, hde.symm, hef]
-  have hbD : b ∉ D := by simp [D, hbc, hbe, hbf]
-  have hcB : c ∉ B := by simp [B, hac.symm, hcd, hce]
-  have hcC : c ∉ C := by simp [C, hbc.symm, hcd, hcf]
-  have hdD : d ∉ D := by simp [D, hcd.symm, hde, hdf]
-  have hfA : f ∉ A := by simp [A, haf.symm, hbf.symm, hcf.symm]
-  have hfB : f ∉ B := by simp [B, haf.symm, hdf.symm, hef.symm]
-  have hCycleCard :
-      ({a, b, e, c, d, f} : Finset (Fin 6)).card = 6 := by
-    have hset :
-        ({a, b, e, c, d, f} : Finset (Fin 6)) =
-          ({a, b, c, d, e, f} : Finset (Fin 6)) := by
-      ext x
-      simp only [Finset.mem_insert, Finset.mem_singleton]
-      tauto
-    rw [hset, hSix]
+  have heA : e ∉ A := by
+    simp only [A, Finset.mem_insert, Finset.mem_singleton, not_or]
+    exact ⟨hae.symm, hbe.symm, hce.symm⟩
+  have hbB : b ∉ B := by
+    simp only [B, Finset.mem_insert, Finset.mem_singleton, not_or]
+    exact ⟨hab.symm, hbd, hbe⟩
+  have haC : a ∉ C := by
+    simp only [C, Finset.mem_insert, Finset.mem_singleton, not_or]
+    exact ⟨hab, had, haf⟩
+  have haD : a ∉ D := by
+    simp only [D, Finset.mem_insert, Finset.mem_singleton, not_or]
+    exact ⟨hac, hae, haf⟩
+  have heC : e ∉ C := by
+    simp only [C, Finset.mem_insert, Finset.mem_singleton, not_or]
+    exact ⟨hbe.symm, hde.symm, hef⟩
+  have hbD : b ∉ D := by
+    simp only [D, Finset.mem_insert, Finset.mem_singleton, not_or]
+    exact ⟨hbc, hbe, hbf⟩
+  have hcB : c ∉ B := by
+    simp only [B, Finset.mem_insert, Finset.mem_singleton, not_or]
+    exact ⟨hac.symm, hcd, hce⟩
+  have hcC : c ∉ C := by
+    simp only [C, Finset.mem_insert, Finset.mem_singleton, not_or]
+    exact ⟨hbc.symm, hcd, hcf⟩
+  have hdD : d ∉ D := by
+    simp only [D, Finset.mem_insert, Finset.mem_singleton, not_or]
+    exact ⟨hcd.symm, hde, hdf⟩
+  have hfA : f ∉ A := by
+    simp only [A, Finset.mem_insert, Finset.mem_singleton, not_or]
+    exact ⟨haf.symm, hbf.symm, hcf.symm⟩
+  have hfB : f ∉ B := by
+    simp only [B, Finset.mem_insert, Finset.mem_singleton, not_or]
+    exact ⟨haf.symm, hdf.symm, hef.symm⟩
   refine ⟨a, b, c, d, e, f, hSix, ?_⟩
   unfold AvoidingCycle6
   rw [hF]
@@ -218,7 +235,7 @@ theorem maximalLinearTripleFamily6_pair_or_pasch
   · exact Or.inr (paschPattern6_of_maximal_pairwiseIntersecting hMax hInt)
   · left
     unfold PairwiseIntersecting6 at hInt
-    push_neg at hInt
+    push Not at hInt
     obtain ⟨A, hAF, B, hBF, hAB, hdisj⟩ := hInt
     exact pairPattern6_of_disjoint_members hMax.1 hAF hBF hAB hdisj
 
