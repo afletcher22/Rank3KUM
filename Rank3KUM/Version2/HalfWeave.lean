@@ -115,7 +115,8 @@ theorem second_next_blocks_ne_nonfinal
   have hfirst_lower :
       k ≤ (fiberFinset S.block (S.block z)).card := by
     have hlarge := S.first_fiber_largest hk (S.block a)
-    simpa [z] using hmid_eq ▸ hlarge
+    rw [hmid_eq] at hlarge
+    simpa [z] using hlarge
   have hfirst_upper := S.fiber_card_le (S.block z)
   have hfirst_eq :
       (fiberFinset S.block (S.block z)).card = k := by
