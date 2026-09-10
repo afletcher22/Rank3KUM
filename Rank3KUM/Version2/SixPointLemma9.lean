@@ -71,7 +71,6 @@ theorem avoidingCycle6_mono
     fun hF => h5 (hFG hF)⟩
 
 /-- The first canonical family is avoided by the paper's cycle `(0,1,3,2,4,5)`. -/
-set_option maxHeartbeats 500000 in
 theorem pairPattern6_has_paper_avoidingCycle
     {F : Finset (Finset (Fin 6))}
     (hPair : PairPattern6 F) :
@@ -117,16 +116,14 @@ theorem pairPattern6_has_paper_avoidingCycle
     ({e, f, a} : Finset (Fin 6)) ∉ {A, B} ∧
     ({f, a, b} : Finset (Fin 6)) ∉ {A, B}
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
-  · exact hMixed _ (by simp) (by simp [A]) (by simp) (by simp [B])
-  · exact hMixed _ (by simp) (by simp [A]) (by simp) (by simp [B])
-  · exact hMixed _ (by simp) (by simp [A]) (by simp) (by simp [B])
-  · exact hMixed _ (by simp) (by simp [A]) (by simp) (by simp [B])
-  · exact hMixed _ (by simp) (by simp [A]) (by simp) (by simp [B])
-  · exact hMixed _ (by simp) (by simp [A]) (by simp) (by simp [B])
+  · exact hMixed _ (x := a) (y := d) (by simp) (by simp [A]) (by simp) (by simp [B])
+  · exact hMixed _ (x := b) (y := d) (by simp) (by simp [A]) (by simp) (by simp [B])
+  · exact hMixed _ (x := c) (y := d) (by simp) (by simp [A]) (by simp) (by simp [B])
+  · exact hMixed _ (x := c) (y := e) (by simp) (by simp [A]) (by simp) (by simp [B])
+  · exact hMixed _ (x := a) (y := e) (by simp) (by simp [A]) (by simp) (by simp [B])
+  · exact hMixed _ (x := a) (y := f) (by simp) (by simp [A]) (by simp) (by simp [B])
 
 /-- The Pasch family is avoided by the paper's cycle `(0,1,4,2,3,5)`. -/
-set_option maxHeartbeats 800000 in
-set_option maxRecDepth 2000 in
 theorem paschPattern6_has_paper_avoidingCycle
     {F : Finset (Finset (Fin 6))}
     (hPasch : PaschPattern6 F) :
