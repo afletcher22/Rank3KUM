@@ -12,8 +12,9 @@ variable {α : Type*}
 /-- The actual bad three-subsets of a fixed six-point enumeration. -/
 def badTripleFamily6
     (M : Matroid α) (enum : Fin 6 ≃ M.E) :
-    Finset (Finset (Fin 6)) :=
-  allTriples6.filter fun T => SixPointBad M enum T
+    Finset (Finset (Fin 6)) := by
+  classical
+  exact allTriples6.filter fun T => SixPointBad M enum T
 
 @[simp] theorem mem_badTripleFamily6_iff
     (M : Matroid α) (enum : Fin 6 ≃ M.E)
@@ -21,7 +22,7 @@ def badTripleFamily6
     T ∈ badTripleFamily6 M enum ↔
       T.card = 3 ∧ SixPointBad M enum T := by
   classical
-  simp [badTripleFamily6, allTriples6]
+  simp [badTripleFamily6]
 
 /--
 Two distinct triples meeting in at least two points can be written with a
@@ -69,8 +70,6 @@ theorem exists_shared_pair_residuals_of_three_sets
   obtain ⟨d, hd⟩ := Finset.card_eq_one.mp hBdiffCard
   have hcDiff : c ∈ A \ P := by rw [hc]; simp
   have hdDiff : d ∈ B \ P := by rw [hd]; simp
-  have hcA : c ∈ A := (Finset.mem_sdiff.mp hcDiff).1
-  have hdB : d ∈ B := (Finset.mem_sdiff.mp hdDiff).1
   have hcP : c ∉ P := (Finset.mem_sdiff.mp hcDiff).2
   have hdP : d ∉ P := (Finset.mem_sdiff.mp hdDiff).2
   have hic : i ≠ c := by
@@ -127,7 +126,7 @@ theorem badTripleFamily6_linear_of_strict_two
   classical
   constructor
   · intro T hT
-    exact (mem_badTripleFamily6_iff M enum T).mp hT |>.1
+    exact ((mem_badTripleFamily6_iff M enum T).mp hT).1
   · intro A hAF B hBF hAB
     have hA := (mem_badTripleFamily6_iff M enum A).mp hAF
     have hB := (mem_badTripleFamily6_iff M enum B).mp hBF
@@ -151,51 +150,64 @@ def sixCycleMap
     (a b c d e f : Fin 6) : Fin 6 → Fin 6 :=
   ![a, b, c, d, e, f]
 
-/-- Six distinct displayed labels define a permutation of `Fin 6`. -/
-def sixCyclePerm
+/-- The displayed six-label map is bijective when the labels are distinct. -/
+theorem sixCycleMap_bijective
     (a b c d e f : Fin 6)
     (hSix : ({a, b, c, d, e, f} : Finset (Fin 6)).card = 6) :
-    Fin 6 ≃ Fin 6 := by
+    Function.Bijective (sixCycleMap a b c d e f) := by
   obtain ⟨hab, hac, had, hae, haf,
       hbc, hbd, hbe, hbf,
       hcd, hce, hcf, hde, hdf, hef⟩ :=
     six_pairwise_ne_of_card_six hSix
-  let g : Fin 6 → Fin 6 := sixCycleMap a b c d e f
-  have hinj : Function.Injective g := by
+  have hinj : Function.Injective (sixCycleMap a b c d e f) := by
     intro x y hxy
     fin_cases x <;> fin_cases y <;>
-      simp [g, sixCycleMap] at hxy ⊢ <;> aesop
-  exact Equiv.ofBijective g ⟨hinj, Finite.surjective_of_injective hinj⟩
+      simp [sixCycleMap] at hxy ⊢ <;> aesop
+  exact ⟨hinj, Finite.surjective_of_injective hinj⟩
+
+/-- Six distinct displayed labels define a permutation of `Fin 6`. -/
+def sixCyclePerm
+    (a b c d e f : Fin 6)
+    (hSix : ({a, b, c, d, e, f} : Finset (Fin 6)).card = 6) :
+    Fin 6 ≃ Fin 6 :=
+  Equiv.ofBijective (sixCycleMap a b c d e f)
+    (sixCycleMap_bijective a b c d e f hSix)
 
 @[simp] theorem sixCyclePerm_apply_zero
     (a b c d e f : Fin 6) (hSix) :
     sixCyclePerm a b c d e f hSix 0 = a := by
-  simp [sixCyclePerm, sixCycleMap, Equiv.ofBijective_apply]
+  change sixCycleMap a b c d e f 0 = a
+  rfl
 
 @[simp] theorem sixCyclePerm_apply_one
     (a b c d e f : Fin 6) (hSix) :
     sixCyclePerm a b c d e f hSix 1 = b := by
-  simp [sixCyclePerm, sixCycleMap, Equiv.ofBijective_apply]
+  change sixCycleMap a b c d e f 1 = b
+  rfl
 
 @[simp] theorem sixCyclePerm_apply_two
     (a b c d e f : Fin 6) (hSix) :
     sixCyclePerm a b c d e f hSix 2 = c := by
-  simp [sixCyclePerm, sixCycleMap, Equiv.ofBijective_apply]
+  change sixCycleMap a b c d e f 2 = c
+  rfl
 
 @[simp] theorem sixCyclePerm_apply_three
     (a b c d e f : Fin 6) (hSix) :
     sixCyclePerm a b c d e f hSix 3 = d := by
-  simp [sixCyclePerm, sixCycleMap, Equiv.ofBijective_apply]
+  change sixCycleMap a b c d e f 3 = d
+  rfl
 
 @[simp] theorem sixCyclePerm_apply_four
     (a b c d e f : Fin 6) (hSix) :
     sixCyclePerm a b c d e f hSix 4 = e := by
-  simp [sixCyclePerm, sixCycleMap, Equiv.ofBijective_apply]
+  change sixCycleMap a b c d e f 4 = e
+  rfl
 
 @[simp] theorem sixCyclePerm_apply_five
     (a b c d e f : Fin 6) (hSix) :
     sixCyclePerm a b c d e f hSix 5 = f := by
-  simp [sixCyclePerm, sixCycleMap, Equiv.ofBijective_apply]
+  change sixCycleMap a b c d e f 5 = f
+  rfl
 
 /-- A three-subset outside the actual bad family is a basis. -/
 theorem isBase_finSixSet_of_not_mem_badTripleFamily6
@@ -219,43 +231,34 @@ theorem cyclicBasisOrder3_of_avoidingCycle6
       ((sixCyclePerm a b c d e f hSix).trans enum) := by
   unfold AvoidingCycle6 at hAvoid
   rcases hAvoid with ⟨h0, h1, h2, h3, h4, h5⟩
+  obtain ⟨hab, hac, had, hae, haf,
+      hbc, hbd, hbe, hbf,
+      hcd, hce, hcf, hde, hdf, hef⟩ :=
+    six_pairwise_ne_of_card_six hSix
+  have hc0 : ({a, b, c} : Finset (Fin 6)).card = 3 := by
+    simp [hab, hac, hbc]
+  have hc1 : ({b, c, d} : Finset (Fin 6)).card = 3 := by
+    simp [hbc, hbd, hcd]
+  have hc2 : ({c, d, e} : Finset (Fin 6)).card = 3 := by
+    simp [hcd, hce, hde]
+  have hc3 : ({d, e, f} : Finset (Fin 6)).card = 3 := by
+    simp [hde, hdf, hef]
+  have hc4 : ({e, f, a} : Finset (Fin 6)).card = 3 := by
+    simp [hef, hae.symm, haf.symm]
+  have hc5 : ({f, a, b} : Finset (Fin 6)).card = 3 := by
+    simp [haf.symm, hbf.symm, hab]
   have g0 := isBase_finSixSet_of_not_mem_badTripleFamily6
-    M enum (T := {a, b, c}) (by simp [hSix]) h0
+    M enum hc0 h0
   have g1 := isBase_finSixSet_of_not_mem_badTripleFamily6
-    M enum (T := {b, c, d}) (by
-      obtain ⟨hab, hac, had, hae, haf,
-          hbc, hbd, hbe, hbf,
-          hcd, hce, hcf, hde, hdf, hef⟩ :=
-        six_pairwise_ne_of_card_six hSix
-      simp [hbc, hbd, hcd]) h1
+    M enum hc1 h1
   have g2 := isBase_finSixSet_of_not_mem_badTripleFamily6
-    M enum (T := {c, d, e}) (by
-      obtain ⟨hab, hac, had, hae, haf,
-          hbc, hbd, hbe, hbf,
-          hcd, hce, hcf, hde, hdf, hef⟩ :=
-        six_pairwise_ne_of_card_six hSix
-      simp [hcd, hce, hde]) h2
+    M enum hc2 h2
   have g3 := isBase_finSixSet_of_not_mem_badTripleFamily6
-    M enum (T := {d, e, f}) (by
-      obtain ⟨hab, hac, had, hae, haf,
-          hbc, hbd, hbe, hbf,
-          hcd, hce, hcf, hde, hdf, hef⟩ :=
-        six_pairwise_ne_of_card_six hSix
-      simp [hde, hdf, hef]) h3
+    M enum hc3 h3
   have g4 := isBase_finSixSet_of_not_mem_badTripleFamily6
-    M enum (T := {e, f, a}) (by
-      obtain ⟨hab, hac, had, hae, haf,
-          hbc, hbd, hbe, hbf,
-          hcd, hce, hcf, hde, hdf, hef⟩ :=
-        six_pairwise_ne_of_card_six hSix
-      simp [hef, hae.symm, haf.symm]) h4
+    M enum hc4 h4
   have g5 := isBase_finSixSet_of_not_mem_badTripleFamily6
-    M enum (T := {f, a, b}) (by
-      obtain ⟨hab, hac, had, hae, haf,
-          hbc, hbd, hbe, hbf,
-          hcd, hce, hcf, hde, hdf, hef⟩ :=
-        six_pairwise_ne_of_card_six hSix
-      simp [haf.symm, hbf.symm, hab]) h5
+    M enum hc5 h5
   unfold CyclicBasisOrder3
   intro i
   fin_cases i
