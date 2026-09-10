@@ -109,7 +109,7 @@ theorem residualSupport_disjoint_of_shared_bridge
     rw [hset]
     exact hbase
   have hSVDNot : ¬ M.IsBase ({s, v, d} : Set α) := by
-    rw [exchangeSet_triple_remove_third hys hyyv hdy] at hOppYNot
+    rw [exchangeSet_triple_remove_third hys hyv hdy] at hOppYNot
     exact hOppYNot
 
   have hUSI : M.Indep ({u, s} : Set α) := by
