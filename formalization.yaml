@@ -20,40 +20,116 @@ classification:
   msc2020: ["05B35", "68V20"]
 
 sources:
+  - title: "The divisible rank-three case of the Kajitani-Ueno-Miyano cyclic basis ordering conjecture"
+    authors:
+      - "Austen Fletcher"
+    type: "original-proof"
+    relationship: "other"
+    note: >-
+      The mathematical result, Lean formalization, and accompanying manuscript
+      were developed together. The version-1 paper and version-1 formalization
+      were prepared and released essentially simultaneously; this entry records
+      the formal development as one of the original presentations of the result.
+    author_endorsement: "participated"
+
   - title: "Cyclic basis orderings of uniformly dense rank-three matroids"
     authors:
       - "Austen Fletcher"
     id: "10.5281/zenodo.22698709"
     type: "paper"
     location: "Theorem 1.2"
-    relationship: "formalizes"
+    relationship: "other"
     note: >-
-      The Lean development and manuscript were co-developed. This source is
-      listed as the published mathematical statement corresponding to the
-      formal theorem, not as a claim that the manuscript historically preceded
-      the formal proof. The Palomar headline theorem corresponds to Theorem 1.2.
+      Published manuscript co-developed with the Lean proof. The Palomar
+      headline theorem corresponds to Theorem 1.2. The paper's Corollary 1.3
+      additionally invokes the external coprime-cardinality theorem and is not
+      itself selected as a fully formalized result.
     author_endorsement: "participated"
-  - title: "Cyclic Orderings and Cyclic Arboricity of Matroids"
+
+  - title: "Ordering of the elements of a matroid such that its consecutive w elements are independent"
     authors:
-      - "Jan van den Heuvel"
-      - "Stéphan Thomassé"
+      - "Y. Kajitani"
+      - "S. Ueno"
+      - "H. Miyano"
+    id: "Discrete Mathematics 72 (1988), 187-194"
     type: "article"
     relationship: "background"
     note: >-
-      Provides the coprime-cardinality case used externally to deduce the full
-      rank-three corollary. That coprime theorem is not formalized in Rank3KUM.
+      Original source of the Kajitani-Ueno-Miyano cyclic-ordering conjecture.
+    author_endorsement: "n/a"
+
+  - title: "Cyclic orderings and cyclic arboricity of matroids"
+    authors:
+      - "Jan van den Heuvel"
+      - "Stéphan Thomassé"
+    id: "arXiv:0912.2929"
+    type: "article"
+    location: "J. Combin. Theory Ser. B 102 (2012), 638-646"
+    relationship: "background"
+    note: >-
+      Proves the coprime-cardinality case. Together with the divisible
+      rank-three theorem it implies the paper's full rank-three corollary, but
+      the coprime theorem is not formalized in Rank3KUM.
+    author_endorsement: "n/a"
+
+  - title: "Cyclic Orderings of Paving Matroids"
+    authors:
+      - "Sean McGuinness"
+    id: "arXiv:2308.12239"
+    type: "article"
+    location: "Electron. J. Combin. 31(4) (2024), Paper 4.9"
+    relationship: "background"
+    note: >-
+      Establishes the conjecture for paving matroids, including the simple
+      rank-three divisible case, and supplies the deletion/contiguous-insertion
+      and rank-three two-gap method credited in the manuscript.
+    author_endorsement: "n/a"
+
+  - title: "Cyclic ordering of split matroids"
+    authors:
+      - "Kristóf Bérczi"
+      - "Ádám Jánosik"
+      - "Bence Mátravölgyi"
+    id: "arXiv:2411.01061"
+    type: "article"
+    location: "Electron. J. Combin. 33 (2026), Paper 1.20"
+    relationship: "background"
+    note: "Related progress on cyclic orderings for a broad matroid class."
+    author_endorsement: "n/a"
+
+  - title: "Basis-exchange properties of sparse paving matroids"
+    authors:
+      - "Joseph E. Bonin"
+    id: "arXiv:1011.1010"
+    type: "article"
+    location: "Adv. Appl. Math. 50 (2013), 6-15"
+    relationship: "background"
+    note: "Background on basis-exchange structure for sparse paving matroids."
+    author_endorsement: "n/a"
+
+  - title: "On serial symmetric exchanges of matroid bases"
+    authors:
+      - "Daniel Kotlar"
+      - "Ran Ziv"
+    id: "arXiv:1110.1826"
+    type: "article"
+    location: "J. Graph Theory 73(3) (2013), 296-304"
+    relationship: "background"
+    note: >-
+      Attribution and context for serial symmetric exchange; not used as an
+      unformalized theorem assumption in the Lean proof.
     author_endorsement: "n/a"
 
 related_formalizations:
   - id: "https://doi.org/10.5281/zenodo.22698862"
     relationship: "builds-on"
     note: >-
-      Archived version-2 formalization. The Palomar branch adds an independently
-      auditable Challenge/Solution wrapper around the same substantive proof
-      development.
+      Archived version-2 formalization. The present Palomar compatibility branch
+      adds an independently auditable Challenge/Solution wrapper around that
+      substantive proof development before the planned structural revision.
   - id: "https://doi.org/10.5281/zenodo.21813155"
-    relationship: "supersedes"
-    note: "Archived version-1 formalization."
+    relationship: "builds-on"
+    note: "Archived version-1 formalization, co-developed with the version-1 manuscript."
 
 status:
   scope: >-
