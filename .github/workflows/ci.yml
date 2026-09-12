@@ -57,6 +57,78 @@ jobs:
           lake env lean Challenge.lean
           lake env lean Solution.lean
 
+  palomar-preflight:
+    if: github.ref == 'refs/heads/palomar'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout current Palomar verifier
+        run: |
+          git clone --filter=blob:none https://github.com/PalomarRegistry/PalomarSubmission.git "$RUNNER_TEMP/palomar-pipeline"
+          git -C "$RUNNER_TEMP/palomar-pipeline" checkout ef2fa1eadcb246c2346ddba39b52eaa53d4bb763
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.10"
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3.12"
+          bundler-cache: true
+          working-directory: ${{ runner.temp }}/palomar-pipeline
+      - name: Install Palomar verifier dependencies
+        run: >-
+          python -m pip install --disable-pip-version-check --require-hashes
+          --no-deps -r "$RUNNER_TEMP/palomar-pipeline/requirements.txt"
+      - name: Run production preflight preparation
+        id: preflight
+        env:
+          BUNDLE_GEMFILE: ${{ runner.temp }}/palomar-pipeline/Gemfile
+          CANDIDATE_REPOSITORY: ${{ github.repository }}
+          CANDIDATE_COMMIT: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          event = {
+              "inputs": {
+                  "repository": os.environ["CANDIDATE_REPOSITORY"],
+                  "commit": os.environ["CANDIDATE_COMMIT"],
+                  "request_id": "kumprefl0001",
+                  "mode": "preflight",
+                  "options": json.dumps({
+                      "comparator_config_path": "comparator.json",
+                      "authorization_relationship": "I am a responsible author or maintainer",
+                  }),
+              }
+          }
+          pathlib.Path(os.environ["RUNNER_TEMP"], "palomar-preflight-event.json").write_text(
+              json.dumps(event), encoding="utf-8"
+          )
+          PY
+          python "$RUNNER_TEMP/palomar-pipeline/scripts/verify_submission.py" prepare \
+            --event "$RUNNER_TEMP/palomar-preflight-event.json" \
+            --work-dir "$RUNNER_TEMP/palomar-work" \
+            --output "$RUNNER_TEMP/palomar-preflight-report.json" \
+            --licensee "$(command -v bundle)"
+      - name: Require Palomar preflight readiness
+        env:
+          PREFLIGHT_READY: ${{ steps.preflight.outputs.ready }}
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          report = json.loads(pathlib.Path(os.environ["RUNNER_TEMP"], "palomar-preflight-report.json").read_text())
+          if os.environ.get("PREFLIGHT_READY") != "true" or report.get("status") != "pending":
+              print(json.dumps(report, indent=2))
+              raise SystemExit("Palomar preflight did not mark this commit ready for full verification")
+          if report.get("errors"):
+              print(json.dumps(report, indent=2))
+              raise SystemExit("Palomar preflight reported errors")
+          print("Palomar production preflight preparation passed.")
+          print(json.dumps({
+              "status": report.get("status"),
+              "stage": report.get("stage"),
+              "warnings": report.get("warnings", []),
+          }, indent=2))
+          PY
+
   palomar-comparator:
     if: github.ref == 'refs/heads/palomar'
     runs-on: ubuntu-latest
