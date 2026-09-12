@@ -2,13 +2,17 @@
 set -euo pipefail
 
 # Palomar-compatible wrapper around Landrun. Comparator supplies Landrun's
-# options and then the command to execute, but Landrun needs an explicit `--`
-# before the sandboxed command.
+# options and then the command to execute. Current Comparator may already place
+# an explicit `--` separator; normalize both forms before invoking Landrun.
 landrun_binary=${PALOMAR_LANDRUN_BIN:?PALOMAR_LANDRUN_BIN must name the pinned Landrun binary}
 landrun_options=()
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
+    --)
+      shift
+      break
+      ;;
     -unrestricted-*|--unrestricted-*)
       echo "error: Landrun option $1 switches off part of the sandbox" >&2
       exit 2
