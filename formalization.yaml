@@ -60,8 +60,8 @@ sources:
 
   - title: "Cyclic orderings and cyclic arboricity of matroids"
     authors:
-      - "Jan van den Heuvel"
-      - "Stéphan Thomassé"
+      - "J. van den Heuvel"
+      - "S. Thomassé"
     id: "arXiv:0912.2929"
     type: "article"
     location: "J. Combin. Theory Ser. B 102 (2012), 638-646"
@@ -74,7 +74,7 @@ sources:
 
   - title: "Cyclic Orderings of Paving Matroids"
     authors:
-      - "Sean McGuinness"
+      - "S. McGuinness"
     id: "arXiv:2308.12239"
     type: "article"
     location: "Electron. J. Combin. 31(4) (2024), Paper 4.9"
@@ -87,19 +87,19 @@ sources:
 
   - title: "Cyclic ordering of split matroids"
     authors:
-      - "Kristóf Bérczi"
-      - "Ádám Jánosik"
-      - "Bence Mátravölgyi"
+      - "K. Bérczi"
+      - "Á. Jánosik"
+      - "B. Mátravölgyi"
     id: "arXiv:2411.01061"
     type: "article"
     location: "Electron. J. Combin. 33 (2026), Paper 1.20"
     relationship: "background"
-    note: "Related progress on cyclic orderings for a broad matroid class."
+    note: "Related progress on cyclic orderings for split matroids."
     author_endorsement: "n/a"
 
   - title: "Basis-exchange properties of sparse paving matroids"
     authors:
-      - "Joseph E. Bonin"
+      - "J. E. Bonin"
     id: "arXiv:1011.1010"
     type: "article"
     location: "Adv. Appl. Math. 50 (2013), 6-15"
@@ -109,8 +109,8 @@ sources:
 
   - title: "On serial symmetric exchanges of matroid bases"
     authors:
-      - "Daniel Kotlar"
-      - "Ran Ziv"
+      - "D. Kotlar"
+      - "R. Ziv"
     id: "arXiv:1110.1826"
     type: "article"
     location: "J. Graph Theory 73(3) (2013), 296-304"
