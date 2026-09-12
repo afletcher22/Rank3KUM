@@ -10,6 +10,12 @@ It intentionally imports only Mathlib and does not import the Rank3KUM proof
 development. The definitions below mirror the statement-level notions used by
 the project so that the advertised theorem can be audited independently of the
 proof implementation.
+
+The unrestricted Kajitani--Ueno--Miyano conjecture is not claimed here. The
+compared theorem is only the divisible rank-three case `|E| = 3k`. The paper's
+full rank-three corollary additionally invokes the published coprime-case theorem
+of van den Heuvel and Thomasse; that external theorem is not formalized or
+selected by this Palomar configuration.
 -/
 
 namespace Rank3KUM.Palomar
