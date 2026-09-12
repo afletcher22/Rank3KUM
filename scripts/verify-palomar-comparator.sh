@@ -8,9 +8,9 @@ comparator_dir="$cache_root/comparator"
 lean4export_dir="$cache_root/lean4export"
 nanoda_dir="$cache_root/nanoda"
 
-# Pins match the current Palomar template except that lean4export is resolved
-# to the v4.33.0-rc2 tag used by this project.
-comparator_commit=68a064109f01c08f47c8edc9f51d6a2bbffaa188
+# Pins track the current Palomar production verifier. lean4export is the exact
+# v4.33.0-rc2 release used by this project.
+comparator_commit=575674928e239f5bc452aab72d1dd7b0f1326494
 lean4export_commit=9fb131bb100eb32ccf6836f14e4f8328d13b6792
 landrun_commit=811cfff51ceaf3d9843708aa6d22e9b84ccac8b4
 nanoda_commit=68d5ca9db226849b41a6fff59d796ff19d0a8840
