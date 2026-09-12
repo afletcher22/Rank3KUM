@@ -25,7 +25,7 @@ sources:
       - "Austen Fletcher"
     id: "10.5281/zenodo.22698709"
     type: "paper"
-    location: "https://doi.org/10.5281/zenodo.22698709"
+    location: "Theorem 1.2"
     relationship: "formalizes"
     note: >-
       The Lean development and manuscript were co-developed. This source is
@@ -67,7 +67,12 @@ status:
   sorry_in_definitions: 0
   axioms: ["propext", "Classical.choice", "Quot.sound"]
   main_results:
-    - "Rank3KUM.Palomar.rankThreeKUM"
+    - declaration: "Rank3KUM.Palomar.rankThreeKUM"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+      literature_dependencies: []
 
 automation:
   methods:
@@ -109,9 +114,8 @@ fidelity:
     of van den Heuvel and Thomasse and is outside the fully formalized scope.
 
 review:
-  status: "self-assessed with multiple AI-assisted adversarial audits"
-  reviewers:
-    - "none"
+  status: "self-assessed"
+  reviewers: []
   notes: >-
     The statement-to-Lean correspondence has been audited repeatedly. Version-2
     additionally underwent AI-assisted critical review and formalization audits.
