@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: ["main", "lean-integration", "version-2"]
+    branches: ["main", "lean-integration", "version-2", "palomar"]
   pull_request:
     branches: ["main"]
   workflow_dispatch:
@@ -50,5 +50,9 @@ jobs:
         run: lake update
       - name: Download Mathlib cache
         run: lake exe cache get
-      - name: Build Rank3KUM
+      - name: Build Rank3KUM and Palomar targets
         run: lake build
+      - name: Check Palomar statement and solution modules directly
+        run: |
+          lake env lean Challenge.lean
+          lake env lean Solution.lean
