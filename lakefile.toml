@@ -1,6 +1,6 @@
 name = "Rank3KUM"
 version = "0.1.0"
-defaultTargets = ["Rank3KUM"]
+defaultTargets = ["Rank3KUM", "Challenge", "Solution"]
 
 [[require]]
 name = "mathlib"
@@ -9,3 +9,11 @@ rev = "v4.33.0-rc2"
 
 [[lean_lib]]
 name = "Rank3KUM"
+
+[[lean_lib]]
+name = "Challenge"
+roots = ["Challenge"]
+
+[[lean_lib]]
+name = "Solution"
+roots = ["Solution"]
