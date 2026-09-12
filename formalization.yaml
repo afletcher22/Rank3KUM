@@ -1,0 +1,135 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Rank3KUM"
+  description: >-
+    Lean 4 formalization of the divisible rank-three case of the
+    Kajitani-Ueno-Miyano cyclic basis ordering conjecture. It proves that every
+    finite uniformly dense rank-three matroid on 3k elements, for k > 0,
+    admits a cyclic ordering in which every three cyclically consecutive
+    elements form a basis.
+  authors:
+    - "Austen Fletcher"
+  license: "MIT"
+  responsible_maintainers:
+    - "Austen Fletcher"
+
+classification:
+  arxiv: ["math.CO"]
+  msc2020: ["05B35", "68V20"]
+
+sources:
+  - title: "Cyclic basis orderings of uniformly dense rank-three matroids"
+    authors:
+      - "Austen Fletcher"
+    id: "10.5281/zenodo.22698709"
+    type: "paper"
+    location: "https://doi.org/10.5281/zenodo.22698709"
+    relationship: "formalizes"
+    note: >-
+      The Lean development and manuscript were co-developed. This source is
+      listed as the published mathematical statement corresponding to the
+      formal theorem, not as a claim that the manuscript historically preceded
+      the formal proof. The Palomar headline theorem corresponds to Theorem 1.2.
+    author_endorsement: "participated"
+  - title: "Cyclic Orderings and Cyclic Arboricity of Matroids"
+    authors:
+      - "Jan van den Heuvel"
+      - "Stéphan Thomassé"
+    type: "article"
+    relationship: "background"
+    note: >-
+      Provides the coprime-cardinality case used externally to deduce the full
+      rank-three corollary. That coprime theorem is not formalized in Rank3KUM.
+    author_endorsement: "n/a"
+
+related_formalizations:
+  - id: "https://doi.org/10.5281/zenodo.22698862"
+    relationship: "builds-on"
+    note: >-
+      Archived version-2 formalization. The Palomar branch adds an independently
+      auditable Challenge/Solution wrapper around the same substantive proof
+      development.
+  - id: "https://doi.org/10.5281/zenodo.21813155"
+    relationship: "supersedes"
+    note: "Archived version-1 formalization."
+
+status:
+  scope: >-
+    Formalizes the divisible rank-three theorem only: rank three, finite ground
+    set, |E| = 3k with k > 0, and uniform density imply a cyclic basis ordering.
+    It does not formalize the van den Heuvel-Thomasse coprime case, so the paper's
+    Corollary 1.3 covering every rank-three ground-set cardinality is not itself
+    a fully machine-checked theorem in this repository. No representability,
+    paving, simplicity, graphicness, or small-ground-set restriction is assumed.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: ["propext", "Classical.choice", "Quot.sound"]
+  main_results:
+    - "Rank3KUM.Palomar.rankThreeKUM"
+
+automation:
+  methods:
+    - method: "copilot"
+      models: ["GPT-5.6 Sol", "Claude Opus 5"]
+      framework: "interactive model interfaces with Lean 4"
+      tool_setup: >-
+        Human-directed AI-assisted mathematical proof development and Lean
+        formalization, with Lean elaboration and kernel checking used throughout.
+      cost:
+        wall_time: "not tracked"
+        spend_usd: "subscription-based; marginal cost not tracked"
+        hardware: "local development machine plus hosted model services"
+      prompting_notes: >-
+        Human oversight selected proof directions, evaluated mathematical
+        structure, requested formal checks, and reconciled the Lean development
+        with the manuscript.
+    - method: "other"
+      models: ["GPT-6 (Astra)", "Fable 5.1"]
+      framework: "model review interfaces"
+      tool_setup: >-
+        Version-2 critical review, formalization auditing, and expository
+        refinement; these systems were not treated as trusted proof checkers.
+      cost:
+        wall_time: "not tracked"
+        spend_usd: "subscription-based; marginal cost not tracked"
+        hardware: "hosted model services"
+      prompting_notes: "Used primarily for adversarial review and correspondence checks."
+  spend_usd: "subscription-based; exact marginal cost not tracked"
+  notes: >-
+    The project was developed under human direction with AI assistance. All
+    formal claims are checked by Lean; the submitted headline theorem is also
+    separated into Palomar Challenge and Solution modules for Comparator review.
+
+fidelity:
+  divergences: >-
+    No known divergence for paper Theorem 1.2, the divisible rank-three theorem.
+    Paper Corollary 1.3 additionally invokes the external coprime-case theorem
+    of van den Heuvel and Thomasse and is outside the fully formalized scope.
+
+review:
+  status: "self-assessed with multiple AI-assisted adversarial audits"
+  reviewers:
+    - "none"
+  notes: >-
+    The statement-to-Lean correspondence has been audited repeatedly. Version-2
+    additionally underwent AI-assisted critical review and formalization audits.
+    No independent human referee report is claimed here.
+
+alignment:
+  namespace: "Rank3KUM.Palomar"
+  statements:
+    - source: "Theorem 1.2 (Main theorem)"
+      lean: "Rank3KUM.Palomar.rankThreeKUM"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        The Palomar statement reproduces the finite uniformly dense rank-three
+        3k theorem. Its Solution proof is a thin wrapper around
+        Rank3KUM.rankThreeKUM.
+
+acknowledgements: >-
+  Lean 4 and Mathlib provide the proof assistant and matroid infrastructure.
+  GPT-5.6 Sol and Claude Opus 5 assisted the development; GPT-6 (Astra) and
+  Fable 5.1 assisted version-2 review and refinement.
