@@ -11,14 +11,10 @@ variable {α : Type*}
 
 /--
 Common rank-three gluing interface for a `k`-point side and a `2k`-element
-pair side.  The only matroid-specific input is that every point lifts each
+pair side. The only matroid-specific input is that every point lifts each
 within-block and across-block adjacent pair to a basis.
-
-This is the shared combinatorial core of both tight-set branches: in the
-rank-two-tight case the pair side is the restriction, while in the
-rank-one-tight case it is the contraction.
 -/
-theorem exists_cyclicBasisOrder3_of_point_pair_gluing
+theorem exists_cyclicBasisOrder3_of_point_pair_gluing_clean
     (M : Matroid α) {P Q : Set α} {k : ℕ}
     (hk : 0 < k)
     (hPQ : Disjoint P Q)
@@ -61,13 +57,22 @@ theorem exists_cyclicBasisOrder3_of_point_pair_gluing
   simpa only [order, localOrder, Equiv.trans_apply,
     Equiv.setCongr_apply] using hi
 
+/-- The contraction ground is definitionally the complement of the contracted set. -/
+def gluingContractGroundEquivClean (M : Matroid α) (X : Set α) :
+    (Matroid.contract M X).E ≃ (M.E \ X : Set α) :=
+  Equiv.setCongr (by simp)
+
+/-- The restriction ground is the restricted set. -/
+def gluingRestrictGroundEquivClean (M : Matroid α) (X : Set α) :
+    (Matroid.restrict M X).E ≃ X :=
+  Equiv.setCongr (by simp)
+
 /--
 Balanced-gluing activation for the complete nonempty proper tight branch in
-rank three.  The two possible tight ranks are routed through the same
-point-pair interface above; only the construction of the rank-two factor and
-the basis-lifting certificate differ.
+rank three. Both tight ranks use the same point-pair gluing theorem; only the
+construction of the rank-two factor and basis-lifting certificate differ.
 -/
-theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight_gluing
+theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight_gluing_clean
     (M : Matroid α) (k : ℕ)
     (hk : 0 < k)
     (hE : M.E.Finite)
@@ -111,7 +116,7 @@ theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight_gluing
     let : Fintype (M.E \ X : Set α) := hComplementFinite.fintype
     let : Fintype (Matroid.contract M X).E :=
       Fintype.ofEquiv (M.E \ X : Set α)
-        (contractGroundEquiv M X).symm
+        (gluingContractGroundEquivClean M X).symm
     let : DecidableEq (Matroid.contract M X).E := Classical.decEq _
     have hXncard : X.ncard = k := by
       have hcast : (X.ncard : ℕ∞) = (k : ℕ∞) := by
@@ -129,7 +134,7 @@ theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight_gluing
       calc
         Fintype.card (Matroid.contract M X).E =
             Fintype.card (M.E \ X : Set α) :=
-          Fintype.card_congr (contractGroundEquiv M X)
+          Fintype.card_congr (gluingContractGroundEquivClean M X)
         _ = Nat.card (M.E \ X : Set α) := Fintype.card_eq_nat_card
         _ = (M.E \ X).ncard := by simp only [Nat.card_coe_set_eq]
         _ = 2 * k := hComplementNcard
@@ -149,11 +154,11 @@ theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight_gluing
     let points : Fin k ≃ X :=
       (Finite.equivFinOfCardEq hXNatCard).symm
     let pairs : Fin k × Bool ≃ (M.E \ X : Set α) :=
-      rankTwoOrder.trans (contractGroundEquiv M X)
+      rankTwoOrder.trans (gluingContractGroundEquivClean M X)
     have hpairs_coe (p : Fin k × Bool) :
         (pairs p : α) =
           ((rankTwoOrder p : (Matroid.contract M X).E) : α) := by
-      exact contractGroundEquiv_trans_apply_coe M X rankTwoOrder p
+      rfl
     have hpointBasis (j : Fin k) :
         M.IsBasis ({(points j : α)} : Set α) X :=
       isBasis_singleton_of_loopless_eRk_eq_one
@@ -172,7 +177,7 @@ theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight_gluing
         hpairs_coe (cyclicIndex k hk i 1, false)]
       simpa [HalfWeave.weaveNext,
         halfWeave_cyclicSucc_eq_cyclicIndex] using hadj (i, true)
-    apply exists_cyclicBasisOrder3_of_point_pair_gluing
+    apply exists_cyclicBasisOrder3_of_point_pair_gluing_clean
       M hk Set.disjoint_sdiff_right (Set.union_sdiff_cancel hX.1)
       points pairs
     · intro i j
@@ -209,7 +214,7 @@ theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight_gluing
     let : Fintype X := hXfinite.fintype
     let : Fintype (M.E \ X : Set α) := hComplementFinite.fintype
     let : Fintype (M.restrict X).E :=
-      Fintype.ofEquiv X (restrictGroundEquiv M X).symm
+      Fintype.ofEquiv X (gluingRestrictGroundEquivClean M X).symm
     let : DecidableEq (M.restrict X).E := Classical.decEq _
     have hXncard : X.ncard = 2 * k := by
       have hcast :
@@ -220,7 +225,7 @@ theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight_gluing
     have hRestrictCard : Fintype.card (M.restrict X).E = 2 * k := by
       calc
         Fintype.card (M.restrict X).E = Fintype.card X :=
-          Fintype.card_congr (restrictGroundEquiv M X)
+          Fintype.card_congr (gluingRestrictGroundEquivClean M X)
         _ = Nat.card X := Fintype.card_eq_nat_card
         _ = X.ncard := by simp only [Nat.card_coe_set_eq]
         _ = 2 * k := hXncard
@@ -239,10 +244,10 @@ theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight_gluing
     let points : Fin k ≃ (M.E \ X : Set α) :=
       (Finite.equivFinOfCardEq hComplementNatCard).symm
     let pairs : Fin k × Bool ≃ X :=
-      rankTwoOrder.trans (restrictGroundEquiv M X)
+      rankTwoOrder.trans (gluingRestrictGroundEquivClean M X)
     have hpairs_coe (p : Fin k × Bool) :
         (pairs p : α) = ((rankTwoOrder p : (M.restrict X).E) : α) := by
-      exact restrictGroundEquiv_trans_apply_coe M X rankTwoOrder p
+      rfl
     have hwithin_ne (i : Fin k) :
         (pairs (i, false) : α) ≠ (pairs (i, true) : α) := by
       intro h
@@ -277,7 +282,7 @@ theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight_gluing
     have hPQ : Disjoint (M.E \ X) X := Set.disjoint_sdiff_left
     have hUnion : (M.E \ X) ∪ X = M.E :=
       Set.sdiff_union_of_subset hXflat.subset_ground
-    apply exists_cyclicBasisOrder3_of_point_pair_gluing
+    apply exists_cyclicBasisOrder3_of_point_pair_gluing_clean
       M hk hPQ hUnion points pairs
     · intro i j
       exact isBase_insert_pair_of_isBasis_flat_rank3
@@ -288,8 +293,8 @@ theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight_gluing
         M hRank hXflat (points j).property.1 (points j).property.2
         (hacross_ne i) (hpairAcross i)
 
-#print axioms Rank3KUM.exists_cyclicBasisOrder3_of_point_pair_gluing
-#print axioms Rank3KUM.exists_cyclicBasisOrder3_of_nonempty_proper_tight_gluing
+#print axioms Rank3KUM.exists_cyclicBasisOrder3_of_point_pair_gluing_clean
+#print axioms Rank3KUM.exists_cyclicBasisOrder3_of_nonempty_proper_tight_gluing_clean
 
 end
 

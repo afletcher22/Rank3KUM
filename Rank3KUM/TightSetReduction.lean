@@ -1,4 +1,4 @@
-import Rank3KUM.BalancedGluingClean
+import Rank3KUM.BalancedGluing
 
 namespace Rank3KUM
 
