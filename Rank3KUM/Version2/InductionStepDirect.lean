@@ -35,7 +35,7 @@ theorem exists_cyclicBasisOrder3_of_cyclic_basis_deletion_direct
       small hsmall
   have hlen : 3 * (k - 1) + 3 = 3 * k := by
     omega
-  rw [hlen] at hsplice
+  cases hlen
   exact hsplice
 
 #print axioms Rank3KUM.Version2.exists_cyclicBasisOrder3_of_cyclic_basis_deletion_direct
