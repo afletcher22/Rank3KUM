@@ -1,6 +1,7 @@
 import Rank3KUM.Basic
 import Rank3KUM.UniformDensity
 import Rank3KUM.TightContraction
+import Rank3KUM.GenericGluing
 import Rank3KUM.HalfWeave.RankTwo
 import Rank3KUM.HalfWeave.ParallelClasses
 import Rank3KUM.TwoGap.Closure
