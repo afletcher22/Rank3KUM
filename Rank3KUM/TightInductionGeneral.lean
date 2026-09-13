@@ -12,6 +12,18 @@ variable {α : Type*}
 def SolvesDivisibleKUMBelow (α : Type*) (r : ℕ) : Prop :=
   ∀ s : ℕ, 0 < s → s < r → SolvesDivisibleKUMAtRank α s
 
+/-- Transport a generic cyclic basis ordering across an equality of ranks. -/
+theorem exists_cyclicBasisOrder_congr_rank
+    (M : Matroid α) {p q k : ℕ}
+    (hpq : p = q)
+    (hp : 0 < p) (hq : 0 < q) (hk : 0 < k)
+    (hOrder : ∃ order : Fin (p * k) ≃ M.E,
+      CyclicBasisOrder M p (Nat.mul_pos hp hk) order) :
+    ∃ order : Fin (q * k) ≃ M.E,
+      CyclicBasisOrder M q (Nat.mul_pos hq hk) order := by
+  subst q
+  simpa using hOrder
+
 /-- Contracting a rank-`s` set from ambient rank `s+t` leaves rank `t`. -/
 theorem contract_eRank_eq_of_eRank_eq_add_general
     (M : Matroid α) {X : Set α} {s t : ℕ}
@@ -125,8 +137,11 @@ theorem exists_cyclicBasisOrder_of_nonempty_proper_tight_of_lower_ranks
       (M := M) (X := X) (s := s) (t := t) (k := k)
       hs ht hk hE hEcardST hDense hX hXrank hContractRank
       hSolveS hSolveT
-  convert hOrder using 1 <;> simp [hst]
+  exact
+    exists_cyclicBasisOrder_congr_rank M hst
+      (Nat.add_pos_left hs t) hr hk hOrder
 
+#print axioms Rank3KUM.exists_cyclicBasisOrder_congr_rank
 #print axioms Rank3KUM.contract_eRank_eq_of_eRank_eq_add_general
 #print axioms Rank3KUM.exists_cyclicBasisOrder_of_nonempty_proper_tight_of_lower_ranks
 
