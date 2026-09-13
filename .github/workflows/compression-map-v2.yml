@@ -2,7 +2,7 @@ name: Compression exploration v2
 
 on:
   push:
-    branches: ["compression-exploration-v2", "balanced-gluing-experiment", "higher-rank-gluing-experiment"]
+    branches: ["compression-exploration-v2", "balanced-gluing-experiment"]
   workflow_dispatch:
 
 permissions:
