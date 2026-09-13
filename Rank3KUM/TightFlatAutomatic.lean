@@ -78,7 +78,8 @@ theorem exists_cyclicBasisOrder3_of_flat_ordering
 /--
 A uniformly dense rank-two flat of size `2k`, with a complement of size `k`,
 supplies exactly the cyclic adjacent-basis ordering needed by interleaving.
-The active construction uses the weaker largest-first half-weave directly.
+Retained as a compatibility endpoint; the active tight branch below constructs
+the same rank-two ordering directly so this wrapper is not on the main proof path.
 -/
 theorem exists_cyclicBasisOrder3_of_uniformlyDense_rankTwo_flat
     (M : Matroid α) (k : ℕ)
@@ -139,9 +140,9 @@ theorem exists_cyclicBasisOrder3_of_uniformlyDense_rankTwo_flat
       M hk hRank hXflat points rankTwoOrder hadj
 
 /--
-The rank-two side of the tight-set classification now discharges all
-restriction-rank, flatness, cardinality, and rank-two ordering data while
-exposing only the adjacent-basis ordering interface downstream.
+The rank-two side of the tight-set classification constructs exactly the
+rank-two adjacent-basis ordering needed for interleaving.  The compatibility
+wrapper above is deliberately bypassed on the active proof path.
 -/
 theorem exists_cyclicBasisOrder3_of_tight_rank_two
     (M : Matroid α) (k : ℕ)
@@ -184,10 +185,50 @@ theorem exists_cyclicBasisOrder3_of_tight_rank_two
     rw [Matroid.eRank_def,
       Matroid.restrict_ground_eq,
       M.restrict_eRk_eq Set.Subset.rfl, hXrank]
+  have hXfinite : X.Finite :=
+    hE.subset hXflat.subset_ground
+  have hComplementFinite : (M.E \ X).Finite :=
+    hE.subset Set.sdiff_subset
+  let : Fintype X := hXfinite.fintype
+  let : Fintype (M.E \ X : Set α) :=
+    hComplementFinite.fintype
+  let : Fintype (M.restrict X).E :=
+    Fintype.ofEquiv X (restrictGroundEquiv M X).symm
+  let : DecidableEq (M.restrict X).E :=
+    Classical.decEq _
+  have hXncard : X.ncard = 2 * k := by
+    have hcast : (X.ncard : ℕ∞) =
+        ((2 * k : ℕ) : ℕ∞) := by
+      rw [hXfinite.cast_ncard_eq]
+      exact hXcard
+    exact_mod_cast hcast
+  have hRestrictCard :
+      Fintype.card (M.restrict X).E = 2 * k := by
+    calc
+      Fintype.card (M.restrict X).E =
+          Fintype.card X :=
+        Fintype.card_congr (restrictGroundEquiv M X)
+      _ = Nat.card X := Fintype.card_eq_nat_card
+      _ = X.ncard := by
+        simp only [Nat.card_coe_set_eq]
+      _ = 2 * k := hXncard
+  have hRestrictDense : UniformlyDense (M.restrict X) k :=
+    UniformlyDense.restrict M k hDense hXflat.subset_ground
+  obtain ⟨rankTwoOrder, hadj⟩ :=
+    HalfWeave.exists_cyclic_adjacent_base_order_of_uniformlyDense_direct
+      (M.restrict X) k hk hRestrictCard hRestrictDense hRestrictRank
+  have hComplementNcard : (M.E \ X).ncard = k := by
+    have hcast : ((M.E \ X).ncard : ℕ∞) = (k : ℕ∞) := by
+      rw [hComplementFinite.cast_ncard_eq]
+      exact hComplementCard
+    exact_mod_cast hcast
+  have hComplementNatCard : Nat.card (M.E \ X : Set α) = k := by
+    simpa only [Nat.card_coe_set_eq] using hComplementNcard
+  let points : Fin k ≃ (M.E \ X : Set α) :=
+    (Finite.equivFinOfCardEq hComplementNatCard).symm
   exact
-    exists_cyclicBasisOrder3_of_uniformlyDense_rankTwo_flat
-      M k hk hE hRank hDense hRestrictRank
-      hXflat hXcard hComplementCard
+    exists_cyclicBasisOrder3_of_flat_ordering
+      M hk hRank hXflat points rankTwoOrder hadj
 
 #print axioms Rank3KUM.exists_cyclicBasisOrder3_of_flat_ordering
 #print axioms Rank3KUM.exists_cyclicBasisOrder3_of_uniformlyDense_rankTwo_flat
