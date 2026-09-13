@@ -1,0 +1,94 @@
+name: Compression exploration v2
+
+on:
+  push:
+    branches: ["compression-exploration-v2"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  IMMUTABLE_PALOMAR_PARENT: abced491e10f618400e1c9739d2d9503477da76f
+
+jobs:
+  mechanical-map:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Guard immutable Palomar Challenge
+        run: |
+          git cat-file -e "${IMMUTABLE_PALOMAR_PARENT}^{commit}"
+          git diff --exit-code "$IMMUTABLE_PALOMAR_PARENT" -- Challenge.lean
+          echo "Challenge.lean matches immutable Palomar parent ${IMMUTABLE_PALOMAR_PARENT}."
+
+      - name: Install Elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Verify pinned dependency manifest
+        run: |
+          test -f lake-manifest.json
+          test -f lean-toolchain
+          sha256sum lake-manifest.json lean-toolchain
+          cat lean-toolchain
+
+      - name: Download Mathlib cache from committed manifest
+        run: lake exe cache get
+
+      - name: Build substantive proof and Palomar wrapper
+        run: lake build
+
+      - name: Ensure dependency pins were not rewritten
+        run: git diff --exit-code -- lake-manifest.json lean-toolchain
+
+      - name: Check frozen challenge and proved solution directly
+        run: |
+          lake env lean Challenge.lean
+          lake env lean Solution.lean
+
+      - name: Check project-to-Challenge definitional contract
+        run: lake env lean tools/StatementContract.lean
+
+      - name: Extract provenance-aware declaration graph
+        run: lake env lean tools/DependencyMap.lean
+
+      - name: Compute deterministic theorem-specific map
+        run: python3 tools/analyze_dependency_map.py
+
+      - name: Upload mechanical baseline artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rank3kum-mechanical-proof-map-v2
+          path: artifacts/compression/
+          if-no-files-found: error
+          retention-days: 90
+
+  comparator-drift-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Guard immutable Palomar Challenge
+        run: git diff --exit-code "$IMMUTABLE_PALOMAR_PARENT" -- Challenge.lean
+
+      - name: Install Elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24.0"
+          cache: false
+
+      - name: Run Palomar-pinned Comparator and NanoDa replay
+        run: bash scripts/verify-palomar-comparator.sh
