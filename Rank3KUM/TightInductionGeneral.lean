@@ -125,7 +125,7 @@ theorem exists_cyclicBasisOrder_of_nonempty_proper_tight_of_lower_ranks
       (M := M) (X := X) (s := s) (t := t) (k := k)
       hs ht hk hE hEcardST hDense hX hXrank hContractRank
       hSolveS hSolveT
-  convert hOrder using 1 <;> omega
+  convert hOrder using 1 <;> simp [hst]
 
 #print axioms Rank3KUM.contract_eRank_eq_of_eRank_eq_add_general
 #print axioms Rank3KUM.exists_cyclicBasisOrder_of_nonempty_proper_tight_of_lower_ranks
