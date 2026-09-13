@@ -149,8 +149,8 @@ theorem exists_cyclicBasisOrder_of_rank_one
     (hRank : M.eRank = 1)
     (hEcard : M.E.encard = (k : ℕ∞))
     (hDense : UniformlyDense M k) :
-    ∃ order : Fin k ≃ M.E,
-      CyclicBasisOrder M 1 hk order := by
+    ∃ order : Fin (1 * k) ≃ M.E,
+      CyclicBasisOrder M 1 (Nat.mul_pos (by omega) hk) order := by
   letI : Fintype M.E := hE.fintype
   have hEncard : M.E.ncard = k := by
     have hcast : (M.E.ncard : ℕ∞) = (k : ℕ∞) := by
@@ -159,8 +159,10 @@ theorem exists_cyclicBasisOrder_of_rank_one
     exact_mod_cast hcast
   have hNatCard : Nat.card M.E = k := by
     simpa only [Nat.card_coe_set_eq] using hEncard
-  let order : Fin k ≃ M.E :=
+  let baseOrder : Fin k ≃ M.E :=
     (Finite.equivFinOfCardEq hNatCard).symm
+  let order : Fin (1 * k) ≃ M.E :=
+    (finCongr (by omega)).trans baseOrder
   have hLoopless : M.Loopless :=
     loopless_of_uniformlyDense M k hk hDense
   let : M.Loopless := hLoopless
@@ -177,7 +179,7 @@ theorem exists_cyclicBasisOrder_of_rank_one
       (hRank.trans
         (hcard.symm.trans hInd.eRk_eq_encard.symm)).le
   have hset :
-      cyclicWindow 1 hk order i =
+      cyclicWindow 1 (Nat.mul_pos (by omega) hk) order i =
         ({(order i : α)} : Set α) := by
     ext x
     simp only [cyclicWindow, Set.mem_range, Set.mem_singleton_iff]
