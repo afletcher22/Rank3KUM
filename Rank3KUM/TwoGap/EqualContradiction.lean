@@ -1,4 +1,5 @@
-import Rank3KUM.TwoGap.EqualDisjointRest
+import Rank3KUM.TwoGap.EqualNonempty
+import Rank3KUM.TwoGap.ResidualSupportDisjoint
 
 namespace Rank3KUM.TwoGap
 
@@ -56,21 +57,76 @@ theorem false_of_equal_singleton_partner_pairs
     equal_singleton_residualSupports_nonempty
       M hD hP hC haD hbD hcD hab hac hbc hXP hXCa hXCc
 
+  -- Lemma 7.20 is used directly for all three residual-support pairs.
+  have hACXset : ({a, c, b} : Set α) = ({a, b, c} : Set α) := by
+    ext z
+    simp [or_comm, or_left_comm, or_assoc]
+  have hACYset : ({b, a, c} : Set α) = ({a, b, c} : Set α) := by
+    ext z
+    simp [or_comm, or_left_comm, or_assoc]
+  have hACBridgeSet : ({c, b, a} : Set α) = ({a, b, c} : Set α) := by
+    ext z
+    simp [or_comm, or_left_comm, or_assoc]
+  have hACX : M.IsBase ({a, c, b} : Set α) := by
+    rw [hACXset]
+    exact hC
+  have hACY : M.IsBase ({b, a, c} : Set α) := by
+    rw [hACYset]
+    exact hC
+  have hACBridge : M.IsBase ({c, b, a} : Set α) := by
+    rw [hACBridgeSet]
+    exact hC
+  have hACXsym :
+      SymmetricPartners M D ({a, c, b} : Set α) a = {t} := by
+    rw [hACXset]
+    exact hXCa
+  have hACYsym :
+      SymmetricPartners M D ({b, a, c} : Set α) c = {t} := by
+    rw [hACYset]
+    exact hXCc
   have hAC :
       Disjoint (ResidualSupport M D t a) (ResidualSupport M D t c) :=
-    equal_singleton_residualSupport_a_disjoint_c
-      M hRank hD hC haD hbD hcD hab hac hbc
-      htD hDtb hXCa hXCc
+    residualSupport_disjoint_of_shared_bridge
+      M hRank hD hACX hACY hACBridge
+      haD hcD hbD haD hcD
+      hac hab hbc.symm hab.symm hbc.symm hac.symm
+      htD hDtb hACXsym hACYsym
+
+  have hABYset : ({c, q, b} : Set α) = ({b, c, q} : Set α) := by
+    ext z
+    simp [or_comm, or_left_comm, or_assoc]
+  have hABY : M.IsBase ({c, q, b} : Set α) := by
+    rw [hABYset]
+    exact hQ
+  have hABYsym :
+      SymmetricPartners M D ({c, q, b} : Set α) b = {t} := by
+    rw [hABYset]
+    exact hXQ
   have hAB :
       Disjoint (ResidualSupport M D t a) (ResidualSupport M D t b) :=
-    equal_singleton_residualSupport_a_disjoint_b
-      M hRank hD hC hQ haD hbD hcD hqD
-      hab hac hbc hbq hcq htD hDtc hXCa hXQ
+    residualSupport_disjoint_of_shared_bridge
+      M hRank hD hC hABY hQ
+      haD hbD hcD hqD hbD
+      hab hac hbc hcq hbc hbq
+      htD hDtc hXCa hABYsym
+
+  have hBCXset : ({b, p, a} : Set α) = ({p, a, b} : Set α) := by
+    ext z
+    simp [or_comm, or_left_comm, or_assoc]
+  have hBCX : M.IsBase ({b, p, a} : Set α) := by
+    rw [hBCXset]
+    exact hP
+  have hBCXsym :
+      SymmetricPartners M D ({b, p, a} : Set α) b = {t} := by
+    rw [hBCXset]
+    exact hXP
   have hBC :
       Disjoint (ResidualSupport M D t b) (ResidualSupport M D t c) :=
-    equal_singleton_residualSupport_b_disjoint_c
-      M hRank hD hP hC hpD haD hbD hcD
-      hpa hpb hab hac hbc htD hDta hXP hXCc
+    residualSupport_disjoint_of_shared_bridge
+      M hRank hD hBCX hC hP
+      hbD hpD haD hbD hcD
+      hpb.symm hab.symm hpa hab hac.symm hbc.symm
+      htD hDta hBCXsym hXCc
 
   rcases hUa with ⟨ua, hua⟩
   rcases hUb with ⟨ub, hub⟩
