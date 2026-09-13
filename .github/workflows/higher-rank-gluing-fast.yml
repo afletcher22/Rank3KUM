@@ -53,7 +53,7 @@ jobs:
           key: ${{ runner.os }}-rank3kum-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
 
       - name: Check higher-rank dependency cone
-        run: lake build Rank3KUM.BalancedWindowGeneral
+        run: lake build Rank3KUM.BalancedWindowRightGeneral
 
       - name: Ensure dependency pins were not rewritten
         run: git diff --exit-code -- lake-manifest.json lean-toolchain
