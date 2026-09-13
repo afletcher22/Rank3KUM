@@ -23,12 +23,24 @@ jobs:
       - name: Guard immutable Palomar Challenge
         run: git diff --exit-code "$IMMUTABLE_PALOMAR_PARENT" -- Challenge.lean
 
-      - name: Install Elan
-        run: |
-          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
-          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Cache pinned Lean toolchain and dependencies
+        id: lean-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.elan
+            .lake/packages
+          key: ${{ runner.os }}-rank3kum-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
 
-      - name: Download Mathlib cache
+      - name: Install Elan on cache miss
+        if: steps.lean-cache.outputs.cache-hit != 'true'
+        run: curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+
+      - name: Add Elan to path
+        run: echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Download Mathlib cache on cache miss
+        if: steps.lean-cache.outputs.cache-hit != 'true'
         run: lake exe cache get
 
       - name: Check higher-rank dependency cone
