@@ -1,4 +1,4 @@
-import Rank3KUM.BalancedGluingTransportLite
+import Rank3KUM.BalancedGluingClean
 
 namespace Rank3KUM
 
@@ -10,8 +10,8 @@ variable {α : Type*}
 
 /--
 Any nonempty proper tight set resolves the rank-three cyclic-order problem.
-The active route now passes through the common balanced point-pair gluing
-interface and uses direct ground-set transport; the strict branch is unchanged.
+The active route passes through one balanced point-pair gluing module and uses
+direct ground-set transport; the strict branch is unchanged.
 -/
 theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight
     (M : Matroid α) (k : ℕ)
@@ -27,7 +27,7 @@ theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight
     ∃ order : Fin (3 * k) ≃ M.E,
       CyclicBasisOrder3 M (by omega) order := by
   exact
-    exists_cyclicBasisOrder3_of_nonempty_proper_tight_gluing_transportLite
+    exists_cyclicBasisOrder3_of_nonempty_proper_tight_gluing_clean
       M k hk hE hRank hEcard hDense hX hXnonempty hXproper
 
 #print axioms Rank3KUM.exists_cyclicBasisOrder3_of_nonempty_proper_tight
