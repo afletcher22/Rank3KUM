@@ -31,12 +31,8 @@ jobs:
       - name: Download Mathlib cache
         run: lake exe cache get
 
-      - name: Check higher-rank modules
-        run: |
-          lake env lean Rank3KUM/TightContraction.lean
-          lake env lean Rank3KUM/GenericGluing.lean
-          lake env lean Rank3KUM/BalancedInterleaveGeneral.lean
-          lake env lean Rank3KUM/BalancedWindowGeneral.lean
+      - name: Check higher-rank dependency cone
+        run: lake build Rank3KUM.BalancedWindowGeneral
 
       - name: Ensure dependency pins were not rewritten
         run: git diff --exit-code -- lake-manifest.json lean-toolchain
