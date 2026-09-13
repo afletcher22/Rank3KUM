@@ -23,7 +23,7 @@ theorem balancedBlockOrder_apply_left_of_lt
   have hdEq : d = Fin.castAdd t j := by
     apply Fin.ext
     rfl
-  subst d
+  rw [hdEq]
   simpa [j] using balancedBlockOrder_left hPQ left right i j
 
 /-- Evaluate a balanced block position known to lie in its right segment. -/
@@ -43,7 +43,7 @@ theorem balancedBlockOrder_apply_right_of_le
     apply Fin.ext
     change d.val = s + (d.val - s)
     omega
-  subst d
+  rw [hdEq]
   simpa [j] using balancedBlockOrder_right hPQ left right i j
 
 /--
@@ -76,7 +76,10 @@ theorem cyclicWindow_balancedBlockOrder_left_start
       refine ⟨qs, ?_⟩
       symm
       have hout := cyclicIndex_blockPosition_same
-        (s + t) k (by omega) hk i (Fin.castAdd t a) q.val (by omega)
+        (s + t) k (by omega) hk i (Fin.castAdd t a) q.val
+          (by
+            change a.val + q.val < s + t
+            omega)
       have hsrc := cyclicIndex_blockPosition_same
         s k hs hk i a qs.val (by simp [qs]; omega)
       rw [hout, hsrc]
@@ -90,7 +93,10 @@ theorem cyclicWindow_balancedBlockOrder_left_start
         refine ⟨qt, ?_⟩
         symm
         have hout := cyclicIndex_blockPosition_same
-          (s + t) k (by omega) hk i (Fin.castAdd t a) q.val hsame
+          (s + t) k (by omega) hk i (Fin.castAdd t a) q.val
+            (by
+              change a.val + q.val < s + t
+              exact hsame)
         have hsrc := cyclicIndex_blockPosition_same
           t k ht hk i (⟨0, ht⟩ : Fin t) qt.val (by simp [qt]; omega)
         rw [hout, hsrc]
@@ -103,7 +109,10 @@ theorem cyclicWindow_balancedBlockOrder_left_start
         refine ⟨qs, ?_⟩
         symm
         have hout := cyclicIndex_blockPosition_next
-          (s + t) k (by omega) hk i (Fin.castAdd t a) q.val q.isLt (by omega)
+          (s + t) k (by omega) hk i (Fin.castAdd t a) q.val q.isLt
+            (by
+              change s + t ≤ a.val + q.val
+              omega)
         have hsrc := cyclicIndex_blockPosition_next
           s k hs hk i a qs.val qs.isLt (by simp [qs]; omega)
         rw [hout, hsrc]
@@ -118,7 +127,11 @@ theorem cyclicWindow_balancedBlockOrder_left_start
     · let q : Fin (s + t) := ⟨s - a.val + j.val, by omega⟩
       refine ⟨q, ?_⟩
       have hout := cyclicIndex_blockPosition_same
-        (s + t) k (by omega) hk i (Fin.castAdd t a) q.val (by simp [q]; omega)
+        (s + t) k (by omega) hk i (Fin.castAdd t a) q.val
+          (by
+            change a.val + q.val < s + t
+            simp [q]
+            omega)
       have hsrc := cyclicIndex_blockPosition_same
         t k ht hk i (⟨0, ht⟩ : Fin t) j.val (by omega)
       rw [hout, hsrc]
@@ -133,7 +146,11 @@ theorem cyclicWindow_balancedBlockOrder_left_start
       · let q : Fin (s + t) := ⟨j.val, by omega⟩
         refine ⟨q, ?_⟩
         have hout := cyclicIndex_blockPosition_same
-          (s + t) k (by omega) hk i (Fin.castAdd t a) q.val (by simp [q]; omega)
+          (s + t) k (by omega) hk i (Fin.castAdd t a) q.val
+            (by
+              change a.val + q.val < s + t
+              simp [q]
+              omega)
         have hsrc := cyclicIndex_blockPosition_same
           s k hs hk i a j.val hsame
         rw [hout, hsrc]
@@ -145,7 +162,10 @@ theorem cyclicWindow_balancedBlockOrder_left_start
         refine ⟨q, ?_⟩
         have hout := cyclicIndex_blockPosition_next
           (s + t) k (by omega) hk i (Fin.castAdd t a) q.val q.isLt
-            (by simp [q]; omega)
+            (by
+              change s + t ≤ a.val + q.val
+              simp [q]
+              omega)
         have hsrc := cyclicIndex_blockPosition_next
           s k hs hk i a j.val j.isLt (by omega)
         rw [hout, hsrc]
