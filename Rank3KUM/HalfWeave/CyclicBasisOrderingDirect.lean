@@ -1,4 +1,5 @@
-import Rank3KUM.HalfWeave.LargestFirstDirect
+import Rank3KUM.HalfWeave.FinitePartitionLargestFirst
+import Rank3KUM.HalfWeave.ParallelClasses
 
 namespace Rank3KUM.HalfWeave
 
@@ -11,8 +12,9 @@ variable {α : Type*}
 /--
 Uniform density in rank two directly yields the only output needed by the
 tight-set branches: a cyclic enumeration whose woven successor pairs are
-bases.  This avoids packaging the result through an intermediate enumeration
-structure or a second paper-facing structure.
+bases.  The enumeration bookkeeping is supplied by the generic finite-
+partition construction; the matroid-specific work is only the parallel-class
+partition, its size bound, and the cross-class basis argument.
 -/
 theorem exists_cyclic_adjacent_base_order_of_uniformlyDense_direct
     (M : Matroid α)
@@ -30,20 +32,22 @@ theorem exists_cyclic_adjacent_base_order_of_uniformlyDense_direct
             ((order (weaveNext k hk p) : M.E) : α)} : Set α) := by
   have hLoopless : M.Loopless :=
     loopless_of_uniformlyDense M k hk hDense
-  let y := largestFirstClosureGroundEquiv M k hRank hcard
-  let S :=
-    largestFirstClosureBlockModel
-      M k hcard hDense hLoopless hRank
+  have hbound :
+      ∀ q : (closureFinpartition M).parts, q.1.card ≤ k := by
+    intro q
+    exact
+      card_closureFinpartition_part_le
+        M k hDense hLoopless q.1 q.2
+  obtain ⟨y, S, hclassify⟩ :=
+    FinitePartition.exists_largestFirst_enumeration
+      (closureFinpartition M) k hk hcard hbound
   let order : Fin k × Bool ≃ M.E := woven k hk y
   refine ⟨order, ?_⟩
   intro p
   let a : Fin (2 * k) := halfWeaveEquiv k hk p
   let b : Fin (2 * k) :=
     halfWeaveEquiv k hk (weaveNext k hk p)
-  have hblocks :
-      largestFirstClosureBlock M k hRank hcard a ≠
-        largestFirstClosureBlock M k hRank hcard b := by
-    change S.block a ≠ S.block b
+  have hblocks : S.block a ≠ S.block b := by
     simpa [a, b] using
       (largestFirst_woven_successor_blocks_ne hk S p)
   have hclosure :
@@ -51,14 +55,23 @@ theorem exists_cyclic_adjacent_base_order_of_uniformlyDense_direct
         M.closure ({((y b : M.E) : α)} : Set α) := by
     intro hcl
     apply hblocks
-    exact
-      (largestFirstClosureBlock_eq_iff_closure_eq
-        M k hRank hcard a b).2 hcl
+    apply (hclassify a b).2
+    have hmem :
+        y b ∈ (closureFinpartition M).part (y a) :=
+      (mem_closureFinpartition_part_iff M (y a) (y b)).2 hcl
+    have hpartMem :
+        (closureFinpartition M).part (y a) ∈
+          (closureFinpartition M).parts :=
+      (closureFinpartition M).part_mem.2 (Finset.mem_univ _)
+    have hrev :
+        (closureFinpartition M).part (y b) =
+          (closureFinpartition M).part (y a) :=
+      ((closureFinpartition M).part_eq_iff_mem hpartMem).2 hmem
+    exact hrev.symm
   have hab : a ≠ b := by
     intro hab
     apply hblocks
-    exact congrArg
-      (largestFirstClosureBlock M k hRank hcard) hab
+    exact congrArg S.block hab
   have hyne : y a ≠ y b := by
     intro hy
     exact hab (y.injective hy)
