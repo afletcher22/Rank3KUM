@@ -1,8 +1,8 @@
-name: Generic gluing ablation fast check
+name: Higher-rank gluing fast check
 
 on:
   push:
-    branches: ["generic-gluing-ablation"]
+    branches: ["higher-rank-gluing-experiment"]
   workflow_dispatch:
 
 permissions:
@@ -12,7 +12,7 @@ env:
   IMMUTABLE_PALOMAR_PARENT: abced491e10f618400e1c9739d2d9503477da76f
 
 jobs:
-  generic-gluing-lean:
+  higher-rank-lean:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -52,8 +52,8 @@ jobs:
             .lake/packages
           key: ${{ runner.os }}-rank3kum-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
 
-      - name: Check active rank-three theorem
-        run: lake build Rank3KUM.FinalInduction
+      - name: Check higher-rank dependency cone
+        run: lake build Rank3KUM.TightInductionGeneral Rank3KUM.HigherRankTightCorollaries
 
       - name: Ensure dependency pins were not rewritten
         run: git diff --exit-code -- lake-manifest.json lean-toolchain
