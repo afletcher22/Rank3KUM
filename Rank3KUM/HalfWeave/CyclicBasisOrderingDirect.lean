@@ -43,7 +43,8 @@ theorem exists_cyclic_adjacent_base_order_of_uniformlyDense_direct
   have hblocks :
       largestFirstClosureBlock M k hRank hcard a ≠
         largestFirstClosureBlock M k hRank hcard b := by
-    simpa [S, a, b] using
+    change S.block a ≠ S.block b
+    simpa [a, b] using
       (largestFirst_woven_successor_blocks_ne hk S p)
   have hclosure :
       M.closure ({((y a : M.E) : α)} : Set α) ≠
