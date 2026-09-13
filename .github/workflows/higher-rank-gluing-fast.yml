@@ -23,9 +23,9 @@ jobs:
       - name: Guard immutable Palomar Challenge
         run: git diff --exit-code "$IMMUTABLE_PALOMAR_PARENT" -- Challenge.lean
 
-      - name: Cache pinned Lean toolchain and dependencies
+      - name: Restore pinned Lean toolchain and dependencies
         id: lean-cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~/.elan
@@ -42,6 +42,15 @@ jobs:
       - name: Download Mathlib cache on cache miss
         if: steps.lean-cache.outputs.cache-hit != 'true'
         run: lake exe cache get
+
+      - name: Save pinned Lean toolchain and dependencies
+        if: steps.lean-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.elan
+            .lake/packages
+          key: ${{ runner.os }}-rank3kum-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
 
       - name: Check higher-rank dependency cone
         run: lake build Rank3KUM.BalancedWindowGeneral
