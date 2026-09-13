@@ -2,6 +2,7 @@ import Rank3KUM.FinalReduction
 import Rank3KUM.NearTightGeometry
 import Rank3KUM.SmallCases
 import Rank3KUM.Version2.SixPointMatroidBridge
+import Rank3KUM.Version2.InductionStepDirect
 
 namespace Rank3KUM
 
@@ -83,7 +84,7 @@ theorem rankThreeKUM_of_small_two_and_strict_deletion
           (Matroid.delete M D) (by omega)
           hDelFinite hDelRank hDelCard hDelDense
       exact
-        exists_cyclicBasisOrder3_of_cyclic_basis_deletion
+        Version2.exists_cyclicBasisOrder3_of_cyclic_basis_deletion_direct
           M k hkThree hRank hD hDelRank
           small hsmall
 
