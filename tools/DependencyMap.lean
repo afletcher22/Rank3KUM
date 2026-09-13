@@ -6,7 +6,8 @@ import Lean.Util.FoldConsts
 
 This file performs no mathematical interpretation. Project ownership is determined by defining-module
 provenance, not by declaration namespace. Type, value, and declaration-metadata dependencies are
-recorded separately; their union is used for reachability.
+recorded separately; their union is used for reachability. Self references are excluded from graph
+edges.
 -/
 
 open Lean Elab Command
@@ -62,6 +63,9 @@ def metadataConstants : ConstantInfo → List Name
 def dedupNames (xs : List Name) : List Name :=
   xs.eraseDups
 
+def withoutSelf (decl : Name) (xs : List Name) : List Name :=
+  xs.filter (fun n => n != decl)
+
 def namesString (xs : List Name) : String :=
   String.intercalate ";" (xs.map Name.toString)
 
@@ -87,9 +91,9 @@ run_cmd do
     match env.find? decl with
     | none => throwError m!"project declaration disappeared from environment: {decl}"
     | some info =>
-        let typeDeps := typeConstants info
-        let valueDeps := valueConstants info
-        let metadataDeps := metadataConstants info
+        let typeDeps := withoutSelf decl (typeConstants info)
+        let valueDeps := withoutSelf decl (valueConstants info)
+        let metadataDeps := withoutSelf decl (metadataConstants info)
         let allDeps := dedupNames (typeDeps ++ valueDeps ++ metadataDeps)
         let (typeProject, typeExternal) := splitProject env typeDeps
         let (valueProject, valueExternal) := splitProject env valueDeps
