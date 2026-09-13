@@ -112,7 +112,8 @@ theorem exists_largestFirst_enumeration
       (fun p : P.parts => p.1.card) hunivParts
   let E : Fin P.parts.card ≃ P.parts := P.parts.equivFin.symm
   let imax : Fin P.parts.card := E.symm pmax
-  have hpartsPos : 0 < P.parts.card := Finset.card_pos.mpr hparts
+  have hpartsPos : 0 < P.parts.card :=
+    Finset.card_pos.mpr ⟨p0, hp0⟩
   let z : Fin P.parts.card := ⟨0, hpartsPos⟩
   let label : Fin P.parts.card ≃ P.parts := (Equiv.swap z imax).trans E
   have hlabel_zero : label z = pmax := by
