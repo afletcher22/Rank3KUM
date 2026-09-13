@@ -9,6 +9,24 @@ noncomputable section
 
 variable {α : Type*}
 
+/-- Rank two makes the singleton-closure partition nonempty. -/
+theorem closureFinpartition_parts_nonempty_of_eRank_eq_two
+    (M : Matroid α)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (hRank : M.eRank = 2) :
+    (closureFinpartition M).parts.Nonempty := by
+  obtain ⟨B, hB⟩ := M.exists_isBase
+  have hBcard : B.encard = 2 := by
+    rw [hB.encard_eq_eRank, hRank]
+  have hBne : B.Nonempty := by
+    apply Set.nonempty_of_encard_ne_zero
+    rw [hBcard]
+    norm_num
+  obtain ⟨e, heB⟩ := hBne
+  let e' : M.E := ⟨e, hB.subset_ground heB⟩
+  exact ⟨(closureFinpartition M).part e', by simp⟩
+
 /-- A rank-two closure partition has a part of maximum cardinality. -/
 theorem exists_largest_closure_part
     (M : Matroid α)
@@ -18,14 +36,12 @@ theorem exists_largest_closure_part
     ∃ p : (closureFinpartition M).parts,
       ∀ q : (closureFinpartition M).parts,
         q.1.card ≤ p.1.card := by
-  obtain ⟨e, _f, he, _hf, _hne⟩ :=
-    exists_pair_closure_ne_of_eRank_eq_two M hRank
-  let e' : M.E := ⟨e, he⟩
-  let p0 : (closureFinpartition M).parts :=
-    ⟨(closureFinpartition M).part e', by simp⟩
+  obtain ⟨p0, hp0⟩ :=
+    closureFinpartition_parts_nonempty_of_eRank_eq_two M hRank
+  let p0' : (closureFinpartition M).parts := ⟨p0, hp0⟩
   have hnonempty :
       (Finset.univ : Finset ((closureFinpartition M).parts)).Nonempty :=
-    ⟨p0, Finset.mem_univ _⟩
+    ⟨p0', Finset.mem_univ _⟩
   obtain ⟨p, _hp, hmax⟩ :=
     Finset.exists_max_image
       (Finset.univ : Finset ((closureFinpartition M).parts))
@@ -64,8 +80,9 @@ def largestFirstClosurePartsEquiv
     ((closureFinpartition M).parts.equivFin).symm
   let p := largestClosurePart M hRank
   let i := E.symm p
-  have htwo := two_le_card_closureFinpartition_parts M hRank
-  have hpos : 0 < (closureFinpartition M).parts.card := by omega
+  have hpos : 0 < (closureFinpartition M).parts.card :=
+    Finset.card_pos.mpr
+      (closureFinpartition_parts_nonempty_of_eRank_eq_two M hRank)
   let z : Fin (closureFinpartition M).parts.card := ⟨0, hpos⟩
   exact (Equiv.swap z i).trans E
 
@@ -316,7 +333,7 @@ theorem card_fiberFinset_largestFirstClosureBlock
           (mem_largestFirstClosurePart_iff_block_eq
             M k hRank hcard j c).symm)
 
-/-- Every largest-first block label occurs. -/
+/-- Every largest-first block label occurs.  Retained as a reusable fact. -/
 theorem largestFirstClosureBlock_surjective
     (M : Matroid α)
     (k : ℕ)
@@ -355,24 +372,44 @@ theorem largestFirstClosureBlock_first_eq_zero
     largestFirstClosureBlock M k hRank hcard
         (firstIndex k (zeroFin k hk)) =
       (⟨0, by
-        have htwo := two_le_card_closureFinpartition_parts M hRank
-        omega⟩ : Fin (closureFinpartition M).parts.card) := by
+        exact Finset.card_pos.mpr
+          (closureFinpartition_parts_nonempty_of_eRank_eq_two M hRank)⟩ :
+        Fin (closureFinpartition M).parts.card) := by
+  have hparts : (closureFinpartition M).parts.Nonempty :=
+    closureFinpartition_parts_nonempty_of_eRank_eq_two M hRank
+  have hpos : 0 < (closureFinpartition M).parts.card :=
+    Finset.card_pos.mpr hparts
   let z : Fin (2 * k) := firstIndex k (zeroFin k hk)
-  let c0 : Fin (closureFinpartition M).parts.card :=
-    ⟨0, by
-      have htwo := two_le_card_closureFinpartition_parts M hRank
-      omega⟩
-  obtain ⟨j, hj⟩ :=
-    largestFirstClosureBlock_surjective M k hRank hcard c0
+  let c0 : Fin (closureFinpartition M).parts.card := ⟨0, hpos⟩
+  have hc0part :
+      ((largestFirstClosurePartsEquiv M hRank c0).1).Nonempty :=
+    (closureFinpartition M).nonempty_of_mem_parts
+      (largestFirstClosurePartsEquiv M hRank c0).2
+  have hc0pos :
+      0 < ((largestFirstClosurePartsEquiv M hRank c0).1).card :=
+    Finset.card_pos.mpr hc0part
+  let q :
+      (i : Fin (closureFinpartition M).parts.card) ×
+        Fin ((largestFirstClosurePartsEquiv M hRank i).1).card :=
+    ⟨c0, ⟨0, hc0pos⟩⟩
+  let j : Fin (2 * k) :=
+    (largestFirstClosureSigmaEquiv M k hRank hcard).symm q
+  have hj : largestFirstClosureBlock M k hRank hcard j = c0 := by
+    change (largestFirstClosureSigmaEquiv M k hRank hcard j).1 = c0
+    simp [j, q]
   have hzj : z ≤ j := by
-    change 0 ≤ j.val
-    simp
+    change z.val ≤ j.val
+    have hzval : z.val = 0 := by
+      simp [z, firstIndex, zeroFin]
+    omega
   have hle :=
     monotone_largestFirstClosureBlock M k hRank hcard hzj
   rw [hj] at hle
   apply Fin.ext
   change (largestFirstClosureBlock M k hRank hcard z).val = 0
-  change (largestFirstClosureBlock M k hRank hcard z).val ≤ 0 at hle
+  have hle0 :
+      (largestFirstClosureBlock M k hRank hcard z).val ≤ 0 := by
+    simpa [c0] using hle
   omega
 
 /-- Distinct direct block labels are exactly distinct singleton-closure classes. -/
@@ -441,8 +478,9 @@ def largestFirstClosureBlockModel
     rw [largestFirstClosureBlock_first_eq_zero M k hRank hcard hk]
     rw [card_fiberFinset_largestFirstClosureBlock,
       card_fiberFinset_largestFirstClosureBlock]
-    have htwo := two_le_card_closureFinpartition_parts M hRank
-    have hpos : 0 < (closureFinpartition M).parts.card := by omega
+    have hpos : 0 < (closureFinpartition M).parts.card :=
+      Finset.card_pos.mpr
+        (closureFinpartition_parts_nonempty_of_eRank_eq_two M hRank)
     have hmax :=
       card_le_largestClosurePart M hRank
         (largestFirstClosurePartsEquiv M hRank c)
