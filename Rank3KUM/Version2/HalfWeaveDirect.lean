@@ -226,6 +226,23 @@ def largestFirstClosureBlock
     Fin (2 * k) → Fin (closureFinpartition M).parts.card :=
   fun j => (largestFirstClosureSigmaEquiv M k hRank hcard j).1
 
+/-- The closure part of a flattened ground position is its largest-first block. -/
+theorem part_largestFirstClosureGroundEquiv
+    (M : Matroid α)
+    (k : ℕ)
+    [Fintype M.E]
+    [DecidableEq M.E]
+    (hRank : M.eRank = 2)
+    (hcard : Fintype.card M.E = 2 * k)
+    (j : Fin (2 * k)) :
+    (closureFinpartition M).part
+        (largestFirstClosureGroundEquiv M k hRank hcard j) =
+      (largestFirstClosurePartsEquiv M hRank
+        (largestFirstClosureBlock M k hRank hcard j)).1 := by
+  simpa [largestFirstClosureGroundEquiv, largestFirstClosureBlock] using
+    part_largestFirstClosureCoordinatesEquiv M hRank
+      (largestFirstClosureSigmaEquiv M k hRank hcard j)
+
 /-- The direct largest-first block labels are monotone because blocks are contiguous. -/
 theorem monotone_largestFirstClosureBlock
     (M : Matroid α)
@@ -267,7 +284,12 @@ theorem mem_largestFirstClosurePart_iff_block_eq
     closureFinpartition M
   rw [← P.part_eq_iff_mem
     (largestFirstClosurePartsEquiv M hRank c).2]
-  rw [part_largestFirstClosureCoordinatesEquiv]
+  change
+    (closureFinpartition M).part
+        (largestFirstClosureGroundEquiv M k hRank hcard j) =
+      (largestFirstClosurePartsEquiv M hRank c).1 ↔
+    largestFirstClosureBlock M k hRank hcard j = c
+  rw [part_largestFirstClosureGroundEquiv]
   constructor
   · intro h
     apply (largestFirstClosurePartsEquiv M hRank).injective
@@ -351,7 +373,7 @@ theorem largestFirstClosureBlock_first_eq_zero
     largestFirstClosureBlock_surjective M k hRank hcard c0
   have hzj : z ≤ j := by
     change 0 ≤ j.val
-    simp [z, firstIndex, zeroFin]
+    simp
   have hle :=
     monotone_largestFirstClosureBlock M k hRank hcard hzj
   rw [hj] at hle
@@ -393,8 +415,8 @@ theorem largestFirstClosureBlock_eq_iff_closure_eq
           ({((y a : M.E) : α)} : Set α) =
         M.closure
           ({((y b : M.E) : α)} : Set α) := by
-      rw [← part_largestFirstClosureCoordinatesEquiv
-        M hRank (largestFirstClosureSigmaEquiv M k hRank hcard a)]
+      rw [← part_largestFirstClosureGroundEquiv
+        M k hRank hcard a]
       exact
         Rank3KUM.HalfWeave.mem_closureFinpartition_part_iff
           M (y a) (y b)
