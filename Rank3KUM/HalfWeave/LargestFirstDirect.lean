@@ -407,6 +407,7 @@ theorem largestFirstClosureBlock_first_eq_zero
   rw [hj] at hle
   apply Fin.ext
   change (largestFirstClosureBlock M k hRank hcard z).val = 0
+  change (largestFirstClosureBlock M k hRank hcard z).val ≤ c0.val at hle
   have hle0 :
       (largestFirstClosureBlock M k hRank hcard z).val ≤ 0 := by
     simpa [c0] using hle
