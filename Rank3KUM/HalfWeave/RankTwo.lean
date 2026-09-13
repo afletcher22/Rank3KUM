@@ -1,4 +1,4 @@
-import Rank3KUM.HalfWeave.SortedBlocks
+import Rank3KUM.HalfWeave.LargestFirst
 import Mathlib.Combinatorics.Matroid.Rank.ENat
 
 namespace Rank3KUM.HalfWeave
@@ -16,22 +16,22 @@ theorem pair_isBase_of_indep_of_eRank_eq_two
   rw [hRank, hpair.eRk_eq_encard, Set.encard_pair hef]
 
 /--
-Data needed to apply the sorted-block half-weave theorem to a matroid.
-Different block labels must give an independent pair after coercion to `α`.
+Data needed to apply the rank-two half-weave theorem to a matroid.
+The block model only requires a largest first block; the remaining blocks
+need not be globally sorted by size.
 -/
 structure RankTwoSortedEnumeration
     {α : Type*}
     (M : Matroid α)
     (k m : ℕ) where
   y : Fin (2 * k) ≃ M.E
-  sortedBlocks : SortedBlockModel k m
+  sortedBlocks : LargestFirstBlockModel k m
   indep_of_blocks_ne :
     ∀ a b : Fin (2 * k),
       sortedBlocks.block a ≠ sortedBlocks.block b →
         M.Indep
           ({((y a : M.E) : α),
             ((y b : M.E) : α)} : Set α)
-
 
 /--
 In a loopless matroid, elements in different singleton-closure classes form
@@ -58,7 +58,6 @@ theorem pair_indep_of_closure_ne
   exact
     (heNonloop.closure_eq_closure_iff_eq_or_dep
       hfNonloop).2 (Or.inr hdep)
-
 
 /-- A rank-two matroid has two ground elements in different singleton-closure classes. -/
 theorem exists_pair_closure_ne_of_eRank_eq_two
@@ -93,9 +92,8 @@ theorem exists_pair_closure_ne_of_eRank_eq_two
 #print axioms Rank3KUM.HalfWeave.exists_pair_closure_ne_of_eRank_eq_two
 
 /--
-To construct a sorted rank-two enumeration, it is enough to label exactly
-the singleton-closure classes.  The matroid independence field is then
-automatic from looplessness.
+A legacy fully sorted block model can still construct the now-weaker
+rank-two enumeration interface.
 -/
 def RankTwoSortedEnumeration.ofClosureBlocks
     {α : Type*}
@@ -113,7 +111,7 @@ def RankTwoSortedEnumeration.ofClosureBlocks
               ({((y b : M.E) : α)} : Set α)) :
     RankTwoSortedEnumeration M k m where
   y := y
-  sortedBlocks := S
+  sortedBlocks := LargestFirstBlockModel.ofSorted S
   indep_of_blocks_ne := by
     intro a b hab
     apply pair_indep_of_closure_ne
@@ -167,7 +165,7 @@ theorem rankTwoWoven_successor_ne
     rankTwoWoven D hk p ≠
       rankTwoWoven D hk (weaveNext k hk p) := by
   have hblocks :=
-    woven_successor_blocks_ne hk D.sortedBlocks p
+    largestFirst_woven_successor_blocks_ne hk D.sortedBlocks p
   intro heq
   apply hblocks
   have hindices :
@@ -205,7 +203,7 @@ theorem rankTwoWoven_successor_indep
         ((rankTwoWoven D hk
           (weaveNext k hk p) : M.E) : α)} : Set α) := by
   have hblocks :=
-    woven_successor_blocks_ne hk D.sortedBlocks p
+    largestFirst_woven_successor_blocks_ne hk D.sortedBlocks p
   simpa [rankTwoWoven, woven] using
     D.indep_of_blocks_ne
       (halfWeaveEquiv k hk p)
@@ -231,8 +229,8 @@ theorem rankTwoWoven_successor_isBase
     (rankTwoWoven_successor_indep D hk p)
 
 /--
-A supplied sorted block enumeration produces a cyclic ground-set enumeration
-whose every successor pair is a base.
+A supplied largest-first block enumeration produces a cyclic ground-set
+enumeration whose every successor pair is a base.
 -/
 theorem exists_cyclic_adjacent_base_order_of_sortedEnumeration
     {α : Type*}
