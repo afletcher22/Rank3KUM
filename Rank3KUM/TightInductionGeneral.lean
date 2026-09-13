@@ -120,12 +120,13 @@ theorem exists_cyclicBasisOrder_of_nonempty_proper_tight_of_lower_ranks
     hBelow s hs hslt
   have hSolveT : SolvesDivisibleKUMAtRank α t :=
     hBelow t ht htlt
-  subst r
-  exact
+  have hOrder :=
     exists_cyclicBasisOrder_of_tight_of_rank_solutions
       (M := M) (X := X) (s := s) (t := t) (k := k)
       hs ht hk hE hEcardST hDense hX hXrank hContractRank
       hSolveS hSolveT
+  rw [hst] at hOrder
+  exact hOrder
 
 #print axioms Rank3KUM.contract_eRank_eq_of_eRank_eq_add_general
 #print axioms Rank3KUM.exists_cyclicBasisOrder_of_nonempty_proper_tight_of_lower_ranks
