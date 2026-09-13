@@ -1,5 +1,4 @@
-import Rank3KUM.TightFlatAutomatic
-import Rank3KUM.ContractInterleave
+import Rank3KUM.BalancedGluing
 
 namespace Rank3KUM
 
@@ -10,10 +9,9 @@ noncomputable section
 variable {α : Type*}
 
 /--
-Any nonempty proper tight set resolves the rank-three cyclic-order problem:
-the rank-one case uses contraction, and the rank-two case uses restriction.
-Both branches consume only the cyclic rank-two ordering and its adjacency
-property, without an additional packaging structure.
+Any nonempty proper tight set resolves the rank-three cyclic-order problem.
+The active route now passes through the common balanced point-pair gluing
+interface; the strict branch is unchanged.
 -/
 theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight
     (M : Matroid α) (k : ℕ)
@@ -28,17 +26,9 @@ theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight
     (hXproper : X ≠ M.E) :
     ∃ order : Fin (3 * k) ≃ M.E,
       CyclicBasisOrder3 M (by omega) order := by
-  rcases
-      (nonempty_proper_tight_flat_classification
-        M k hE hRank hEcard hk hDense
-        hX hXnonempty hXproper).2 with
-    hOne | hTwo
-  · exact
-      exists_cyclicBasisOrder3_of_tight_rank_one
-        M k hk hE hRank hEcard hDense hX hOne.1
-  · exact
-      exists_cyclicBasisOrder3_of_tight_rank_two
-        M k hk hE hRank hEcard hDense hX hTwo.1
+  exact
+    exists_cyclicBasisOrder3_of_nonempty_proper_tight_gluing
+      M k hk hE hRank hEcard hDense hX hXnonempty hXproper
 
 #print axioms Rank3KUM.exists_cyclicBasisOrder3_of_nonempty_proper_tight
 
