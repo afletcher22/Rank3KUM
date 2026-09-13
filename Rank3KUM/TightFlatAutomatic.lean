@@ -1,4 +1,4 @@
-import Rank3KUM.HalfWeave.ParallelClasses
+import Rank3KUM.HalfWeave.LargestFirstDirect
 import Rank3KUM.Interleave
 
 namespace Rank3KUM
@@ -11,7 +11,7 @@ variable {α : Type*}
 
 /--
 A uniformly dense rank-two flat of size `2k`, with a complement of size `k`,
-canonically supplies the sorted half-weave enumeration and hence a cyclic
+canonically supplies a largest-first half-weave enumeration and hence a cyclic
 rank-three basis order.
 -/
 theorem exists_cyclicBasisOrder3_of_uniformlyDense_rankTwo_flat
@@ -52,13 +52,9 @@ theorem exists_cyclicBasisOrder3_of_uniformlyDense_rankTwo_flat
       _ = 2 * k := hXncard
   have hRestrictDense : UniformlyDense (M.restrict X) k :=
     UniformlyDense.restrict M k hDense hXflat.subset_ground
-  have hRestrictLoopless : (M.restrict X).Loopless :=
-    loopless_of_uniformlyDense
-      (M.restrict X) k hk hRestrictDense
   let D :=
-    HalfWeave.rankTwoSortedEnumerationOfUniformlyDense
-      (M.restrict X) k hRestrictCard hRestrictDense
-      hRestrictLoopless hRestrictRank
+    HalfWeave.rankTwoLargestFirstEnumerationOfUniformlyDense
+      (M.restrict X) k hk hRestrictCard hRestrictDense hRestrictRank
   exact
     exists_cyclicBasisOrder3_of_sortedEnumeration_tight_flat
       M hk hE hRank hRestrictRank hXflat
