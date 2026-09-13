@@ -1,5 +1,5 @@
 import Rank3KUM.FinalReduction
-import Rank3KUM.NearTightGeometry
+import Rank3KUM.Version2.NearTightHitting
 import Rank3KUM.SmallCases
 import Rank3KUM.Version2.SixPointMatroidBridge
 
@@ -53,7 +53,7 @@ theorem rankThreeKUM_of_small_two_and_strict_deletion
       have hLoopless : M.Loopless :=
         loopless_of_uniformlyDense M k hk hDense
       obtain ⟨D, hD, hHits⟩ :=
-        exists_isBase_hitsNearTight_of_strict_rankThree
+        Version2.exists_isBase_hitsNearTight_of_strict_rankThree
           M k hkThree hLoopless hE hRank hEcard hStrict
       have hDelCard :
           (Matroid.delete M D).E.encard =
