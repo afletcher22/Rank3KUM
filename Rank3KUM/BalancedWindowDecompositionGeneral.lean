@@ -38,6 +38,12 @@ theorem cyclicWindow_balancedBlockOrder_decomposition
     have hda : d = Fin.castAdd t a := by
       apply Fin.ext
       rfl
+    have hstart :
+        p = blockPosition (s + t) k i (Fin.castAdd t a) := by
+      calc
+        p = blockPosition (s + t) k i d := hp.symm
+        _ = blockPosition (s + t) k i (Fin.castAdd t a) :=
+          congrArg (blockPosition (s + t) k i) hda
     refine ⟨blockPosition s k i a,
       blockPosition t k i ⟨0, ht⟩, ?_⟩
     calc
@@ -45,8 +51,12 @@ theorem cyclicWindow_balancedBlockOrder_decomposition
           (balancedBlockOrder hPQ left right) p =
         cyclicWindow (s + t) (Nat.mul_pos (by omega) hk)
           (balancedBlockOrder hPQ left right)
-          (blockPosition (s + t) k i (Fin.castAdd t a)) := by
-            rw [← hp, hda]
+          (blockPosition (s + t) k i (Fin.castAdd t a)) :=
+            congrArg
+              (fun q => cyclicWindow (s + t)
+                (Nat.mul_pos (by omega) hk)
+                (balancedBlockOrder hPQ left right) q)
+              hstart
       _ = cyclicWindow t (Nat.mul_pos ht hk) right
             (blockPosition t k i ⟨0, ht⟩) ∪
           cyclicWindow s (Nat.mul_pos hs hk) left
@@ -59,6 +69,12 @@ theorem cyclicWindow_balancedBlockOrder_decomposition
       apply Fin.ext
       change d.val = s + (d.val - s)
       omega
+    have hstart :
+        p = blockPosition (s + t) k i (Fin.natAdd s b) := by
+      calc
+        p = blockPosition (s + t) k i d := hp.symm
+        _ = blockPosition (s + t) k i (Fin.natAdd s b) :=
+          congrArg (blockPosition (s + t) k i) hdb
     refine ⟨blockPosition s k (cyclicIndex k hk i 1) ⟨0, hs⟩,
       blockPosition t k i b, ?_⟩
     calc
@@ -66,8 +82,12 @@ theorem cyclicWindow_balancedBlockOrder_decomposition
           (balancedBlockOrder hPQ left right) p =
         cyclicWindow (s + t) (Nat.mul_pos (by omega) hk)
           (balancedBlockOrder hPQ left right)
-          (blockPosition (s + t) k i (Fin.natAdd s b)) := by
-            rw [← hp, hdb]
+          (blockPosition (s + t) k i (Fin.natAdd s b)) :=
+            congrArg
+              (fun q => cyclicWindow (s + t)
+                (Nat.mul_pos (by omega) hk)
+                (balancedBlockOrder hPQ left right) q)
+              hstart
       _ = cyclicWindow t (Nat.mul_pos ht hk) right
             (blockPosition t k i b) ∪
           cyclicWindow s (Nat.mul_pos hs hk) left
