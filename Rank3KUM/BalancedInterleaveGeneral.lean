@@ -25,6 +25,68 @@ def blockPosition (r k : ℕ) (i : Fin k) (j : Fin r) :
     (blockPosition r k i j).val = j.val + r * i.val := by
   rfl
 
+/-- A cyclic shift that stays inside a block is just an offset shift. -/
+theorem cyclicIndex_blockPosition_same
+    (r k : ℕ) (hr : 0 < r) (hk : 0 < k)
+    (i : Fin k) (d : Fin r) (q : ℕ)
+    (hstay : d.val + q < r) :
+    cyclicIndex (r * k) (Nat.mul_pos hr hk)
+        (blockPosition r k i d) q =
+      blockPosition r k i ⟨d.val + q, hstay⟩ := by
+  apply Fin.ext
+  simp only [cyclicIndex_val, blockPosition_val]
+  have hik : i.val + 1 ≤ k := by omega
+  have hmul := Nat.mul_le_mul_left r hik
+  have hmul' : r * i.val + r ≤ r * k := by
+    simpa [Nat.mul_add] using hmul
+  have hlt : d.val + r * i.val + q < r * k := by omega
+  rw [Nat.mod_eq_of_lt hlt]
+  omega
+
+/--
+A cyclic shift by less than one block that crosses the block boundary lands
+at the corresponding offset of the next cyclic block.
+-/
+theorem cyclicIndex_blockPosition_next
+    (r k : ℕ) (hr : 0 < r) (hk : 0 < k)
+    (i : Fin k) (d : Fin r) (q : ℕ)
+    (hq : q < r)
+    (hcross : r ≤ d.val + q) :
+    cyclicIndex (r * k) (Nat.mul_pos hr hk)
+        (blockPosition r k i d) q =
+      blockPosition r k (cyclicIndex k hk i 1)
+        ⟨d.val + q - r, by omega⟩ := by
+  apply Fin.ext
+  simp only [cyclicIndex_val, blockPosition_val]
+  have hsumlt : d.val + q < 2 * r := by omega
+  by_cases hi : i.val + 1 < k
+  · have hik : i.val + 2 ≤ k := by omega
+    have hmul := Nat.mul_le_mul_left r hik
+    have hmul' : r * i.val + 2 * r ≤ r * k := by
+      calc
+        r * i.val + 2 * r = r * (i.val + 2) := by ring
+        _ ≤ r * k := hmul
+    have hlt : d.val + r * i.val + q < r * k := by omega
+    rw [Nat.mod_eq_of_lt hlt, Nat.mod_eq_of_lt hi]
+    omega
+  · have hieq : i.val + 1 = k := by omega
+    have hbase : r * k = r * i.val + r := by
+      calc
+        r * k = r * (i.val + 1) := by rw [hieq]
+        _ = r * i.val + r := by ring
+    have hoff : d.val + q - r < r := by omega
+    have hkone : 1 ≤ k := by omega
+    have hrle : r ≤ r * k := by
+      simpa using Nat.mul_le_mul_left r hkone
+    have hoffTotal : d.val + q - r < r * k := by omega
+    have hwrap : (i.val + 1) % k = 0 := by
+      rw [hieq, Nat.mod_self]
+    have hnum :
+        d.val + r * i.val + q = r * k + (d.val + q - r) := by
+      omega
+    rw [hwrap, Nat.mul_zero, add_zero, hnum]
+    simp [Nat.add_mod, Nat.mod_eq_of_lt hoffTotal]
+
 /--
 Split each block of length `s+t` into an `s`-slot left segment followed by a
 `t`-slot right segment, preserving block order on both sides.
@@ -88,6 +150,8 @@ def balancedBlockOrder
       (right (blockPosition t k i j) : α) := by
   simp [balancedBlockOrder]
 
+#print axioms Rank3KUM.cyclicIndex_blockPosition_same
+#print axioms Rank3KUM.cyclicIndex_blockPosition_next
 #print axioms Rank3KUM.balancedBlockOrder_left
 #print axioms Rank3KUM.balancedBlockOrder_right
 
