@@ -51,7 +51,9 @@ theorem cyclicWindow_balancedBlockOrder_right_start
         (by
           change s ≤ s + b.val + q.val
           omega)
-      simpa [qt] using heval
+      have hoff : s + b.val + q.val - s = b.val + q.val := by
+        omega
+      simpa [qt, hoff] using heval
     · by_cases hleft : b.val + q.val < t + s
       · right
         let qs : Fin s := ⟨b.val + q.val - t, by omega⟩
@@ -124,7 +126,9 @@ theorem cyclicWindow_balancedBlockOrder_right_start
           (by
             change s ≤ s + b.val + j.val
             omega)
-        simpa [q] using heval
+        have hoff : s + b.val + j.val - s = b.val + j.val := by
+          omega
+        simpa [q, hoff] using heval
       · let q : Fin (s + t) := ⟨s + j.val, by omega⟩
         refine ⟨q, ?_⟩
         have hout := cyclicIndex_blockPosition_next
@@ -167,7 +171,10 @@ theorem cyclicWindow_balancedBlockOrder_right_start
         omega
       have heval := balancedBlockOrder_apply_left_of_lt
         hPQ left right (cyclicIndex k hk i 1)
-        (⟨j.val, by omega⟩ : Fin (s + t)) (by omega)
+        (⟨j.val, by omega⟩ : Fin (s + t))
+        (by
+          change j.val < s
+          exact j.isLt)
       simpa [hres] using heval
 
 #print axioms Rank3KUM.cyclicWindow_balancedBlockOrder_right_start
