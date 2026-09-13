@@ -10,15 +10,15 @@ noncomputable section
 namespace FinitePartition
 
 /-- Prefix sum for the standard flattening of a finite sigma type. -/
-def prefix {m : ℕ} (n : Fin m → ℕ) (r : ℕ) : ℕ :=
+def sigmaPrefix {m : ℕ} (n : Fin m → ℕ) (r : ℕ) : ℕ :=
   ∑ i ∈ Finset.range r,
     if h : i < m then n ⟨i, h⟩ else 0
 
-private theorem sum_fin_castLE_eq_prefix
+private theorem sum_fin_castLE_eq_sigmaPrefix
     {m : ℕ} (n : Fin m → ℕ) (c : Fin m) :
     (∑ i : Fin c.val, n (Fin.castLE c.isLt.le i)) =
-      prefix n c.val := by
-  unfold prefix
+      sigmaPrefix n c.val := by
+  unfold sigmaPrefix
   rw [← Fin.sum_univ_eq_sum_range]
   apply Finset.sum_congr rfl
   intro i _
@@ -28,16 +28,16 @@ private theorem sum_fin_castLE_eq_prefix
   apply Fin.ext
   rfl
 
-private theorem prefix_succ
+private theorem sigmaPrefix_succ
     {m : ℕ} (n : Fin m → ℕ) (r : ℕ) (hr : r < m) :
-    prefix n (r + 1) = prefix n r + n ⟨r, hr⟩ := by
-  simp [prefix, Finset.sum_range_succ, hr]
+    sigmaPrefix n (r + 1) = sigmaPrefix n r + n ⟨r, hr⟩ := by
+  simp [sigmaPrefix, Finset.sum_range_succ, hr]
 
-private theorem prefix_add_le
+private theorem sigmaPrefix_add_le
     {m : ℕ} (n : Fin m → ℕ) {a b : Fin m} (hab : a < b) :
-    prefix n a.val + n a ≤ prefix n b.val := by
-  rw [← prefix_succ n a.val a.isLt]
-  unfold prefix
+    sigmaPrefix n a.val + n a ≤ sigmaPrefix n b.val := by
+  rw [← sigmaPrefix_succ n a.val a.isLt]
+  unfold sigmaPrefix
   apply Finset.sum_le_sum_of_subset_of_nonneg
   · exact Finset.range_mono (by omega)
   · intro i _ _
@@ -62,14 +62,14 @@ theorem monotone_finSigmaFinEquiv_symm_fst
   have hyb : finSigmaFinEquiv y = b := E.apply_symm_apply b
   rw [hxa] at hxformula
   rw [hyb] at hyformula
-  rw [sum_fin_castLE_eq_prefix] at hxformula
-  rw [sum_fin_castLE_eq_prefix] at hyformula
-  have hpref := prefix_add_le n hyx
+  rw [sum_fin_castLE_eq_sigmaPrefix] at hxformula
+  rw [sum_fin_castLE_eq_sigmaPrefix] at hyformula
+  have hpref := sigmaPrefix_add_le n hyx
   have hxoff : 0 ≤ x.2.val := Nat.zero_le _
   have hyoff : y.2.val < n y.1 := y.2.isLt
   change a.val ≤ b.val at hab
-  change a.val = prefix n x.1.val + x.2.val at hxformula
-  change b.val = prefix n y.1.val + y.2.val at hyformula
+  change a.val = sigmaPrefix n x.1.val + x.2.val at hxformula
+  change b.val = sigmaPrefix n y.1.val + y.2.val at hyformula
   omega
 
 /--
@@ -248,7 +248,12 @@ theorem exists_largestFirst_enumeration
   intro a b
   change block a = block b ↔ P.part (y a) = P.part (y b)
   rw [hpart a, hpart b]
-  exact label.injective.eq_iff
+  constructor
+  · intro h
+    rw [h]
+  · intro h
+    apply label.injective
+    exact Subtype.ext h
 
 end FinitePartition
 
