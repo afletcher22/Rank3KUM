@@ -122,9 +122,11 @@ def balancedBlockOrder
     (hPQ : Disjoint P Q)
     (left : Fin (s * k) ≃ P)
     (right : Fin (t * k) ≃ Q) :
-    Fin ((s + t) * k) ≃ (P ∪ Q : Set α) :=
-  (balancedBlockIndexEquiv s t k).trans
-    ((Equiv.sumCongr left right).trans (Equiv.Set.union hPQ).symm)
+    Fin ((s + t) * k) ≃ (P ∪ Q : Set α) := by
+  classical
+  exact
+    (balancedBlockIndexEquiv s t k).trans
+      ((Equiv.sumCongr left right).trans (Equiv.Set.union hPQ).symm)
 
 @[simp] theorem balancedBlockOrder_left
     {P Q : Set α} {s t k : ℕ}
