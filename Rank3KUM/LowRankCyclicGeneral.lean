@@ -151,6 +151,7 @@ theorem exists_cyclicBasisOrder_of_rank_one
     (hDense : UniformlyDense M k) :
     ∃ order : Fin k ≃ M.E,
       CyclicBasisOrder M 1 hk order := by
+  letI : Fintype M.E := hE.fintype
   have hEncard : M.E.ncard = k := by
     have hcast : (M.E.ncard : ℕ∞) = (k : ℕ∞) := by
       rw [hE.cast_ncard_eq]
@@ -162,10 +163,11 @@ theorem exists_cyclicBasisOrder_of_rank_one
     (Finite.equivFinOfCardEq hNatCard).symm
   have hLoopless : M.Loopless :=
     loopless_of_uniformlyDense M k hk hDense
+  let : M.Loopless := hLoopless
   refine ⟨order, ?_⟩
   intro i
   have heNonloop : M.IsNonloop (order i : α) :=
-    hLoopless.isNonloop (order i).property
+    Matroid.isNonloop_of_loopless (order i).property
   have hInd : M.Indep ({(order i : α)} : Set α) :=
     heNonloop.indep
   have hBase : M.IsBase ({(order i : α)} : Set α) := by
