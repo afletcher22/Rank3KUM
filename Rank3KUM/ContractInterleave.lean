@@ -1,4 +1,4 @@
-import Rank3KUM.HalfWeave.ParallelClasses
+import Rank3KUM.HalfWeave.CyclicBasisOrderingDirect
 import Rank3KUM.Interleave
 import Mathlib.Combinatorics.Matroid.Minor.Contract
 
@@ -87,11 +87,13 @@ theorem isBasis_singleton_of_loopless_eRk_eq_one
       (by rw [hXrank, heNonloop.eRk_eq])).isBasis
 
 /--
-A sorted rank-two enumeration of the contraction by a rank-one set interleaves
-with any enumeration of that set to give a cyclic rank-three basis order.
+A cyclic adjacent-basis ordering of the rank-two contraction is the only
+rank-two input needed by the rank-one tight branch.  The ordering and its
+adjacency proof are passed directly rather than through an implementation
+structure for the half-weave construction.
 -/
-theorem exists_cyclicBasisOrder3_of_contract_sortedEnumeration
-    (M : Matroid α) {X : Set α} {k m : ℕ}
+theorem exists_cyclicBasisOrder3_of_contract_ordering
+    (M : Matroid α) {X : Set α} {k : ℕ}
     (hk : 0 < k)
     (hRank : M.eRank = 3)
     (hContractRank : (Matroid.contract M X).eRank = 2)
@@ -99,19 +101,22 @@ theorem exists_cyclicBasisOrder3_of_contract_sortedEnumeration
     (hXrank : M.eRk X = 1)
     (hLoopless : M.Loopless)
     (points : Fin k ≃ X)
-    (D : HalfWeave.RankTwoSortedEnumeration
-      (Matroid.contract M X) k m) :
+    (rankTwoOrder : Fin k × Bool ≃ (Matroid.contract M X).E)
+    (hadj :
+      ∀ p : Fin k × Bool,
+        (Matroid.contract M X).IsBase
+          ({((rankTwoOrder p : (Matroid.contract M X).E) : α),
+            ((rankTwoOrder (HalfWeave.weaveNext k hk p) :
+              (Matroid.contract M X).E) : α)} : Set α)) :
     ∃ order : Fin (3 * k) ≃ M.E,
       CyclicBasisOrder3 M (by omega) order := by
   let pairs : Fin k × Bool ≃ (M.E \ X : Set α) :=
-    (HalfWeave.rankTwoWoven D hk).trans
-      (contractGroundEquiv M X)
+    rankTwoOrder.trans (contractGroundEquiv M X)
   have hpairs_coe (p : Fin k × Bool) :
       (pairs p : α) =
-        ((HalfWeave.rankTwoWoven D hk p :
-          (Matroid.contract M X).E) : α) := by
+        ((rankTwoOrder p : (Matroid.contract M X).E) : α) := by
     exact contractGroundEquiv_trans_apply_coe
-      M X (HalfWeave.rankTwoWoven D hk) p
+      M X rankTwoOrder p
   have hpointBasis (i : Fin k) :
       M.IsBasis ({(points i : α)} : Set α) X :=
     isBasis_singleton_of_loopless_eRk_eq_one
@@ -121,21 +126,17 @@ theorem exists_cyclicBasisOrder3_of_contract_sortedEnumeration
         ({(pairs (i, false) : α),
           (pairs (i, true) : α)} : Set α) := by
     rw [hpairs_coe (i, false), hpairs_coe (i, true)]
-    simpa using
-      (HalfWeave.rankTwoWoven_successor_isBase
-        (Matroid.contract M X) D hk hContractRank
-        (i, false))
+    simpa [HalfWeave.weaveNext] using
+      hadj (i, false)
   have hacross (i : Fin k) :
       (Matroid.contract M X).IsBase
         ({(pairs (i, true) : α),
-          (pairs (cyclicIndex k hk i 1, false) : α)} :
-            Set α) := by
+          (pairs (cyclicIndex k hk i 1, false) : α)} : Set α) := by
     rw [hpairs_coe (i, true),
       hpairs_coe (cyclicIndex k hk i 1, false)]
-    simpa [halfWeave_cyclicSucc_eq_cyclicIndex] using
-      (HalfWeave.rankTwoWoven_successor_isBase
-        (Matroid.contract M X) D hk hContractRank
-        (i, true))
+    simpa [HalfWeave.weaveNext,
+      halfWeave_cyclicSucc_eq_cyclicIndex] using
+      hadj (i, true)
   have hDisjoint : Disjoint X (M.E \ X) :=
     Set.disjoint_sdiff_right
   have hLocal :
@@ -179,7 +180,7 @@ theorem exists_cyclicBasisOrder3_of_contract_sortedEnumeration
 #print axioms Rank3KUM.isBase_insert_pair_of_contract_isBase_rank3
 #print axioms Rank3KUM.contractGroundEquiv_trans_apply_coe
 #print axioms Rank3KUM.isBasis_singleton_of_loopless_eRk_eq_one
-#print axioms Rank3KUM.exists_cyclicBasisOrder3_of_contract_sortedEnumeration
+#print axioms Rank3KUM.exists_cyclicBasisOrder3_of_contract_ordering
 
 /--
 Contracting a rank-one set whose singleton basis is `e` lowers the rank of
@@ -295,7 +296,8 @@ theorem eRank_contract_eq_two_of_eRank_eq_three_eRk_eq_one
 
 /--
 A nonempty tight rank-one set supplies the entire contraction/interleave branch
-of the rank-three construction automatically.
+of the rank-three construction automatically.  The rank-two component is
+consumed only through its cyclic adjacent-basis ordering interface.
 -/
 theorem exists_cyclicBasisOrder3_of_tight_rank_one
     (M : Matroid α) (k : ℕ)
@@ -375,22 +377,18 @@ theorem exists_cyclicBasisOrder3_of_tight_rank_one
       M hRank hX.1 hXrank
   have hLoopless : M.Loopless :=
     loopless_of_uniformlyDense M k hk hDense
-  have hContractLoopless :
-      (Matroid.contract M X).Loopless :=
-    loopless_of_uniformlyDense
-      (Matroid.contract M X) k hk hContractDense
-  let D :=
-    HalfWeave.rankTwoSortedEnumerationOfUniformlyDense
-      (Matroid.contract M X) k hContractCard
-      hContractDense hContractLoopless hContractRank
+  obtain ⟨rankTwoOrder, hadj⟩ :=
+    HalfWeave.exists_cyclic_adjacent_base_order_of_uniformlyDense_direct
+      (Matroid.contract M X) k hk hContractCard
+      hContractDense hContractRank
   have hXNatCard : Nat.card X = k := by
     simpa only [Nat.card_coe_set_eq] using hXncard
   let points : Fin k ≃ X :=
     (Finite.equivFinOfCardEq hXNatCard).symm
   exact
-    exists_cyclicBasisOrder3_of_contract_sortedEnumeration
+    exists_cyclicBasisOrder3_of_contract_ordering
       M hk hRank hContractRank hX.1 hXrank
-      hLoopless points D
+      hLoopless points rankTwoOrder hadj
 
 #print axioms Rank3KUM.eRk_union_eq_contract_eRk_add_one
 #print axioms Rank3KUM.UniformlyDense.contract_tight_rank_one
