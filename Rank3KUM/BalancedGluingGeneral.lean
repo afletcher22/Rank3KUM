@@ -25,6 +25,19 @@ def genericContractGroundEquiv (M : Matroid α) (X : Set α) :
   left_inv e := by ext; rfl
   right_inv e := by ext; rfl
 
+@[simp] theorem genericRestrictGroundEquiv_apply_coe
+    (M : Matroid α) (X : Set α)
+    (x : (Matroid.restrict M X).E) :
+    (((genericRestrictGroundEquiv M X) x : X) : α) = (x : α) := by
+  rfl
+
+@[simp] theorem genericContractGroundEquiv_apply_coe
+    (M : Matroid α) (X : Set α)
+    (x : (Matroid.contract M X).E) :
+    (((genericContractGroundEquiv M X) x : (M.E \ X : Set α)) : α) =
+      (x : α) := by
+  rfl
+
 @[simp] theorem genericRestrictGroundEquiv_trans_apply_coe
     {β : Type*} (M : Matroid α) (X : Set α)
     (σ : β ≃ (Matroid.restrict M X).E) (x : β) :
@@ -85,8 +98,8 @@ theorem exists_cyclicBasisOrder_of_balanced_restrict_contract
   refine ⟨iS, iT, ?_⟩
   simpa only [order, localOrder, left, right,
     cyclicWindow, Equiv.trans_apply, Equiv.setCongr_apply,
-    genericRestrictGroundEquiv_trans_apply_coe,
-    genericContractGroundEquiv_trans_apply_coe] using hp
+    genericRestrictGroundEquiv_apply_coe,
+    genericContractGroundEquiv_apply_coe] using hp
 
 #print axioms Rank3KUM.exists_cyclicBasisOrder_of_balanced_restrict_contract
 
