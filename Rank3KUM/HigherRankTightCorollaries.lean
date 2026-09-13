@@ -56,10 +56,12 @@ theorem exists_cyclicBasisOrder_of_rank_five_of_tight_rank_two
     (hXrank : M.eRk X = 2) :
     ∃ order : Fin (5 * k) ≃ M.E,
       CyclicBasisOrder M 5 (by omega) order := by
+  have hRank23 : M.eRank = ((2 + 3 : ℕ) : ℕ∞) := by
+    convert hRank using 1 <;> norm_num
   have hContractRank : (Matroid.contract M X).eRank = 3 :=
     contract_eRank_eq_of_eRank_eq_add
       (M := M) (X := X) (s := 2) (t := 3)
-      hX.1 (by simpa using hRank) hXrank
+      hX.1 hRank23 hXrank
   have hEcard' :
       M.E.encard = (((2 + 3) * k : ℕ) : ℕ∞) := by
     simpa using hEcard
@@ -87,10 +89,12 @@ theorem exists_cyclicBasisOrder_of_rank_five_of_tight_rank_three
     (hXrank : M.eRk X = 3) :
     ∃ order : Fin (5 * k) ≃ M.E,
       CyclicBasisOrder M 5 (by omega) order := by
+  have hRank32 : M.eRank = ((3 + 2 : ℕ) : ℕ∞) := by
+    convert hRank using 1 <;> norm_num
   have hContractRank : (Matroid.contract M X).eRank = 2 :=
     contract_eRank_eq_of_eRank_eq_add
       (M := M) (X := X) (s := 3) (t := 2)
-      hX.1 (by simpa using hRank) hXrank
+      hX.1 hRank32 hXrank
   have hEcard' :
       M.E.encard = (((3 + 2) * k : ℕ) : ℕ∞) := by
     simpa using hEcard
@@ -139,10 +143,12 @@ theorem exists_cyclicBasisOrder_of_rank_six_of_tight_rank_three
     (hXrank : M.eRk X = 3) :
     ∃ order : Fin (6 * k) ≃ M.E,
       CyclicBasisOrder M 6 (by omega) order := by
+  have hRank33 : M.eRank = ((3 + 3 : ℕ) : ℕ∞) := by
+    convert hRank using 1 <;> norm_num
   have hContractRank : (Matroid.contract M X).eRank = 3 :=
     contract_eRank_eq_of_eRank_eq_add
       (M := M) (X := X) (s := 3) (t := 3)
-      hX.1 (by simpa using hRank) hXrank
+      hX.1 hRank33 hXrank
   have hEcard' :
       M.E.encard = (((3 + 3) * k : ℕ) : ℕ∞) := by
     simpa using hEcard
