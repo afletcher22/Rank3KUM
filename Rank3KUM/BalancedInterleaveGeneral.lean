@@ -68,6 +68,8 @@ theorem cyclicIndex_blockPosition_next
         _ ≤ r * k := hmul
     have hlt : d.val + r * i.val + q < r * k := by omega
     rw [Nat.mod_eq_of_lt hlt, Nat.mod_eq_of_lt hi]
+    have hnextmul : r * (i.val + 1) = r * i.val + r := by ring
+    rw [hnextmul]
     omega
   · have hieq : i.val + 1 = k := by omega
     have hbase : r * k = r * i.val + r := by
