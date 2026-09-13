@@ -1,5 +1,4 @@
-import Rank3KUM.TightFlatAutomatic
-import Rank3KUM.ContractInterleave
+import Rank3KUM.Version2.TightBranchesDirect
 
 namespace Rank3KUM
 
@@ -32,10 +31,10 @@ theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight
         hX hXnonempty hXproper).2 with
     hOne | hTwo
   · exact
-      exists_cyclicBasisOrder3_of_tight_rank_one
+      Version2.exists_cyclicBasisOrder3_of_tight_rank_one_direct
         M k hk hE hRank hEcard hDense hX hOne.1
   · exact
-      exists_cyclicBasisOrder3_of_tight_rank_two
+      Version2.exists_cyclicBasisOrder3_of_tight_rank_two_direct
         M k hk hE hRank hEcard hDense hX hTwo.1
 
 #print axioms Rank3KUM.exists_cyclicBasisOrder3_of_nonempty_proper_tight
