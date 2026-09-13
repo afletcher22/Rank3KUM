@@ -49,6 +49,32 @@ theorem eRk_union_eq_contract_eRk_add
       rw [hJ.encard_eq_eRk, hI.encard_eq_eRk]
 
 /--
+A basis of a contracted set and a basis of the contraction glue to a basis of
+the original matroid.  This is the rank-independent matroid step behind
+balanced restriction/contraction gluing.
+-/
+theorem isBase_union_of_isBasis_contract_isBase
+    (M : Matroid α) {X I J : Set α}
+    (hX : X ⊆ M.E)
+    (hI : M.IsBasis I X)
+    (hJ : (Matroid.contract M X).IsBase J) :
+    M.IsBase (J ∪ I) := by
+  have hdata := hI.contract_indep_iff.mp hJ.indep
+  have hInd : M.Indep (J ∪ I) := hdata.1
+  have hSpanX : M.Spanning (J ∪ X) :=
+    ((Matroid.contract_spanning_iff
+      (M := M) (C := X) (X := J) hX).mp hJ.spanning).1
+  have hclosure :
+      M.closure (J ∪ I) = M.closure (J ∪ X) :=
+    M.closure_union_congr_right hI.closure_eq_closure
+  have hSpanI : M.Spanning (J ∪ I) := by
+    apply (Matroid.spanning_iff_closure_eq hInd.subset_ground).2
+    rw [hclosure]
+    exact
+      (Matroid.spanning_iff_closure_eq hSpanX.subset_ground).1 hSpanX
+  exact hInd.isBase_of_spanning hSpanI
+
+/--
 Uniform density with parameter `k` is inherited by contraction of any finite
 tight set, with the same parameter `k`.  No ambient-rank hypothesis is used.
 -/
@@ -77,6 +103,7 @@ theorem UniformlyDense.contract_tight
   exact (ENat.add_le_add_iff_right hcancel).mp hdense
 
 #print axioms Rank3KUM.eRk_union_eq_contract_eRk_add
+#print axioms Rank3KUM.isBase_union_of_isBasis_contract_isBase
 #print axioms Rank3KUM.UniformlyDense.contract_tight
 
 end
