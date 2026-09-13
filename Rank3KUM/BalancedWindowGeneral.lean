@@ -23,8 +23,15 @@ theorem balancedBlockOrder_apply_left_of_lt
   have hdEq : d = Fin.castAdd t j := by
     apply Fin.ext
     rfl
-  rw [hdEq]
-  simpa [j] using balancedBlockOrder_left hPQ left right i j
+  change
+    ((balancedBlockOrder hPQ left right
+        (blockPosition (s + t) k i d) : (P ∪ Q : Set α)) : α) =
+      (left (blockPosition s k i j) : α)
+  have hmove := congrArg
+    (fun z : Fin (s + t) =>
+      ((balancedBlockOrder hPQ left right
+          (blockPosition (s + t) k i z) : (P ∪ Q : Set α)) : α)) hdEq
+  exact hmove.trans (balancedBlockOrder_left hPQ left right i j)
 
 /-- Evaluate a balanced block position known to lie in its right segment. -/
 theorem balancedBlockOrder_apply_right_of_le
@@ -43,8 +50,15 @@ theorem balancedBlockOrder_apply_right_of_le
     apply Fin.ext
     change d.val = s + (d.val - s)
     omega
-  rw [hdEq]
-  simpa [j] using balancedBlockOrder_right hPQ left right i j
+  change
+    ((balancedBlockOrder hPQ left right
+        (blockPosition (s + t) k i d) : (P ∪ Q : Set α)) : α) =
+      (right (blockPosition t k i j) : α)
+  have hmove := congrArg
+    (fun z : Fin (s + t) =>
+      ((balancedBlockOrder hPQ left right
+          (blockPosition (s + t) k i z) : (P ∪ Q : Set α)) : α)) hdEq
+  exact hmove.trans (balancedBlockOrder_right hPQ left right i j)
 
 /--
 If an `(s+t)`-window starts in the left segment of a balanced block, its
@@ -102,7 +116,10 @@ theorem cyclicWindow_balancedBlockOrder_left_start
         rw [hout, hsrc]
         have heval := balancedBlockOrder_apply_right_of_le
           hPQ left right i
-          (⟨a.val + q.val, hsame⟩ : Fin (s + t)) (by omega)
+          (⟨a.val + q.val, hsame⟩ : Fin (s + t))
+          (by
+            change s ≤ a.val + q.val
+            omega)
         simpa [qt] using heval
       · right
         let qs : Fin s := ⟨q.val - t, by omega⟩
@@ -121,7 +138,10 @@ theorem cyclicWindow_balancedBlockOrder_left_start
           omega
         have heval := balancedBlockOrder_apply_left_of_lt
           hPQ left right (cyclicIndex k hk i 1)
-          (⟨a.val + q.val - (s + t), by omega⟩ : Fin (s + t)) (by omega)
+          (⟨a.val + q.val - (s + t), by omega⟩ : Fin (s + t))
+          (by
+            change a.val + q.val - (s + t) < s
+            omega)
         simpa [qs, hres] using heval
   · rintro (⟨j, rfl⟩ | ⟨j, rfl⟩)
     · let q : Fin (s + t) := ⟨s - a.val + j.val, by omega⟩
@@ -133,14 +153,21 @@ theorem cyclicWindow_balancedBlockOrder_left_start
             simp [q]
             omega)
       have hsrc := cyclicIndex_blockPosition_same
-        t k ht hk i (⟨0, ht⟩ : Fin t) j.val (by omega)
+        t k ht hk i (⟨0, ht⟩ : Fin t) j.val
+          (by
+            change 0 + j.val < t
+            omega)
       rw [hout, hsrc]
       have hres : a.val + q.val - s = j.val := by
         simp [q]
         omega
       have heval := balancedBlockOrder_apply_right_of_le
         hPQ left right i
-        (⟨a.val + q.val, by simp [q]; omega⟩ : Fin (s + t)) (by simp [q]; omega)
+        (⟨a.val + q.val, by simp [q]; omega⟩ : Fin (s + t))
+        (by
+          change s ≤ a.val + q.val
+          simp [q]
+          omega)
       simpa [hres] using heval
     · by_cases hsame : a.val + j.val < s
       · let q : Fin (s + t) := ⟨j.val, by omega⟩
