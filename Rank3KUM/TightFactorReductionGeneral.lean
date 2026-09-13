@@ -15,10 +15,10 @@ statement at a fixed positive rank `r`, for matroids on ambient type `α`.
 def SolvesDivisibleKUMAtRank (α : Type*) (r : ℕ) : Prop :=
   ∀ (N : Matroid α) (k : ℕ)
     (hr : 0 < r) (hk : 0 < k)
-    (hE : N.E.Finite)
-    (hRank : N.eRank = r)
-    (hEcard : N.E.encard = ((r * k : ℕ) : ℕ∞))
-    (hDense : UniformlyDense N k),
+    (_hE : N.E.Finite)
+    (_hRank : N.eRank = r)
+    (_hEcard : N.E.encard = ((r * k : ℕ) : ℕ∞))
+    (_hDense : UniformlyDense N k),
     ∃ order : Fin (r * k) ≃ N.E,
       CyclicBasisOrder N r (Nat.mul_pos hr hk) order
 
@@ -99,9 +99,7 @@ theorem exists_cyclicBasisOrder_of_tight_of_rank_solutions
       _ = M.E.encard := hsum
       _ = (((s + t) * k : ℕ) : ℕ∞) := hEcard
       _ = ((s * k : ℕ) : ℕ∞) + ((t * k : ℕ) : ℕ∞) := by
-        rw [← ENat.natCast_add]
-        congr 1
-        omega
+        rw [Nat.add_mul, ENat.natCast_add]
   have hRestrictRank : (Matroid.restrict M X).eRank = s := by
     rw [Matroid.eRank_def, Matroid.restrict_ground_eq,
       M.restrict_eRk_eq Set.Subset.rfl, hXrank]
