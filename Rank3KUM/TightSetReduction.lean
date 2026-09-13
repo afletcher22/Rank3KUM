@@ -1,5 +1,4 @@
-import Rank3KUM.TightFlatAutomatic
-import Rank3KUM.ContractInterleaveLargestFirst
+import Rank3KUM.Version2.TightBranchesDirect
 
 namespace Rank3KUM
 
@@ -12,6 +11,8 @@ variable {α : Type*}
 /--
 Any nonempty proper tight set resolves the rank-three cyclic-order problem:
 the rank-one case uses contraction, and the rank-two case uses restriction.
+Both branches consume only the paper-level cyclic rank-two basis-ordering
+interface supplied by the weakened largest-first half-weave.
 -/
 theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight
     (M : Matroid α) (k : ℕ)
@@ -32,10 +33,10 @@ theorem exists_cyclicBasisOrder3_of_nonempty_proper_tight
         hX hXnonempty hXproper).2 with
     hOne | hTwo
   · exact
-      exists_cyclicBasisOrder3_of_tight_rank_one_largestFirst
+      Version2.exists_cyclicBasisOrder3_of_tight_rank_one_direct
         M k hk hE hRank hEcard hDense hX hOne.1
   · exact
-      exists_cyclicBasisOrder3_of_tight_rank_two
+      Version2.exists_cyclicBasisOrder3_of_tight_rank_two_direct
         M k hk hE hRank hEcard hDense hX hTwo.1
 
 #print axioms Rank3KUM.exists_cyclicBasisOrder3_of_nonempty_proper_tight
