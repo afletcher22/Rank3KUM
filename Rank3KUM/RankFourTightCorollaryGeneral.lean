@@ -13,8 +13,8 @@ A second proof of the non-strict divisible rank-four case, this time obtained
 uniformly from the arbitrary-rank lower-ranks-to-tight-set reduction.
 
 This intentionally coexists with the earlier explicit `1+3`, `2+2`, `3+1`
-proof in `RankFourTightReduction.lean`; the two routes provide an independent
-cross-check of the rank-four consequence.
+proof in `RankFourTightReduction.lean`; it provides a second derivation through
+the shared infrastructure for comparison with the general reduction.
 -/
 theorem exists_cyclicBasisOrder_of_rank_four_of_nonempty_proper_tight_via_lower_ranks
     (M : Matroid α) (k : ℕ)
