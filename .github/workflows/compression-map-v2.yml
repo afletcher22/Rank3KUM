@@ -2,7 +2,7 @@ name: Compression exploration v2
 
 on:
   push:
-    branches: ["compression-exploration-v2", "balanced-gluing-experiment"]
+    branches: ["compression-exploration-v2", "balanced-gluing-experiment", "higher-rank-gluing-experiment"]
   workflow_dispatch:
 
 permissions:
@@ -41,8 +41,10 @@ jobs:
       - name: Download Mathlib cache from committed manifest
         run: lake exe cache get
 
-      - name: Build substantive proof and Palomar wrapper
-        run: lake build
+      - name: Build substantive proof, Palomar wrapper, and higher-rank endpoints
+        run: |
+          lake build
+          lake build Rank3KUM.TightInductionGeneral Rank3KUM.RankFourTightReduction Rank3KUM.RankFourTightCorollaryGeneral Rank3KUM.HigherRankTightCorollaries
 
       - name: Ensure dependency pins were not rewritten
         run: git diff --exit-code -- lake-manifest.json lean-toolchain
