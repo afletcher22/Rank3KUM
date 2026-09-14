@@ -108,7 +108,7 @@ jobs:
               "inputs": {
                   "repository": os.environ["CANDIDATE_REPOSITORY"],
                   "commit": os.environ["CANDIDATE_COMMIT"],
-                  "request_id": "kumv3preflight0001",
+                  "request_id": "kumv3pre0001",
                   "mode": "preflight",
                   "options": json.dumps({
                       "comparator_config_path": "comparator.json",
