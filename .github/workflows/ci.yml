@@ -2,16 +2,27 @@ name: CI
 
 on:
   push:
-    branches: ["main", "lean-integration", "version-2", "palomar"]
+    branches: ["main", "lean-integration", "version-2", "palomar", "version-3"]
   pull_request:
     branches: ["main"]
   workflow_dispatch:
+
+env:
+  IMMUTABLE_PALOMAR_PARENT: abced491e10f618400e1c9739d2d9503477da76f
+  PALOMAR_SUBMISSION_COMMIT: a013555a88a0fc9ec910a09ea833dc9cc338db35
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Guard immutable Palomar Challenge
+        run: |
+          git cat-file -e "${IMMUTABLE_PALOMAR_PARENT}^{commit}"
+          git diff --exit-code "$IMMUTABLE_PALOMAR_PARENT" -- Challenge.lean
+          echo "Challenge.lean matches immutable Palomar parent ${IMMUTABLE_PALOMAR_PARENT}."
       - name: Check paper alignment tooling
         run: |
           python3 -m py_compile tools/update_v2_paper_alignment.py
@@ -42,30 +53,36 @@ jobs:
         run: |
           curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-      - name: Verify Lean toolchain
+      - name: Verify Lean toolchain and pinned manifest
         run: |
           lean --version
           lake --version
-      - name: Resolve pinned dependencies
-        run: lake update
-      - name: Download Mathlib cache
+          test -f lake-manifest.json
+          test -f lean-toolchain
+          sha256sum lake-manifest.json lean-toolchain
+          git diff --exit-code -- lake-manifest.json lean-toolchain
+      - name: Download Mathlib cache from committed manifest
         run: lake exe cache get
       - name: Build Rank3KUM and Palomar targets
         run: lake build
+      - name: Ensure dependency pins were not rewritten
+        run: git diff --exit-code -- lake-manifest.json lean-toolchain
       - name: Check Palomar statement and solution modules directly
         run: |
           lake env lean Challenge.lean
           lake env lean Solution.lean
+      - name: Check project-to-Challenge definitional contract
+        run: lake env lean tools/StatementContract.lean
 
   palomar-preflight:
-    if: github.ref == 'refs/heads/palomar'
+    if: github.ref == 'refs/heads/palomar' || github.ref == 'refs/heads/version-3'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Checkout current Palomar verifier
+      - name: Checkout pinned current Palomar verifier
         run: |
           git clone --filter=blob:none https://github.com/PalomarRegistry/PalomarSubmission.git "$RUNNER_TEMP/palomar-pipeline"
-          git -C "$RUNNER_TEMP/palomar-pipeline" checkout ef2fa1eadcb246c2346ddba39b52eaa53d4bb763
+          git -C "$RUNNER_TEMP/palomar-pipeline" checkout "$PALOMAR_SUBMISSION_COMMIT"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11.10"
@@ -91,7 +108,7 @@ jobs:
               "inputs": {
                   "repository": os.environ["CANDIDATE_REPOSITORY"],
                   "commit": os.environ["CANDIDATE_COMMIT"],
-                  "request_id": "kumprefl0001",
+                  "request_id": "kumv3preflight0001",
                   "mode": "preflight",
                   "options": json.dumps({
                       "comparator_config_path": "comparator.json",
@@ -130,11 +147,15 @@ jobs:
           PY
 
   palomar-comparator:
-    if: github.ref == 'refs/heads/palomar'
+    if: github.ref == 'refs/heads/palomar' || github.ref == 'refs/heads/version-3'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Guard immutable Palomar Challenge
+        run: git diff --exit-code "$IMMUTABLE_PALOMAR_PARENT" -- Challenge.lean
       - name: Install Elan
         run: |
           curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
@@ -149,5 +170,5 @@ jobs:
           lake --version
           go version
           cargo --version
-      - name: Run pinned Comparator and NanoDa replay
+      - name: Run pinned Comparator and NanoDa regression replay
         run: bash scripts/verify-palomar-comparator.sh
